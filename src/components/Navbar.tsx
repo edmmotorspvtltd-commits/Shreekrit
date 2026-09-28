@@ -128,7 +128,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] hover:border-[#8C2711] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer shadow-2xs"
                 aria-label="Select language"
-                title="Change language / भाषा बदलें / भाषा बदलू"
               >
                 <Languages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8C2711] flex-shrink-0" />
                 <span className="hidden sm:inline font-medium">{currentLang.nativeName}</span>
@@ -184,7 +183,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }}
                 className="px-2 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] hover:border-[#8C2711] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
                 aria-label="Select currency"
-                title="Change currency"
               >
                 <Globe className="w-3 h-3 text-[#8C2711] flex-shrink-0" />
                 <span className="font-mono font-bold text-[#8C2711]">{CURRENCY_RATES[currency]?.symbol}</span>
