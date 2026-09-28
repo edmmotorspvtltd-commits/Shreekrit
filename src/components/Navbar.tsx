@@ -116,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Controls: Language Selector, Currency, Custom Commission, Cart Button */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             {/* Language Selector Switcher */}
             <div className="relative">
               <button
@@ -126,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setLanguageDropdownOpen(!languageDropdownOpen);
                   setCurrencyDropdownOpen(false);
                 }}
-                className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] hover:border-[#8C2711] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full hover:bg-[#F0E4D2] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer"
                 aria-label="Select language"
               >
                 <Languages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8C2711] flex-shrink-0" />
@@ -181,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setCurrencyDropdownOpen(!currencyDropdownOpen);
                   setLanguageDropdownOpen(false);
                 }}
-                className="px-2 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] hover:border-[#8C2711] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                className="px-2 py-1 rounded-full hover:bg-[#F0E4D2] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 transition-colors cursor-pointer"
                 aria-label="Select currency"
               >
                 <Globe className="w-3 h-3 text-[#8C2711] flex-shrink-0" />
@@ -214,10 +214,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
+            <div className="hidden sm:block w-px h-5 bg-[#E2D4BF] mx-1" />
+
             {/* Custom Commission Button */}
             <button
               onClick={onOpenCommission}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-[#8C2711]/40 text-[#8C2711] hover:bg-[#8C2711] hover:text-white text-xs font-semibold transition-all cursor-pointer shadow-2xs"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8C2711] text-white hover:bg-[#6E1C0A] text-xs font-semibold transition-all cursor-pointer shadow-sm"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>{t.nav.customCommission}</span>
@@ -227,7 +229,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenCart}
               id="navbar-cart-btn"
-              className="relative p-1.5 sm:p-2 rounded-full bg-[#FAF5EA] hover:bg-[#F3EADA] border border-[#D5C3A5] text-[#241A14] transition-colors cursor-pointer shadow-2xs"
+              className="relative p-1.5 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
               aria-label="Open cart"
             >
               <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-[#8C2711]" />
