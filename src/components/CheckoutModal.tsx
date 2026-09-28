@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import confetti from 'canvas-confetti';
-import { 
-  X, Check, ShieldCheck, CreditCard, Lock, 
-  Truck, Award, ArrowRight, Printer, Sparkles, MapPin 
+import {
+  X, Check, ShieldCheck, Lock,
+  Award, ArrowRight, Printer, AlertCircle
 } from 'lucide-react';
 import { CartItem, CurrencyCode, ShippingAddress, OrderConfirmation } from '../types';
 import { formatPrice } from '../utils/currency';
+import { SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../data/paintings';
 import { useLanguage } from '../context/LanguageContext';
+import { openRazorpayCheckout } from '../utils/razorpay';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -28,8 +30,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   if (!isOpen) return null;
 
   const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'stripe' | 'paypal'>('stripe');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const [completedOrder, setCompletedOrder] = useState<OrderConfirmation | null>(null);
 
   // Form State — left blank; this is a real order form, not a filled-in demo.
@@ -52,8 +54,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   // Shipping calculation
   // Free insured shipping on orders above ₹40,000 (~$500)
-  const isFreeShipping = subtotalINR > 40000;
-  const shippingCostINR = isFreeShipping ? 0 : 4500;
+  const isFreeShipping = subtotalINR > FREE_SHIPPING_THRESHOLD_INR;
+  const shippingCostINR = isFreeShipping ? 0 : SHIPPING_COST_INR;
   const grandTotalINR = subtotalINR + shippingCostINR;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -68,37 +70,79 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setStep('payment');
   };
 
-  const handlePaymentSubmit = (e: React.FormEvent) => {
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+    setPaymentError(null);
 
-    setTimeout(() => {
-      setIsProcessing(false);
-      const order: OrderConfirmation = {
-        orderId: `MITH-${Math.floor(100000 + Math.random() * 900000)}`,
-        items: [...items],
-        shippingAddress: { ...formData },
-        totalINR: grandTotalINR,
-        currency,
-        totalInCurrency: grandTotalINR,
-        shippingCostINR,
-        paymentMethod,
-        orderDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        estimatedDeliveryDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-      };
-
-      setCompletedOrder(order);
-      setStep('confirmation');
-      onClearCart();
-
-      // Trigger celebratory confetti
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#8C2711', '#E5A93C', '#2A4B7C', '#426B43']
+    try {
+      // Server recomputes every price from the database and creates the
+      // real Razorpay order — the client never decides what gets charged.
+      const createRes = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            paintingId: item.painting.id,
+            editionType: item.editionType,
+            frame: item.frame
+          })),
+          shipping: formData,
+          currency
+        })
       });
-    }, 1600);
+      const createData = await createRes.json();
+      if (!createRes.ok) {
+        throw new Error(createData.error || 'Could not start checkout');
+      }
+
+      await openRazorpayCheckout({
+        keyId: createData.keyId,
+        amountPaise: createData.amountPaise,
+        razorpayOrderId: createData.razorpayOrderId,
+        prefill: {
+          name: formData.fullName,
+          email: formData.email,
+          contact: formData.phone
+        },
+        onDismiss: () => setIsProcessing(false),
+        onSuccess: async (response) => {
+          const verifyRes = await fetch('/api/orders/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              dbOrderId: createData.dbOrderId,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            })
+          });
+          const order: OrderConfirmation = await verifyRes.json();
+          if (!verifyRes.ok) {
+            throw new Error((order as any).error || 'Payment could not be verified');
+          }
+
+          setIsProcessing(false);
+          setCompletedOrder(order);
+          setStep('confirmation');
+          onClearCart();
+
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#8C2711', '#E5A93C', '#2A4B7C', '#426B43']
+          });
+        },
+        onFailure: (description) => {
+          setIsProcessing(false);
+          setPaymentError(description);
+        }
+      });
+    } catch (err) {
+      setIsProcessing(false);
+      setPaymentError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -355,102 +399,27 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <form onSubmit={handlePaymentSubmit} className="max-w-xl mx-auto space-y-6">
               <div className="text-center space-y-1">
                 <h4 className="font-serif-display text-2xl font-bold text-[#241A14]">
-                  Select Payment Gateway
+                  Secure Payment via Razorpay
                 </h4>
                 <p className="text-xs text-[#6B5747]">
-                  All transactions are encrypted with 256-bit SSL protocols.
+                  Cards, UPI, netbanking, and wallets — all transactions are encrypted with 256-bit SSL protocols.
                 </p>
               </div>
 
-              {/* Gateway Selection Tabs */}
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('stripe')}
-                  className={`p-3 rounded border text-center transition-all cursor-pointer ${
-                    paymentMethod === 'stripe'
-                      ? 'border-[#8C2711] bg-[#8C2711]/5 font-semibold text-[#8C2711] ring-1 ring-[#8C2711]'
-                      : 'border-[#D5C3A5] bg-[#FAF5EA] text-[#5A4535]'
-                  }`}
-                >
-                  <CreditCard className="w-5 h-5 mx-auto mb-1 text-[#8C2711]" />
-                  <span className="text-xs block">Stripe</span>
-                  <span className="text-[9px] text-[#7A6452]">Global Cards / Apple Pay</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('razorpay')}
-                  className={`p-3 rounded border text-center transition-all cursor-pointer ${
-                    paymentMethod === 'razorpay'
-                      ? 'border-[#8C2711] bg-[#8C2711]/5 font-semibold text-[#8C2711] ring-1 ring-[#8C2711]'
-                      : 'border-[#D5C3A5] bg-[#FAF5EA] text-[#5A4535]'
-                  }`}
-                >
-                  <Sparkles className="w-5 h-5 mx-auto mb-1 text-[#2A4B7C]" />
-                  <span className="text-xs block">Razorpay</span>
-                  <span className="text-[9px] text-[#7A6452]">UPI / Netbanking / INR</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('paypal')}
-                  className={`p-3 rounded border text-center transition-all cursor-pointer ${
-                    paymentMethod === 'paypal'
-                      ? 'border-[#8C2711] bg-[#8C2711]/5 font-semibold text-[#8C2711] ring-1 ring-[#8C2711]'
-                      : 'border-[#D5C3A5] bg-[#FAF5EA] text-[#5A4535]'
-                  }`}
-                >
-                  <Lock className="w-5 h-5 mx-auto mb-1 text-[#426B43]" />
-                  <span className="text-xs block">PayPal</span>
-                  <span className="text-[9px] text-[#7A6452]">Buyer Protection</span>
-                </button>
+              <div className="bg-[#F4EADB] p-5 rounded border border-[#DFCDB3] flex items-center gap-3">
+                <Lock className="w-5 h-5 text-[#2A4B7C] flex-shrink-0" />
+                <p className="text-xs text-[#5A4535]">
+                  You'll be taken to Razorpay's secure checkout to complete payment. Shreekrit never sees or
+                  stores your card, UPI, or bank details.
+                </p>
               </div>
 
-              {/* Mock Payment Card Form */}
-              <div className="bg-[#F4EADB] p-4 rounded border border-[#DFCDB3] space-y-3">
-                <div className="flex items-center justify-between text-xs text-[#5A4535]">
-                  <span className="font-semibold">Test Mode Payment Simulator</span>
-                  <span className="text-[10px] bg-[#FAF5EA] px-2 py-0.5 rounded border border-[#DFCDB3]">Instant Sandbox</span>
+              {paymentError && (
+                <div className="bg-[#FBEAE5] border border-[#C94A29]/40 rounded p-3 flex items-start gap-2 text-xs text-[#8C2711]">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{paymentError}</span>
                 </div>
-
-                <div>
-                  <label className="block text-[11px] font-medium text-[#5A4535] mb-1">
-                    Card Number
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue="4242 •••• •••• 4242"
-                    readOnly
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-white text-[#241A14] font-mono"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-medium text-[#5A4535] mb-1">
-                      Expiry Date
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="12/28"
-                      readOnly
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-white text-[#241A14] font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-medium text-[#5A4535] mb-1">
-                      CVC / CVV
-                    </label>
-                    <input
-                      type="text"
-                      defaultValue="888"
-                      readOnly
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-white text-[#241A14] font-mono"
-                    />
-                  </div>
-                </div>
-              </div>
+              )}
 
               <div className="flex items-center justify-between text-sm font-bold text-[#241A14]">
                 <span>Total Charge:</span>
@@ -474,7 +443,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   className="flex-1 py-3 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isProcessing ? (
-                    <span className="animate-pulse">Authorizing Bank...</span>
+                    <span className="animate-pulse">Opening Razorpay...</span>
                   ) : (
                     <>
                       <Lock className="w-4 h-4" />
@@ -494,7 +463,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
               <div>
                 <span className="text-xs font-mono font-bold text-[#8C2711] tracking-widest uppercase">
-                  Order Reference: {completedOrder.orderId}
+                  Order Reference: {completedOrder.orderRef}
                 </span>
                 <h4 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#241A14] mt-1">
                   {t.checkout.orderSuccess}
@@ -539,14 +508,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       {completedOrder.items[0]?.editionType === 'print' ? 'Print Edition Certificate ID' : 'Registry Certificate ID'}
                     </span>
                     <span className="font-mono font-bold text-[#8C2711]">
-                      {completedOrder.items[0]
-                        ? completedOrder.items[0].editionType === 'print'
-                          ? `${completedOrder.items[0].painting.certificateId}-PR-${completedOrder.orderId.slice(-6)}`
-                          : completedOrder.items[0].painting.certificateId
-                        : 'MITH-2024-AD-0012'}
+                      {completedOrder.items[0]?.certificateNumber ?? completedOrder.orderRef}
                     </span>
                   </div>
                 </div>
+
+                {completedOrder.items.length > 1 && (
+                  <div className="pt-2 border-t border-[#E0D0B8] space-y-1">
+                    {completedOrder.items.slice(1).map((item, i) => (
+                      <div key={i} className="flex justify-between text-[10px] text-[#7A6452]">
+                        <span>{item.paintingTitle} ({item.editionType === 'print' ? 'Print' : 'Original'})</span>
+                        <span className="font-mono font-bold text-[#8C2711]">{item.certificateNumber}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div className="border-t border-[#E0D0B8] pt-3 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">

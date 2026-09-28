@@ -49,6 +49,9 @@ export interface Painting {
   inRoomImage: string;
   artistSignatureImage?: string;
   certificateId: string;
+  // True for the demo paintings seeded from the original scaffold's
+  // placeholder stock photography — false once real inventory replaces them.
+  isPlaceholder?: boolean;
 }
 
 export interface Artist {
@@ -65,6 +68,9 @@ export interface Artist {
   avatar: string;
   awards: string[];
   quote: string;
+  // True for the four invented demo artists — false once real artist
+  // bios/photos replace them.
+  isPlaceholder?: boolean;
 }
 
 export interface CartItem {
@@ -94,15 +100,28 @@ export interface ShippingAddress {
   country: string;
 }
 
+// One paid line item as the server records it — assembled from
+// api/orders/verify.ts's response, not fabricated client-side. The
+// certificate number is a real sequential value from order_items.id
+// (see db/schema.sql), not derived from the order id.
+export interface ConfirmedOrderItem {
+  paintingId: string;
+  paintingTitle: string;
+  editionType: EditionType;
+  frame: string;
+  framePriceINR: number;
+  unitPriceINR: number;
+  certificateNumber: string;
+}
+
 export interface OrderConfirmation {
-  orderId: string;
-  items: CartItem[];
+  orderRef: string;
+  items: ConfirmedOrderItem[];
   shippingAddress: ShippingAddress;
   totalINR: number;
   currency: CurrencyCode;
-  totalInCurrency: number;
   shippingCostINR: number;
-  paymentMethod: 'razorpay' | 'stripe' | 'paypal';
+  paymentMethod: 'razorpay';
   orderDate: string;
   estimatedDeliveryDate: string;
 }
