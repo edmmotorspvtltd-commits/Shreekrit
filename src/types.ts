@@ -1,5 +1,6 @@
 export type CurrencyCode = 'INR' | 'USD' | 'EUR' | 'GBP' | 'JPY';
 export type Language = 'en' | 'hi' | 'mai';
+export type EditionType = 'original' | 'print';
 
 
 export interface CurrencyRate {
@@ -71,6 +72,14 @@ export interface CartItem {
   frame: FrameOption;
   framePriceINR: number;
   addedAt: number;
+  // The edition actually being purchased, and the price that was agreed to
+  // for it at add-to-cart time. Cart/checkout/drawer must total off
+  // unitPriceINR, never off painting.priceINR directly — priceINR is the
+  // ORIGINAL's price only; a print is a fraction of it (see
+  // ArtworkDetailModal's basePrice calc) and totaling off priceINR silently
+  // overcharges anyone who chose a print.
+  editionType: EditionType;
+  unitPriceINR: number;
 }
 
 export interface ShippingAddress {

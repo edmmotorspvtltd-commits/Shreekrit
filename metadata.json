@@ -1,8 +1,5 @@
 {
   "name": "Mithilā Heritage Arts — Hand-Painted Folk Art Gallery",
   "description": "Fine-art gallery and e-commerce platform for authentic, hand-painted Mithila (Madhubani) folk art from India with high-resolution zooming, cultural storytelling, artist profiles, multi-currency pricing, and direct checkout.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "requestFramePermissions": []
 }

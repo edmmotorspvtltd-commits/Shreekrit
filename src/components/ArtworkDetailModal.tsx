@@ -5,7 +5,7 @@ import {
   Sparkles, Check, ShoppingBag, ArrowRight, Share2, 
   HelpCircle, Info, Heart, Award, MapPin, Eye
 } from 'lucide-react';
-import { Painting, CurrencyCode, FrameOption } from '../types';
+import { Painting, CurrencyCode, FrameOption, EditionType } from '../types';
 import { formatPrice } from '../utils/currency';
 import { FRAME_OPTIONS } from '../data/paintings';
 import { ARTISTS } from '../data/artists';
@@ -16,8 +16,8 @@ interface ArtworkDetailModalProps {
   allPaintings: Painting[];
   currency: CurrencyCode;
   onClose: () => void;
-  onAddToCart: (painting: Painting, frame: FrameOption, framePriceINR: number) => void;
-  onDirectBuy: (painting: Painting, frame: FrameOption, framePriceINR: number) => void;
+  onAddToCart: (painting: Painting, frame: FrameOption, framePriceINR: number, editionType: EditionType, unitPriceINR: number) => void;
+  onDirectBuy: (painting: Painting, frame: FrameOption, framePriceINR: number, editionType: EditionType, unitPriceINR: number) => void;
   onSelectArtist: (artistId: string) => void;
   onSelectRelated: (painting: Painting) => void;
   onOpenCommission: (paintingTheme?: string) => void;
@@ -44,7 +44,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   
   // Format choice: Original vs Museum Print
-  const [editionType, setEditionType] = useState<'original' | 'print'>('original');
+  const [editionType, setEditionType] = useState<EditionType>('original');
   
   // Framing selection
   const [selectedFrame, setSelectedFrame] = useState<FrameOption>('Raw Sheesham Wood Frame');
@@ -509,7 +509,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     <button
                       type="button"
                       id="artwork-buy-now-btn"
-                      onClick={() => onDirectBuy(painting, selectedFrame, framePrice)}
+                      onClick={() => onDirectBuy(painting, selectedFrame, framePrice, editionType, basePrice)}
                       className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                     >
                       <Sparkles className="w-4 h-4" />
@@ -519,7 +519,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     <button
                       type="button"
                       id="artwork-add-cart-btn"
-                      onClick={() => onAddToCart(painting, selectedFrame, framePrice)}
+                      onClick={() => onAddToCart(painting, selectedFrame, framePrice, editionType, basePrice)}
                       className="w-full py-3 border border-[#8C2711] text-[#8C2711] hover:bg-[#8C2711] hover:text-white rounded text-sm font-semibold tracking-wide bg-[#FAF5EA] transition-all cursor-pointer flex items-center justify-center gap-2"
                     >
                       <ShoppingBag className="w-4 h-4" />

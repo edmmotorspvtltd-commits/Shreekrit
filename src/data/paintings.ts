@@ -325,12 +325,17 @@ export const PAINTINGS: Painting[] = [
   }
 ];
 
+// Point-in-time FX snapshot (derived from live USD/INR, EUR/USD, GBP/USD,
+// USD/JPY rates as of 2026-09-28). These drift daily — for production,
+// replace with a live FX feed rather than hardcoding, or re-snapshot on a
+// schedule. formatPrice() in utils/currency.ts applies an additional
+// INTERNATIONAL_MARKUP on top of these for non-INR currencies.
 export const CURRENCY_RATES: Record<string, { symbol: string; rateFromINR: number; name: string }> = {
   INR: { symbol: '₹', rateFromINR: 1, name: 'Indian Rupee' },
-  USD: { symbol: '$', rateFromINR: 0.012, name: 'US Dollar' },
-  EUR: { symbol: '€', rateFromINR: 0.011, name: 'Euro' },
-  GBP: { symbol: '£', rateFromINR: 0.0095, name: 'British Pound' },
-  JPY: { symbol: '¥', rateFromINR: 1.85, name: 'Japanese Yen' }
+  USD: { symbol: '$', rateFromINR: 0.010419, name: 'US Dollar' },
+  EUR: { symbol: '€', rateFromINR: 0.009172, name: 'Euro' },
+  GBP: { symbol: '£', rateFromINR: 0.007947, name: 'British Pound' },
+  JPY: { symbol: '¥', rateFromINR: 1.6376, name: 'Japanese Yen' }
 };
 
 export const FRAME_OPTIONS: { id: string; name: string; priceINR: number; description: string }[] = [

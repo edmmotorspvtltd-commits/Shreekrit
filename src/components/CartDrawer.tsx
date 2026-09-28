@@ -26,7 +26,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   if (!isOpen) return null;
 
   const subtotalINR = items.reduce(
-    (sum, item) => sum + item.painting.priceINR + item.framePriceINR,
+    (sum, item) => sum + item.unitPriceINR + item.framePriceINR,
     0
   );
 
@@ -128,8 +128,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       {t.gallery.byArtist} {item.painting.artistName}
                     </div>
 
-                    <div className="text-[11px] text-[#8C2711] bg-[#F4EBDB] px-1.5 py-0.5 rounded inline-block mt-1 font-mono">
-                      {item.frame}
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[11px] text-[#8C2711] bg-[#F4EBDB] px-1.5 py-0.5 rounded inline-block font-mono">
+                        {item.frame}
+                      </span>
+                      <span className="text-[11px] text-[#3E5C38] bg-[#E8F0E5] px-1.5 py-0.5 rounded inline-block font-mono">
+                        {item.editionType === 'original' ? 'Original' : 'Museum Print'}
+                      </span>
                     </div>
 
                     <div className="mt-2 flex items-center justify-between text-xs">
@@ -137,7 +142,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         {item.painting.dimensions.inches}
                       </span>
                       <span className="font-bold text-[#241A14] font-serif-display text-sm">
-                        {formatPrice(item.painting.priceINR + item.framePriceINR, currency)}
+                        {formatPrice(item.unitPriceINR + item.framePriceINR, currency)}
                       </span>
                     </div>
                   </div>

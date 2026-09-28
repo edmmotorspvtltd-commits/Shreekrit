@@ -32,21 +32,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<OrderConfirmation | null>(null);
 
-  // Form State
+  // Form State — left blank; this is a real order form, not a filled-in demo.
   const [formData, setFormData] = useState<ShippingAddress>({
-    fullName: 'David Sterling',
-    email: 'david.sterling@artcollector.org',
-    phone: '+1 (555) 234-8901',
-    addressLine1: '742 Evergreen Terrace, Suite 4B',
-    addressLine2: 'Private Residence',
-    city: 'New York',
-    state: 'NY',
-    postalCode: '10021',
-    country: 'United States'
+    fullName: '',
+    email: '',
+    phone: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: ''
   });
 
   const subtotalINR = items.reduce(
-    (sum, item) => sum + item.painting.priceINR + item.framePriceINR,
+    (sum, item) => sum + item.unitPriceINR + item.framePriceINR,
     0
   );
 
@@ -268,10 +268,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </label>
                   <select
                     name="country"
+                    required
                     value={formData.country}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
+                    <option value="" disabled>Select a country</option>
                     <option value="United States">United States</option>
                     <option value="India">India</option>
                     <option value="United Kingdom">United Kingdom</option>
@@ -313,10 +315,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-[#241A14] truncate">{item.painting.title}</div>
-                        <div className="text-[10px] text-[#7A6452] truncate">{item.frame}</div>
+                        <div className="text-[10px] text-[#7A6452] truncate">
+                          {item.frame} · {item.editionType === 'original' ? 'Original' : 'Museum Print'}
+                        </div>
                       </div>
                       <span className="font-mono font-semibold">
-                        {formatPrice(item.painting.priceINR + item.framePriceINR, currency)}
+                        {formatPrice(item.unitPriceINR + item.framePriceINR, currency)}
                       </span>
                     </div>
                   ))}
@@ -511,7 +515,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     Mithilāyana Certificate of Authenticity
                   </h5>
                   <p className="text-[11px] text-[#7A6452] italic">
-                    Certified Hand-Painted Original Folk Art of Madhubani, Bihar, India
+                    {completedOrder.items[0]?.editionType === 'print'
+                      ? 'Certified Limited Giclée Edition of Madhubani Folk Art, Bihar, India'
+                      : 'Certified Hand-Painted Original Folk Art of Madhubani, Bihar, India'}
                   </p>
                 </div>
 
@@ -529,9 +535,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     <span className="font-bold text-[#426B43]">{completedOrder.estimatedDeliveryDate}</span>
                   </div>
                   <div>
-                    <span className="text-[#8C7665] block text-[10px]">Registry Certificate ID</span>
+                    <span className="text-[#8C7665] block text-[10px]">
+                      {completedOrder.items[0]?.editionType === 'print' ? 'Print Edition Certificate ID' : 'Registry Certificate ID'}
+                    </span>
                     <span className="font-mono font-bold text-[#8C2711]">
-                      {completedOrder.items[0]?.painting.certificateId || 'MITH-2024-AD-0012'}
+                      {completedOrder.items[0]
+                        ? completedOrder.items[0].editionType === 'print'
+                          ? `${completedOrder.items[0].painting.certificateId}-PR-${completedOrder.orderId.slice(-6)}`
+                          : completedOrder.items[0].painting.certificateId
+                        : 'MITH-2024-AD-0012'}
                     </span>
                   </div>
                 </div>

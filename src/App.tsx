@@ -9,7 +9,7 @@ import {
   Sparkles, Eye, ArrowRight, ShieldCheck, 
   ShoppingBag, Check, Award, Heart, ChevronRight 
 } from 'lucide-react';
-import { Painting, Artist, CartItem, CurrencyCode, FrameOption } from './types';
+import { Painting, Artist, CartItem, CurrencyCode, FrameOption, EditionType } from './types';
 import { PAINTINGS } from './data/paintings';
 import { ARTISTS } from './data/artists';
 import { formatPrice } from './utils/currency';
@@ -85,7 +85,9 @@ export default function App() {
   const handleAddToCart = (
     painting: Painting,
     frame: FrameOption = 'Raw Sheesham Wood Frame',
-    framePriceINR: number = 6500
+    framePriceINR: number = 6500,
+    editionType: EditionType = 'original',
+    unitPriceINR: number = painting.priceINR
   ) => {
     setCart((prev) => [
       ...prev,
@@ -93,7 +95,9 @@ export default function App() {
         painting,
         frame,
         framePriceINR,
-        addedAt: Date.now()
+        addedAt: Date.now(),
+        editionType,
+        unitPriceINR
       }
     ]);
     const pTitle = (language === 'mai' || language === 'hi') && painting.maithiliTitle ? painting.maithiliTitle : painting.title;
@@ -101,23 +105,27 @@ export default function App() {
     setIsCartOpen(true);
   };
 
-  // Quick Add (defaults to Sheesham frame)
+  // Quick Add (defaults to Sheesham frame, original edition at full price)
   const handleQuickAdd = (painting: Painting) => {
-    handleAddToCart(painting, 'Raw Sheesham Wood Frame', 6500);
+    handleAddToCart(painting, 'Raw Sheesham Wood Frame', 6500, 'original', painting.priceINR);
   };
 
   // Direct Buy ("Buy Now" - bypass cart)
   const handleDirectBuy = (
     painting: Painting,
     frame: FrameOption = 'Raw Sheesham Wood Frame',
-    framePriceINR: number = 6500
+    framePriceINR: number = 6500,
+    editionType: EditionType = 'original',
+    unitPriceINR: number = painting.priceINR
   ) => {
     setCart([
       {
         painting,
         frame,
         framePriceINR,
-        addedAt: Date.now()
+        addedAt: Date.now(),
+        editionType,
+        unitPriceINR
       }
     ]);
     setSelectedPainting(null);
@@ -291,12 +299,12 @@ export default function App() {
             allPaintings={PAINTINGS}
             currency={currency}
             onClose={() => setSelectedPainting(null)}
-            onAddToCart={(painting, frame, framePrice) => {
-              handleAddToCart(painting, frame, framePrice);
+            onAddToCart={(painting, frame, framePrice, editionType, unitPriceINR) => {
+              handleAddToCart(painting, frame, framePrice, editionType, unitPriceINR);
               setSelectedPainting(null);
             }}
-            onDirectBuy={(painting, frame, framePrice) => {
-              handleDirectBuy(painting, frame, framePrice);
+            onDirectBuy={(painting, frame, framePrice, editionType, unitPriceINR) => {
+              handleDirectBuy(painting, frame, framePrice, editionType, unitPriceINR);
             }}
             onSelectArtist={(artistId) => {
               handleArtistClickById(artistId);

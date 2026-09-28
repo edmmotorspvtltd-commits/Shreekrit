@@ -21,17 +21,20 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
   if (!isOpen) return null;
 
   const [submitted, setSubmitted] = useState(false);
+  // Identity, budget and notes are left blank — this is a real inquiry form,
+  // not a filled-in demo submission. Only the selects carry a sensible
+  // default (a starting option to pick from, not a stand-in for user data).
   const [formData, setFormData] = useState({
-    name: 'Eleanor Vance',
-    email: 'eleanor.vance@studioart.com',
-    phone: '+1 (415) 890-1234',
-    artist: preselectedArtist || 'Ambika Devi',
+    name: '',
+    email: '',
+    phone: '',
+    artist: preselectedArtist || ARTISTS[0]?.name || 'Any Available Master',
     theme: preselectedTheme || 'Tree of Life with Personal Family Motifs',
     style: 'Kachni (Fine Line Inking)',
     size: 'Large Wall Canvas (36" × 24")',
     pigmentPreference: '100% Organic Earth & Plant Pigments',
-    budgetRange: '$800 – $1,500 USD',
-    notes: 'We would love an auspicious Kalpavriksha tree with our wedding date and initials subtly woven into the twin peacock plumage in the traditional Mithila script style.'
+    budgetRange: '',
+    notes: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,6 +89,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   <input
                     type="text"
                     required
+                    placeholder="Your full name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -98,6 +102,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   <input
                     type="email"
                     required
+                    placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -162,6 +167,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   </label>
                   <input
                     type="text"
+                    placeholder="e.g. $800 – $1,500 USD"
                     value={formData.budgetRange}
                     onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
