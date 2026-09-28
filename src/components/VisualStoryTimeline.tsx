@@ -89,7 +89,7 @@ export const VisualStoryTimeline: React.FC = () => {
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F5EDE0] border-y border-[#DFCDB5] relative overflow-hidden">
-      <div className="max-w-6xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto space-y-12">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8DAC5] border border-[#8C2711]/20 text-[#8C2711] text-xs uppercase tracking-widest font-semibold">

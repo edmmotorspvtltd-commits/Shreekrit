@@ -64,7 +64,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#FAF5EA] border-t border-[#DFCDB5]">
-      <div className="max-w-6xl mx-auto space-y-16">
+      <div className="max-w-7xl mx-auto space-y-16">
         
         {/* Heritage Story Introduction */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">

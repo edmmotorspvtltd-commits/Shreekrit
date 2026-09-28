@@ -78,7 +78,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
         </svg>
       </div>
 
-      <div className="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
+      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center relative z-10">
         {/* Left column: Storytelling Headline and Context */}
         <motion.div 
           initial={{ opacity: 0, y: 24 }}
@@ -96,7 +96,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
             <span className="italic font-normal text-[#8C2711]">{t.hero.titleHighlight}</span>
           </h1>
 
-          <p className="text-[#5C4A3C] text-sm sm:text-base lg:text-lg leading-relaxed max-w-lg font-normal">
+          <p className="text-[#5C4A3C] text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl font-normal">
             {t.hero.desc}
           </p>
 
@@ -205,7 +205,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               scale: canvasScale,
               transformStyle: 'preserve-3d'
             }}
-            className="relative w-full max-w-xl p-3 sm:p-5 rounded-lg bg-[#F3EADA] shadow-2xl border border-[#D5C3A5] mithila-double-border overflow-hidden transition-shadow hover:shadow-3xl"
+            className="relative w-full max-w-2xl p-3 sm:p-5 rounded-lg bg-[#F3EADA] shadow-2xl border border-[#D5C3A5] mithila-double-border overflow-hidden transition-shadow hover:shadow-3xl"
           >
             {/* Corner Decorative Ornaments */}
             <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#8C2711] pointer-events-none" />
