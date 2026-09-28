@@ -128,7 +128,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission }) 
               Mithila Folk Art Guild<br />
               Jitwarpur & Ranti Centers,<br />
               Madhubani District, Bihar 847211, India<br />
-              curator@mithilayana-arts.org
+              curator@shreekrit.com
             </p>
           </div>
         </div>
@@ -136,7 +136,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission }) 
         {/* Bottom Copyright & Guarantee */}
         <div className="pt-8 border-t border-[#3D2C22] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C7665] gap-4">
           <div>
-            © {new Date().getFullYear()} Mithilāyana Fine Arts. {t.footer.rightsReserved}
+            © {new Date().getFullYear()} Shreekrit Fine Arts. {t.footer.rightsReserved}
           </div>
           <div className="flex items-center gap-4">
             <span>{language === 'mai' ? 'प्राकृतिक रंग प्रमाणीकरण' : language === 'hi' ? 'प्राकृतिक रंग प्रमाणीकरण' : 'Natural Pigment Verification'}</span>

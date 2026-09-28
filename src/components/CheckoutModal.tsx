@@ -512,7 +512,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
                 <div className="text-center border-b border-[#E0D0B8] pb-3">
                   <h5 className="font-serif-display font-bold text-xl text-[#8C2711]">
-                    Mithilāyana Certificate of Authenticity
+                    Shreekrit Certificate of Authenticity
                   </h5>
                   <p className="text-[11px] text-[#7A6452] italic">
                     {completedOrder.items[0]?.editionType === 'print'

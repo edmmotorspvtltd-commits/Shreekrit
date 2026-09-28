@@ -63,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div>
               <span className="font-serif-display text-lg sm:text-2xl font-bold text-[#241A14] tracking-tight block leading-none">
-                Mithilāyana
+                Shreekrit
               </span>
               <span className="font-serif text-[9px] sm:text-[11px] text-[#8C2711] tracking-wider uppercase font-semibold block mt-0.5">
                 {t.nav.tagline}
