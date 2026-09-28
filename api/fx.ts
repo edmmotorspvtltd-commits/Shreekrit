@@ -1,15 +1,9 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-// frankfurter.app mirrors the ECB's daily reference rates and needs no
-// API key. It doesn't quote INR as a base, so we ask it for INR's value
-// in each target currency directly (amount=1&from=INR&to=...), which is
-// exactly the rateFromINR shape CURRENCY_RATES already uses.
+export const config = { runtime: 'edge' };
 const TARGET_CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY'];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request) {
   if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
   }
 
   try {
@@ -27,12 +21,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Cache at the edge for an hour — daily ECB rates don't need
     // per-request freshness, and this keeps us well inside frankfurter's
     // free, keyless usage norms.
-    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400');
-    res.status(200).json({ rates, asOf: new Date().toISOString(), source: 'frankfurter.app (ECB)' });
+    return new Response(JSON.stringify({ rates, asOf: new Date().toISOString(), source: 'frankfurter.app (ECB)' }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400'
+      }
+    });
   } catch (err) {
     console.error('GET /api/fx failed:', err);
-    // Client-side refreshLiveRates() already treats a non-OK response as
-    // "keep the static fallback" — surface that explicitly here.
-    res.status(502).json({ error: 'Live FX feed unavailable' });
+    return new Response(JSON.stringify({ error: 'Live FX feed unavailable' }), { status: 502 });
   }
 }

@@ -1,5 +1,5 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+export const config = { runtime: 'edge' };
+
 import { sql } from '../_lib/db';
 
 interface RequestBody {
@@ -9,35 +9,59 @@ interface RequestBody {
   razorpay_signature: string;
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: Request) {
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
   }
 
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
   if (!keySecret) {
-    res.status(500).json({ error: 'Payment gateway is not configured yet' });
-    return;
+    return new Response(JSON.stringify({ error: 'Payment gateway is not configured yet' }), { status: 500 });
   }
 
-  const { dbOrderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body as RequestBody;
+  let body;
+  try {
+    body = await req.json() as RequestBody;
+  } catch (err) {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
+  }
+
+  const { dbOrderId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
   if (!dbOrderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    res.status(400).json({ error: 'Missing payment verification fields' });
-    return;
+    return new Response(JSON.stringify({ error: 'Missing payment verification fields' }), { status: 400 });
   }
 
-  const expectedSignature = createHmac('sha256', keySecret)
-    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-    .digest('hex');
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(keySecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signatureBuffer = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(`${razorpay_order_id}|${razorpay_payment_id}`)
+  );
+  
+  const signatureArray = Array.from(new Uint8Array(signatureBuffer));
+  const expectedSignature = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-  const expected = Buffer.from(expectedSignature, 'utf-8');
-  const actual = Buffer.from(razorpay_signature, 'utf-8');
-  const signatureValid = expected.length === actual.length && timingSafeEqual(expected, actual);
+  // timing-safe comparison
+  let signatureValid = true;
+  if (expectedSignature.length !== razorpay_signature.length) {
+    signatureValid = false;
+  }
+  for (let i = 0; i < expectedSignature.length; i++) {
+    if (expectedSignature[i] !== razorpay_signature[i]) {
+      signatureValid = false;
+    }
+  }
 
   if (!signatureValid) {
-    res.status(400).json({ error: 'Payment verification failed' });
-    return;
+    return new Response(JSON.stringify({ error: 'Payment verification failed' }), { status: 400 });
   }
 
   try {
@@ -45,8 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const orderRows = await db`SELECT * FROM orders WHERE id = ${dbOrderId} AND razorpay_order_id = ${razorpay_order_id}`;
     const order = orderRows[0];
     if (!order) {
-      res.status(404).json({ error: 'Order not found' });
-      return;
+      return new Response(JSON.stringify({ error: 'Order not found' }), { status: 404 });
     }
 
     // Idempotent: a duplicate Razorpay callback replay just re-returns the
@@ -71,7 +94,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const paidAt = new Date(paidOrder.paid_at);
     const estimatedDelivery = new Date(paidAt.getTime() + 8 * 24 * 60 * 60 * 1000);
 
-    res.status(200).json({
+    return new Response(JSON.stringify({
       orderRef: paidOrder.order_ref,
       orderDate: paidAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       estimatedDeliveryDate: estimatedDelivery.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
@@ -99,9 +122,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         unitPriceINR: Number(r.unit_price_inr),
         certificateNumber: r.certificate_number
       }))
-    });
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (err) {
     console.error('POST /api/orders/verify failed:', err);
-    res.status(500).json({ error: 'Failed to verify payment' });
+    return new Response(JSON.stringify({ error: 'Failed to verify payment' }), { status: 500 });
   }
 }

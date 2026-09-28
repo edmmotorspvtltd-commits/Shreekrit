@@ -96,6 +96,25 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         throw new Error(createData.error || 'Could not start checkout');
       }
 
+      // No Razorpay keys configured yet — the server already recorded a
+      // clearly-marked test_paid order (see api/orders/create.ts) and
+      // handed back a full confirmation directly, skipping the real
+      // gateway entirely. Nothing was charged.
+      if (createData.testMode) {
+        setIsProcessing(false);
+        setCompletedOrder(createData as OrderConfirmation);
+        setStep('confirmation');
+        onClearCart();
+
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#8C2711', '#E5A93C', '#2A4B7C', '#426B43']
+        });
+        return;
+      }
+
       await openRazorpayCheckout({
         keyId: createData.keyId,
         amountPaise: createData.amountPaise,
@@ -457,6 +476,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
           {step === 'confirmation' && completedOrder && (
             <div className="max-w-2xl mx-auto space-y-6 text-center">
+              {completedOrder.testMode && (
+                <div className="bg-[#FBEAE5] border border-[#C94A29]/40 rounded p-3 text-xs text-[#8C2711] font-semibold flex items-center justify-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  TEST MODE — Razorpay isn't configured yet. Nothing was charged; this preview lets you review the
+                  confirmation and certificate layout ahead of real payments going live.
+                </div>
+              )}
+
               <div className="w-16 h-16 rounded-full bg-[#E8F0E5] border-2 border-[#426B43] flex items-center justify-center mx-auto text-[#426B43]">
                 <Check className="w-8 h-8" />
               </div>

@@ -1,10 +1,10 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sql } from './_lib/db';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export const config = { runtime: 'edge' };
+
+export default async function handler(req: Request) {
   if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
   }
 
   try {
@@ -38,13 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       isPlaceholder: r.is_placeholder
     }));
 
-    // Short edge cache — gallery data changes rarely, but availability
-    // (is_available going false on a sold original) should show up
-    // within a minute rather than being pinned for a full day.
-    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300');
-    res.status(200).json(paintings);
+    return new Response(JSON.stringify(paintings), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300'
+      }
+    });
   } catch (err) {
     console.error('GET /api/paintings failed:', err);
-    res.status(500).json({ error: 'Failed to load paintings' });
+    return new Response(JSON.stringify({ error: 'Failed to load paintings' }), { status: 500 });
   }
 }

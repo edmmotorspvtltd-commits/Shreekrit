@@ -122,6 +122,9 @@ export interface OrderConfirmation {
   currency: CurrencyCode;
   shippingCostINR: number;
   paymentMethod: 'razorpay';
+  // True when this order bypassed Razorpay entirely because no gateway
+  // keys are configured yet — nothing was charged. See api/orders/create.ts.
+  testMode?: boolean;
   orderDate: string;
   estimatedDeliveryDate: string;
 }
