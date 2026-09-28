@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { X, Sparkles, Check, Palette, Send, FileText } from 'lucide-react';
-import { ARTISTS } from '../data/artists';
+import { Artist } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
 interface CommissionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  artists: Artist[];
   preselectedArtist?: string;
   preselectedTheme?: string;
 }
@@ -14,6 +15,7 @@ interface CommissionModalProps {
 export const CommissionModal: React.FC<CommissionModalProps> = ({
   isOpen,
   onClose,
+  artists,
   preselectedArtist,
   preselectedTheme
 }) => {
@@ -28,7 +30,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
     name: '',
     email: '',
     phone: '',
-    artist: preselectedArtist || ARTISTS[0]?.name || 'Any Available Master',
+    artist: preselectedArtist || artists[0]?.name || 'Any Available Master',
     theme: preselectedTheme || 'Tree of Life with Personal Family Motifs',
     style: 'Kachni (Fine Line Inking)',
     size: 'Large Wall Canvas (36" × 24")',
@@ -120,7 +122,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                     onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
-                    {ARTISTS.map(a => (
+                    {artists.map(a => (
                       <option key={a.id} value={a.name}>{a.name} ({a.village})</option>
                     ))}
                     <option value="Any Available Master">Recommend Best Master for Subject</option>

@@ -5,15 +5,15 @@ import {
   Sparkles, Check, ShoppingBag, ArrowRight, Share2, 
   HelpCircle, Info, Heart, Award, MapPin, Eye
 } from 'lucide-react';
-import { Painting, CurrencyCode, FrameOption, EditionType } from '../types';
+import { Painting, Artist, CurrencyCode, FrameOption, EditionType } from '../types';
 import { formatPrice } from '../utils/currency';
-import { FRAME_OPTIONS } from '../data/paintings';
-import { ARTISTS } from '../data/artists';
+import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO } from '../data/paintings';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ArtworkDetailModalProps {
   painting: Painting | null;
   allPaintings: Painting[];
+  artists: Artist[];
   currency: CurrencyCode;
   onClose: () => void;
   onAddToCart: (painting: Painting, frame: FrameOption, framePriceINR: number, editionType: EditionType, unitPriceINR: number) => void;
@@ -26,6 +26,7 @@ interface ArtworkDetailModalProps {
 export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
   painting,
   allPaintings,
+  artists,
   currency,
   onClose,
   onAddToCart,
@@ -37,7 +38,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
   if (!painting) return null;
 
   const { t, language } = useLanguage();
-  const artist = ARTISTS.find(a => a.id === painting.artistId) || ARTISTS[0];
+  const artist = artists.find(a => a.id === painting.artistId) || artists[0];
 
   // View modes: 'artwork' | 'macro' | 'in-room' | 'signature'
   const [activeViewMode, setActiveViewMode] = useState<'artwork' | 'macro' | 'in-room' | 'signature'>('artwork');
@@ -66,7 +67,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
     .slice(0, 3);
 
   const currentFrameObj = FRAME_OPTIONS.find(f => f.name === selectedFrame) || FRAME_OPTIONS[1];
-  const basePrice = editionType === 'original' ? painting.priceINR : Math.round(painting.priceINR * 0.22);
+  const basePrice = editionType === 'original' ? painting.priceINR : Math.round(painting.priceINR * PRINT_EDITION_PRICE_RATIO);
   const framePrice = currentFrameObj.priceINR;
   const totalPriceINR = basePrice + framePrice;
 

@@ -10,9 +10,8 @@ import {
   ShoppingBag, Check, Award, Heart, ChevronRight 
 } from 'lucide-react';
 import { Painting, Artist, CartItem, CurrencyCode, FrameOption, EditionType } from './types';
-import { PAINTINGS } from './data/paintings';
-import { ARTISTS } from './data/artists';
 import { formatPrice } from './utils/currency';
+import { refreshLiveRates } from './utils/liveRates';
 import { useLanguage } from './context/LanguageContext';
 
 // Components
@@ -38,6 +37,53 @@ export default function App() {
     const saved = localStorage.getItem('mithila_currency');
     return (saved as CurrencyCode) || 'INR';
   });
+
+  // Gallery data now lives in the database (Neon), not hardcoded files —
+  // fetched once on mount from /api/paintings and /api/artists.
+  const [paintings, setPaintings] = useState<Painting[]>([]);
+  const [artists, setArtists] = useState<Artist[]>([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [paintingsRes, artistsRes] = await Promise.all([
+          fetch('/api/paintings'),
+          fetch('/api/artists')
+        ]);
+        if (!paintingsRes.ok || !artistsRes.ok) {
+          throw new Error('Gallery data request failed');
+        }
+        const [paintingsData, artistsData] = await Promise.all([
+          paintingsRes.json(),
+          artistsRes.json()
+        ]);
+        if (!cancelled) {
+          setPaintings(paintingsData);
+          setArtists(artistsData);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setDataError('Unable to load the gallery right now. Please refresh, or try again shortly.');
+        }
+      } finally {
+        if (!cancelled) setIsDataLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Live FX rates mutate CURRENCY_RATES in place (see utils/liveRates.ts);
+  // this forces one re-render afterward so already-mounted prices reflect
+  // the refreshed rates instead of the static fallback snapshot.
+  const [, forceRatesRerender] = useState(0);
+  useEffect(() => {
+    refreshLiveRates().then(() => forceRatesRerender((n) => n + 1));
+  }, []);
 
   // Session-persisted cart
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -152,13 +198,13 @@ export default function App() {
   };
 
   const handleArtistClickById = (artistId: string) => {
-    const artist = ARTISTS.find((a) => a.id === artistId);
+    const artist = artists.find((a) => a.id === artistId);
     if (artist) {
       setSelectedArtist(artist);
     }
   };
 
-  const featuredPaintings = PAINTINGS.filter((p) => p.isFeatured).slice(0, 3);
+  const featuredPaintings = paintings.filter((p) => p.isFeatured).slice(0, 3);
 
   return (
     <div className="min-h-screen bg-[#FAF5EA] text-[#241A14] flex flex-col relative selection:bg-[#C94A29]/20 selection:text-[#8C2711]">
@@ -181,7 +227,19 @@ export default function App() {
 
       {/* Main Views Container */}
       <main className="flex-grow z-10">
-        {activeSection === 'home' && (
+        {isDataLoading && (
+          <div className="py-32 text-center text-sm text-[#8C7665]">
+            Loading the gallery…
+          </div>
+        )}
+
+        {!isDataLoading && dataError && (
+          <div className="py-32 text-center text-sm text-[#8C2711]">
+            {dataError}
+          </div>
+        )}
+
+        {!isDataLoading && !dataError && activeSection === 'home' && (
           <div className="space-y-16">
             {/* Signature Hand-Drawn Animated Hero */}
             <HeroHandDrawn
@@ -238,6 +296,7 @@ export default function App() {
 
             {/* Meet the Artists Teaser Strip */}
             <ArtistsSection
+              artists={artists}
               onSelectArtist={(artist) => setSelectedArtist(artist)}
               onOpenCommission={handleOpenCommission}
             />
@@ -253,9 +312,10 @@ export default function App() {
           </div>
         )}
 
-        {activeSection === 'gallery' && (
+        {!isDataLoading && !dataError && activeSection === 'gallery' && (
           <GallerySection
-            paintings={PAINTINGS}
+            paintings={paintings}
+            artists={artists}
             currency={currency}
             onSelectPainting={(p) => setSelectedPainting(p)}
             onQuickAdd={handleQuickAdd}
@@ -281,9 +341,10 @@ export default function App() {
           </div>
         )}
 
-        {activeSection === 'artists' && (
+        {!isDataLoading && !dataError && activeSection === 'artists' && (
           <div className="pt-6">
             <ArtistsSection
+              artists={artists}
               onSelectArtist={(artist) => setSelectedArtist(artist)}
               onOpenCommission={handleOpenCommission}
             />
@@ -296,7 +357,8 @@ export default function App() {
         {selectedPainting && (
           <ArtworkDetailModal
             painting={selectedPainting}
-            allPaintings={PAINTINGS}
+            allPaintings={paintings}
+            artists={artists}
             currency={currency}
             onClose={() => setSelectedPainting(null)}
             onAddToCart={(painting, frame, framePrice, editionType, unitPriceINR) => {
@@ -325,7 +387,7 @@ export default function App() {
         {selectedArtist && (
           <ArtistProfileModal
             artist={selectedArtist}
-            paintings={PAINTINGS}
+            paintings={paintings}
             currency={currency}
             onClose={() => setSelectedArtist(null)}
             onSelectPainting={(p) => {
@@ -376,6 +438,7 @@ export default function App() {
           <CommissionModal
             isOpen={isCommissionOpen}
             onClose={() => setIsCommissionOpen(false)}
+            artists={artists}
             preselectedArtist={commissionArtist}
             preselectedTheme={commissionTheme}
           />

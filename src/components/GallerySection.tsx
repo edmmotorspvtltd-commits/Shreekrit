@@ -4,13 +4,13 @@ import {
   Search, SlidersHorizontal, Filter, Sparkles, 
   RotateCcw, Check, ChevronDown 
 } from 'lucide-react';
-import { Painting, CurrencyCode, PaintingTheme, PaintingStyle } from '../types';
+import { Painting, Artist, CurrencyCode, PaintingTheme, PaintingStyle } from '../types';
 import { PaintingCard } from './PaintingCard';
-import { ARTISTS } from '../data/artists';
 import { useLanguage } from '../context/LanguageContext';
 
 interface GallerySectionProps {
   paintings: Painting[];
+  artists: Artist[];
   currency: CurrencyCode;
   onSelectPainting: (painting: Painting) => void;
   onQuickAdd: (painting: Painting) => void;
@@ -18,6 +18,7 @@ interface GallerySectionProps {
 
 export const GallerySection: React.FC<GallerySectionProps> = ({
   paintings,
+  artists,
   currency,
   onSelectPainting,
   onQuickAdd
@@ -218,7 +219,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                 className="px-2.5 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs max-w-[170px] truncate"
               >
                 <option value="All">{t.gallery.allArtists}</option>
-                {ARTISTS.map(a => (
+                {artists.map(a => (
                   <option key={a.id} value={a.id}>
                     {language === 'mai' && a.maithiliName ? `${a.maithiliName} (${a.name})` : a.name}
                   </option>

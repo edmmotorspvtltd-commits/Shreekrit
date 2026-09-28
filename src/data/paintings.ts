@@ -344,3 +344,14 @@ export const FRAME_OPTIONS: { id: string; name: string; priceINR: number; descri
   { id: 'matte-ebony', name: 'Matte Ebony Frame', priceINR: 5800, description: 'Clean, gallery-standard solid black timber with off-white archival mat border.' },
   { id: 'warm-brass', name: 'Minimalist Warm Brass Frame', priceINR: 8200, description: 'Sleek brushed brass metal moulding that complements warm turmeric & vermillion hues.' }
 ];
+
+// A "Museum Print" costs this fraction of the original's priceINR.
+// Shared between the client (ArtworkDetailModal price display) and the
+// api/orders/create serverless function, which recomputes it server-side
+// rather than trusting a client-submitted price.
+export const PRINT_EDITION_PRICE_RATIO = 0.22;
+
+// Flat insured courier cost, waived above the free-shipping threshold.
+// Shared the same way as PRINT_EDITION_PRICE_RATIO above.
+export const SHIPPING_COST_INR = 4500;
+export const FREE_SHIPPING_THRESHOLD_INR = 40000;

@@ -2,15 +2,16 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { MapPin, Award, ArrowRight, Sparkles, Feather } from 'lucide-react';
 import { Artist } from '../types';
-import { ARTISTS } from '../data/artists';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ArtistsSectionProps {
+  artists: Artist[];
   onSelectArtist: (artist: Artist) => void;
   onOpenCommission: (artistName?: string) => void;
 }
 
 export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
+  artists,
   onSelectArtist,
   onOpenCommission
 }) => {
@@ -34,7 +35,7 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
 
         {/* Artist Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {ARTISTS.map((artist) => (
+          {artists.map((artist) => (
             <div
               key={artist.id}
               onClick={() => onSelectArtist(artist)}
