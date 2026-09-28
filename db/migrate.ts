@@ -17,12 +17,21 @@ if (!databaseUrl) {
 const sql = neon(databaseUrl);
 const schema = readFileSync(join(__dirname, 'schema.sql'), 'utf-8');
 
-// Split on statement-terminating semicolons; schema.sql has no semicolons
-// inside string literals or function bodies, so this simple split is safe.
-const statements = schema
+// Strip full-line `--` comments first, then split on statement-terminating
+// semicolons; schema.sql has no semicolons inside string literals or
+// function bodies, so this simple split is safe. Stripping comments before
+// splitting (rather than filtering whole chunks that start with `--`)
+// matters here: a couple of statements are preceded by a comment line, and
+// filtering by chunk start previously discarded those statements entirely.
+const withoutComments = schema
+  .split('\n')
+  .filter((line) => !line.trim().startsWith('--'))
+  .join('\n');
+
+const statements = withoutComments
   .split(';')
   .map((s) => s.trim())
-  .filter((s) => s.length > 0 && !s.startsWith('--'));
+  .filter((s) => s.length > 0);
 
 for (const statement of statements) {
   await sql(statement);
