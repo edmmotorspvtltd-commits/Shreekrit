@@ -74,10 +74,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium text-[#4A3525]">
+          <nav className="hidden md:flex items-center gap-3 lg:gap-4 text-[13px] 2xl:text-sm font-medium text-[#4A3525]">
             <button
               onClick={() => handleNavClick('home')}
-              className={`hover:text-[#8C2711] transition-colors cursor-pointer ${
+              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'home' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
@@ -85,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => handleNavClick('gallery')}
-              className={`hover:text-[#8C2711] transition-colors cursor-pointer ${
+              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'gallery' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => handleNavClick('story')}
-              className={`hover:text-[#8C2711] transition-colors cursor-pointer ${
+              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'story' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
@@ -101,7 +101,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => handleNavClick('heritage')}
-              className={`hover:text-[#8C2711] transition-colors cursor-pointer ${
+              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'heritage' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
@@ -109,11 +109,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => handleNavClick('artists')}
-              className={`hover:text-[#8C2711] transition-colors cursor-pointer ${
+              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'artists' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
               {t.nav.artists}
+            </button>
+            <button
+              onClick={() => handleNavClick('blog')}
+              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
+                activeSection === 'blog' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
+              }`}
+            >
+              {t.nav.blog}
             </button>
           </nav>
 
@@ -346,6 +354,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.artists}
+          </button>
+          <button
+            onClick={() => handleNavClick('blog')}
+            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          >
+            {t.nav.blog}
           </button>
           <div className="pt-2 space-y-2">
             <button

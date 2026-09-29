@@ -73,6 +73,20 @@ export interface Artist {
   isPlaceholder?: boolean;
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  date: string;
+  coverImage: string;
+  author: string;
+  // True for the placeholder posts shipped with this scaffold — false once
+  // real editorial content replaces them. Mirrors Painting/Artist's
+  // isPlaceholder convention.
+  isPlaceholder?: boolean;
+}
+
 export interface CartItem {
   painting: Painting;
   frame: FrameOption;

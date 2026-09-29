@@ -23,6 +23,7 @@ import { PaintingCard } from './components/PaintingCard';
 import { VisualStoryTimeline } from './components/VisualStoryTimeline';
 import { HeritageAboutSection } from './components/HeritageAboutSection';
 import { ArtistsSection } from './components/ArtistsSection';
+import { BlogSection } from './components/BlogSection';
 import { ArtworkDetailModal } from './components/ArtworkDetailModal';
 import { ArtistProfileModal } from './components/ArtistProfileModal';
 import { CartDrawer } from './components/CartDrawer';
@@ -351,6 +352,12 @@ export default function App() {
               onSelectArtist={(artist) => setSelectedArtist(artist)}
               onOpenCommission={handleOpenCommission}
             />
+          </div>
+        )}
+
+        {activeSection === 'blog' && (
+          <div className="pt-6">
+            <BlogSection />
           </div>
         )}
       </main>

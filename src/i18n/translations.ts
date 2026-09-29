@@ -21,6 +21,7 @@ export const TRANSLATIONS = {
       story: 'Artisan Journey',
       heritage: 'Heritage Lore',
       artists: 'Master Artists',
+      blog: 'Blog',
       customCommission: 'Custom Commission',
       forArtisans: 'Sell Your Art',
       tagline: 'Authentic Folk Art Archives',
@@ -243,6 +244,15 @@ export const TRANSLATIONS = {
       portfolioTitle: 'Portfolio of Original Canvases',
       requestCommission: 'Request Custom Commission from'
     },
+    blog: {
+      badge: 'From the Guild Journal',
+      title: 'Stories from the Studio',
+      subtitle: 'Notes on technique, tradition, and the artisans behind every canvas.',
+      readMore: 'Read More',
+      backToBlog: 'Back to Blog',
+      byAuthor: 'By',
+      placeholderNotice: 'This is placeholder content for layout preview only — not published editorial writing.'
+    },
     footer: {
       tagline: 'Connecting global collectors, galleries, and discerning homes directly with generational Mithila (Madhubani) folk art masters in North Bihar, India.',
       certifiedOriginals: '100% Certified Originals',
@@ -267,6 +277,7 @@ export const TRANSLATIONS = {
       story: 'शिल्पी यात्रा',
       heritage: 'धरोहर कथा',
       artists: 'सिद्ध कलाकार',
+      blog: 'ब्लॉग',
       customCommission: 'विशेष आदेश',
       forArtisans: 'अपनी कला बेचें',
       tagline: 'प्रमाणित लोक कला अभिलेखागार',
@@ -489,6 +500,15 @@ export const TRANSLATIONS = {
       portfolioTitle: 'कलाकार की मूल कृतियों का संग्रह',
       requestCommission: 'विशेष चित्र का अनुरोध करें:'
     },
+    blog: {
+      badge: 'गिल्ड पत्रिका से',
+      title: 'स्टूडियो की कहानियां',
+      subtitle: 'शिल्प, परंपरा और हर कृति के पीछे के कलाकारों पर टिप्पणियां।',
+      readMore: 'और पढ़ें',
+      backToBlog: 'ब्लॉग पर वापस',
+      byAuthor: 'लेखक:',
+      placeholderNotice: 'यह केवल लेआउट पूर्वावलोकन हेतु अस्थायी सामग्री है — प्रकाशित संपादकीय लेख नहीं।'
+    },
     footer: {
       tagline: 'विश्व भर के कला-प्रेमियों को सीधे उत्तरी बिहार के मिथिला (मधुबनी) कलाकारों से जोड़ने वाला मंच।',
       certifiedOriginals: '१००% प्रमाणित मूल कृतियां',
@@ -513,6 +533,7 @@ export const TRANSLATIONS = {
       story: 'कलाकार यात्रा',
       heritage: 'विरासत कथा',
       artists: 'महान कलाकार',
+      blog: 'ब्लॉग',
       customCommission: 'विशेष आदेश',
       forArtisans: 'अपन कला बेचू',
       tagline: 'प्रामाणिक लोककला धरोहर',
@@ -734,6 +755,15 @@ export const TRANSLATIONS = {
       viewBodyOfWork: 'कलाकृतिक संग्रह देखू',
       portfolioTitle: 'कलाकारक मूल कृतिक संग्रह',
       requestCommission: 'विशेष चित्रक आदेश दिअ:'
+    },
+    blog: {
+      badge: 'गिल्ड पत्रिका सँ',
+      title: 'स्टूडियोक कथा',
+      subtitle: 'शिल्प, परंपरा आ हर कृतिक पाछू कलाकार लोकनि पर टिप्पणी।',
+      readMore: 'आओर पढ़ू',
+      backToBlog: 'ब्लॉग पर वापस',
+      byAuthor: 'लेखक:',
+      placeholderNotice: 'ई केवल ले-आउट पूर्वावलोकन लेल अस्थायी सामग्री अछि — प्रकाशित संपादकीय लेख नहि।'
     },
     footer: {
       tagline: 'दुनिया भरिक कला मर्मज्ञ लोकनि केँ सोझहि उत्तर बिहारक मिथिला (मधुबनी) लोककलाकार लोकनि सँ जोड़निहार मंच।',
