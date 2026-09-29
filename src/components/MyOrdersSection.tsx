@@ -4,6 +4,7 @@ import { OrderRecord, OrderItemRecord } from '../types';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { PAINTINGS } from '../data/paintings';
+import { handleImageError } from '../utils/imageFallback';
 import { OrderDetailCard } from './OrderDetailCard';
 
 interface MyOrdersSectionProps {
@@ -141,6 +142,7 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
                     src={thumb}
                     alt={item.painting_title}
                     referrerPolicy="no-referrer"
+                    onError={handleImageError}
                     className="w-10 h-10 rounded object-cover border-2 border-[#FAF5EA] shadow-sm"
                     style={{ zIndex: 3 - i }}
                   />

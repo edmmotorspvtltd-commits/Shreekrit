@@ -109,7 +109,12 @@ export const TRANSLATIONS = {
       certificateNotice: 'Accompanied by signed Certificate of Authenticity with artist thumbprint.',
       fairTradeNotice: '85%+ proceeds paid directly to the artisan bank account in Bihar.',
       relatedTitle: 'Related Masterpieces in this Lineage',
-      soldMessage: 'This original work has entered a private sanctuary. You can commission the master to compose a sister piece.'
+      soldMessage: 'This original work has entered a private sanctuary. You can commission the master to compose a sister piece.',
+      naturalPigments: 'Natural Pigments Used',
+      culturalStory: 'The Story Behind This Piece',
+      year: 'Year',
+      certificate: 'Certificate',
+      freeShipping: 'Free Worldwide Shipping'
     },
     cart: {
       title: 'Acquisition Gallery Cart',
@@ -365,7 +370,12 @@ export const TRANSLATIONS = {
       certificateNotice: 'कलाकार के हस्ताक्षर व अंगूठे के निशान वाले प्रामाणिकता पत्र के साथ।',
       fairTradeNotice: '८५%+ मूल्य सीधे बिहार के शिल्पकार के खाते में स्थानांतरित।',
       relatedTitle: 'इस परंपरा की अन्य उत्कृष्ट कृतियां',
-      soldMessage: 'यह मूल कृति किसी निजी संग्रह में जा चुकी है। आप कलाकार को ऐसी ही एक और कृति बनाने का आदेश दे सकते हैं।'
+      soldMessage: 'यह मूल कृति किसी निजी संग्रह में जा चुकी है। आप कलाकार को ऐसी ही एक और कृति बनाने का आदेश दे सकते हैं।',
+      naturalPigments: 'प्रयुक्त प्राकृतिक रंग',
+      culturalStory: 'इस कृति की कथा',
+      year: 'वर्ष',
+      certificate: 'प्रमाणपत्र',
+      freeShipping: 'निःशुल्क अंतर्राष्ट्रीय शिपिंग'
     },
     cart: {
       title: 'कला संग्रह झोली (कार्ट)',
@@ -621,7 +631,12 @@ export const TRANSLATIONS = {
       certificateNotice: 'कलाकारक हस्ताक्षर आ अँगूठाक निशानक प्रामाणिकता पत्रक संग।',
       fairTradeNotice: '८५%+ दाम सोझहि मिथिलाक कलाकारक बैंक खाता मे हस्तांतरित।',
       relatedTitle: 'एहि परंपराक आओर श्रेष्ठ चित्र',
-      soldMessage: 'ई मूल चित्र कोनो निजी संग्रह मे चलि गेल अछि। अहाँ कलाकार सँ एहन दोसर चित्र बनयबाक अनुरोध कऽ सकैत छी।'
+      soldMessage: 'ई मूल चित्र कोनो निजी संग्रह मे चलि गेल अछि। अहाँ कलाकार सँ एहन दोसर चित्र बनयबाक अनुरोध कऽ सकैत छी।',
+      naturalPigments: 'प्रयुक्त प्राकृतिक रंग',
+      culturalStory: 'एहि कृतिक कथा',
+      year: 'वर्ष',
+      certificate: 'प्रमाणपत्र',
+      freeShipping: 'मुफ़्त अंतर्राष्ट्रीय शिपिंग'
     },
     cart: {
       title: 'कला संग्रह झोरी (कार्ट)',

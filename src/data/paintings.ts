@@ -197,9 +197,9 @@ export const PAINTINGS: Painting[] = [
       { name: 'Water Ripples (Tarang)', meaning: 'The fluid passing of seasons and emotional serenity' },
       { name: 'Godna Dot Markings', meaning: 'Protective talismans anciently etched onto women forearms' }
     ],
-    primaryImage: 'https://images.unsplash.com/photo-1579783902598-a38674996fb2?auto=format&fit=crop&w=1600&q=85',
+    primaryImage: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=1600&q=85',
     detailImages: [
-      'https://images.unsplash.com/photo-1579783902598-a38674996fb2?auto=format&fit=crop&w=2000&q=95',
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=2000&q=95',
       'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=1600&q=85'
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1600&q=85',

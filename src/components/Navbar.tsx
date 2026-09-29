@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
+import { BLOG_POSTS } from '../data/blogPosts';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { LANGUAGES } from '../i18n/translations';
@@ -43,6 +44,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const currencies: CurrencyCode[] = ['INR', 'USD', 'EUR', 'GBP', 'JPY'];
 
   const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
+
+  // Blog nav entry stays hidden until there's at least one real (non-
+  // placeholder) post — no point sending visitors to a page that only
+  // says "Replace Before Launch". Reappears automatically once real
+  // content lands in blogPosts.ts.
+  const hasRealBlogContent = BLOG_POSTS.some((p) => !p.isPlaceholder);
 
   const handleNavClick = (section: string) => {
     onNavigate(section);
@@ -118,14 +125,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               {t.nav.artists}
             </button>
-            <button
-              onClick={() => handleNavClick('blog')}
-              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
-                activeSection === 'blog' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
-              }`}
-            >
-              {t.nav.blog}
-            </button>
+            {hasRealBlogContent && (
+              <button
+                onClick={() => handleNavClick('blog')}
+                className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
+                  activeSection === 'blog' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
+                }`}
+              >
+                {t.nav.blog}
+              </button>
+            )}
           </nav>
 
           {/* Right Controls: Language Selector, Currency, Custom Commission, Cart Button */}
@@ -427,12 +436,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {t.nav.artists}
           </button>
-          <button
-            onClick={() => handleNavClick('blog')}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
-          >
-            {t.nav.blog}
-          </button>
+          {hasRealBlogContent && (
+            <button
+              onClick={() => handleNavClick('blog')}
+              className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+            >
+              {t.nav.blog}
+            </button>
+          )}
           {/* Mobile Account Section */}
           <div className="py-2 border-b border-[#E8DEC8] space-y-2">
             {user ? (

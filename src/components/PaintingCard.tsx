@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Eye, ShoppingBag, Check, ShieldCheck, Sparkles } from 'lucide-react';
 import { Painting, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/currency';
+import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 
 interface PaintingCardProps {
@@ -84,6 +85,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
           alt={painting.title}
           referrerPolicy="no-referrer"
           loading="lazy"
+          onError={handleImageError}
           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
 

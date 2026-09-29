@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Truck, Sparkles } from 'lucide-react';
 import { CartItem, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/currency';
+import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 
 interface CartDrawerProps {
@@ -60,7 +61,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   {t.cart.title}
                 </h3>
                 <span className="text-xs text-[#7A6452]">
-                  {items.length} {t.cart.itemsReserved}
+                  {items.length} {t.cart.itemsCount}
                 </span>
               </div>
             </div>
@@ -94,7 +95,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   onClick={onClose}
                   className="px-5 py-2.5 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-xs font-semibold cursor-pointer transition-colors"
                 >
-                  {t.cart.exploreBtn}
+                  {t.cart.exploreCollection}
                 </button>
               </div>
             ) : (
@@ -107,6 +108,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     src={item.painting.primaryImage}
                     alt={item.painting.title}
                     referrerPolicy="no-referrer"
+                    onError={handleImageError}
                     className="w-20 h-20 object-cover rounded border border-[#DFCDB3] flex-shrink-0"
                   />
 
@@ -157,7 +159,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               {/* International Shipping Guarantee */}
               <div className="flex items-center gap-2 text-[11px] text-[#3E5C38] bg-[#E8F0E5] p-2 rounded border border-[#C6DCBF]">
                 <Truck className="w-4 h-4 flex-shrink-0" />
-                <span>{t.cart.shippingNotice}</span>
+                <span>{t.cart.shippingGuarantee}</span>
               </div>
 
               {/* Subtotal */}
@@ -182,7 +184,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
               <div className="flex items-center justify-center gap-2 text-[10px] text-[#7A6452]">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8C2711]" />
-                <span>{t.cart.authenticityNotice}</span>
+                <span>{t.cart.coaNotice}</span>
               </div>
             </div>
           )}

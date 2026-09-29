@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { X, MapPin, Award, Calendar, Quote, Sparkles, ArrowRight } from 'lucide-react';
 import { Artist, Painting, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/currency';
+import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ArtistProfileModalProps {
@@ -152,6 +153,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                       src={painting.primaryImage}
                       alt={painting.title}
                       referrerPolicy="no-referrer"
+                      onError={handleImageError}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
                   </div>

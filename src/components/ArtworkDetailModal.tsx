@@ -8,6 +8,7 @@ import {
 import { Painting, Artist, CurrencyCode, FrameOption, EditionType } from '../types';
 import { formatPrice } from '../utils/currency';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO } from '../data/paintings';
+import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 
 interface ArtworkDetailModalProps {
@@ -193,6 +194,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       src={activeViewMode === 'macro' ? painting.detailImages[0] || painting.primaryImage : painting.primaryImage}
                       alt={painting.title}
                       referrerPolicy="no-referrer"
+                      onError={handleImageError}
                       className="w-full h-full object-contain select-none transition-transform duration-100 ease-out"
                       style={{
                         transform: isHoveringImage 
@@ -232,16 +234,18 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       src={painting.inRoomImage}
                       alt="Living room display preview"
                       referrerPolicy="no-referrer"
+                      onError={handleImageError}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/15 pointer-events-none" />
                     {/* Simulated scaled artwork hanging on the wall */}
                     <div className="absolute top-1/4 w-44 sm:w-56 aspect-[4/3] rounded shadow-2xl border-4 border-[#3D2513] overflow-hidden bg-white">
-                      <img 
-                        src={painting.primaryImage} 
-                        alt="Mounted in room" 
+                      <img
+                        src={painting.primaryImage}
+                        alt="Mounted in room"
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover" 
+                        onError={handleImageError}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="absolute bottom-3 left-3 bg-[#FAF5EA]/90 backdrop-blur-sm px-2 py-1 rounded text-[11px] text-[#4A3222] font-medium border border-[#D5C3A5]">
@@ -259,7 +263,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     activeViewMode === 'artwork' ? 'border-[#8C2711] ring-2 ring-[#8C2711]/20' : 'border-[#D5C3A5] opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={painting.primaryImage} alt="Canvas" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                  <img src={painting.primaryImage} alt="Canvas" referrerPolicy="no-referrer" onError={handleImageError} className="w-full h-full object-cover" />
                 </button>
                 {painting.detailImages.map((img, idx) => (
                   <button
@@ -269,7 +273,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       activeViewMode === 'macro' && selectedImageIndex === idx + 1 ? 'border-[#8C2711] ring-2 ring-[#8C2711]/20' : 'border-[#D5C3A5] opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt={`Detail ${idx + 1}`} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                    <img src={img} alt={`Detail ${idx + 1}`} referrerPolicy="no-referrer" onError={handleImageError} className="w-full h-full object-cover" />
                     <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[8px] text-center">Macro</span>
                   </button>
                 ))}
@@ -279,7 +283,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     activeViewMode === 'in-room' ? 'border-[#8C2711] ring-2 ring-[#8C2711]/20' : 'border-[#D5C3A5] opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <img src={painting.inRoomImage} alt="In Room" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                  <img src={painting.inRoomImage} alt="In Room" referrerPolicy="no-referrer" onError={handleImageError} className="w-full h-full object-cover" />
                   <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[8px] text-center">Room</span>
                 </button>
               </div>
@@ -427,7 +431,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
               <div className="space-y-2 pt-2 border-t border-[#E8DEC8]">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold uppercase tracking-wider text-[#69513F]">
-                    {t.detail.framingOptions}:
+                    {t.detail.framingHeading}:
                   </label>
                   <span className="text-xs text-[#8C2711] font-medium">
                     {framePrice > 0 ? `+${formatPrice(framePrice, currency)}` : 'Included'}
@@ -514,7 +518,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                     >
                       <Sparkles className="w-4 h-4" />
-                      <span>{t.detail.directBuy}</span>
+                      <span>{t.detail.buyNow}</span>
                     </button>
 
                     <button
@@ -619,6 +623,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       src={rel.primaryImage}
                       alt={rel.title}
                       referrerPolicy="no-referrer"
+                      onError={handleImageError}
                       className="w-16 h-16 object-cover rounded flex-shrink-0 group-hover:scale-105 transition-transform"
                     />
                     <div className="overflow-hidden">

@@ -8,6 +8,7 @@ import {
 import { CartItem, CurrencyCode, ShippingAddress, OrderConfirmation } from '../types';
 import { formatPrice, convertPrice } from '../utils/currency';
 import { SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../data/paintings';
+import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -420,6 +421,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         src={item.painting.primaryImage}
                         alt={item.painting.title}
                         referrerPolicy="no-referrer"
+                        onError={handleImageError}
                         className="w-12 h-12 rounded object-cover border border-[#D5C3A5]"
                       />
                       <div className="flex-1 min-w-0">

@@ -120,7 +120,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               {t.footer.patronageCustom}
             </h5>
             <ul className="space-y-2">
-              <li><button onClick={onOpenCommission} className="hover:text-white cursor-pointer text-[#E5A93C] font-medium">{t.nav.commission}</button></li>
+              <li><button onClick={onOpenCommission} className="hover:text-white cursor-pointer text-[#E5A93C] font-medium">{t.nav.customCommission}</button></li>
               <li><button onClick={() => onNavigate('story')} className="hover:text-white cursor-pointer">{t.nav.story}</button></li>
               <li><button onClick={() => onNavigate('heritage')} className="hover:text-white cursor-pointer">{t.nav.heritage}</button></li>
               <li><button onClick={() => onNavigate('artists')} className="hover:text-white cursor-pointer">{t.nav.artists}</button></li>
