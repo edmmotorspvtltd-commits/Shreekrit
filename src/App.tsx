@@ -28,6 +28,7 @@ import { ArtistProfileModal } from './components/ArtistProfileModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { CommissionModal } from './components/CommissionModal';
+import { ArtistApplicationModal } from './components/ArtistApplicationModal';
 import { Footer } from './components/Footer';
 
 export default function App() {
@@ -103,6 +104,7 @@ export default function App() {
   const [isCommissionOpen, setIsCommissionOpen] = useState(false);
   const [commissionArtist, setCommissionArtist] = useState<string | undefined>(undefined);
   const [commissionTheme, setCommissionTheme] = useState<string | undefined>(undefined);
+  const [isArtistApplicationOpen, setIsArtistApplicationOpen] = useState(false);
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -223,6 +225,7 @@ export default function App() {
         cartCount={cart.length}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenCommission={() => handleOpenCommission()}
+        onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
       />
 
       {/* Main Views Container */}
@@ -445,6 +448,16 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Artist Guild Onboarding Application Modal */}
+      <AnimatePresence>
+        {isArtistApplicationOpen && (
+          <ArtistApplicationModal
+            isOpen={isArtistApplicationOpen}
+            onClose={() => setIsArtistApplicationOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -469,6 +482,7 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenCommission={() => handleOpenCommission()}
+        onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
       />
     </div>
   );

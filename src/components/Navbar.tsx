@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  ShoppingBag, Menu, X, Sparkles, Globe, 
-  ChevronDown, Languages, Check
+import {
+  ShoppingBag, Menu, X, Sparkles, Globe,
+  ChevronDown, Languages, Check, Feather
 } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
@@ -16,6 +16,7 @@ interface NavbarProps {
   cartCount: number;
   onOpenCart: () => void;
   onOpenCommission: () => void;
+  onOpenArtistApplication: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -25,7 +26,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onCurrencyChange,
   cartCount,
   onOpenCart,
-  onOpenCommission
+  onOpenCommission,
+  onOpenArtistApplication
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
@@ -216,6 +218,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="hidden sm:block w-px h-5 bg-[#E2D4BF] mx-1" />
 
+            {/* Sell Your Art / Artist Onboarding Button */}
+            <button
+              onClick={onOpenArtistApplication}
+              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#8C2711] text-[#8C2711] hover:bg-[#F0E4D2] text-xs font-semibold transition-all cursor-pointer"
+            >
+              <Feather className="w-3.5 h-3.5" />
+              <span>{t.nav.forArtisans}</span>
+            </button>
+
             {/* Custom Commission Button */}
             <button
               onClick={onOpenCommission}
@@ -333,7 +344,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {t.nav.artists}
           </button>
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
+            <button
+              onClick={() => {
+                onOpenArtistApplication();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full py-2.5 border border-[#8C2711] text-[#8C2711] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Feather className="w-3.5 h-3.5" />
+              <span>{t.nav.forArtisans}</span>
+            </button>
             <button
               onClick={() => {
                 onOpenCommission();

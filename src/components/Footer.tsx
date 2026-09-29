@@ -5,9 +5,10 @@ import { useLanguage } from '../context/LanguageContext';
 interface FooterProps {
   onNavigate: (section: string) => void;
   onOpenCommission: () => void;
+  onOpenArtistApplication: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, onOpenArtistApplication }) => {
   const { t, language } = useLanguage();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -117,6 +118,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission }) 
               <li><button onClick={() => onNavigate('story')} className="hover:text-white cursor-pointer">{t.nav.story}</button></li>
               <li><button onClick={() => onNavigate('heritage')} className="hover:text-white cursor-pointer">{t.nav.heritage}</button></li>
               <li><button onClick={() => onNavigate('artists')} className="hover:text-white cursor-pointer">{t.nav.artists}</button></li>
+              <li><button onClick={onOpenArtistApplication} className="hover:text-white cursor-pointer text-[#E5A93C] font-medium">{t.nav.forArtisans}</button></li>
             </ul>
           </div>
 
