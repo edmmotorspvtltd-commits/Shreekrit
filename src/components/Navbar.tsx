@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-[#FAF5EA]/95 backdrop-blur-md border-b border-[#E2D4BF] shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="flex items-center justify-between h-20 sm:h-24">
           
           {/* Brand Logo only — no wordmark */}
           <div 
@@ -60,7 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex flex-col items-center cursor-pointer group select-none flex-shrink-0"
           >
             {/* Shreekrit 4K Logo — slightly larger */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 group-hover:scale-105 transition-transform flex-shrink-0">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 group-hover:scale-105 transition-transform flex-shrink-0">
               <img
                 src="/shreekrit-logo-4k.png"
                 alt="Shreekrit Logo"
@@ -69,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </div>
             {/* Tagline below logo */}
-            <span className="font-serif text-[8px] sm:text-[10px] text-[#8C2711] tracking-widest uppercase font-semibold mt-0.5 whitespace-nowrap">
+            <span className="font-serif text-[9px] sm:text-[11px] text-[#8C2711] tracking-widest uppercase font-semibold mt-1 whitespace-nowrap">
               Authentic Folk Art Archive
             </span>
           </div>
