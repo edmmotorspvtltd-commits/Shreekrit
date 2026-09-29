@@ -75,7 +75,7 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
         <div className="w-14 h-14 rounded-full bg-[#F4EADB] border border-[#DFCDB3] flex items-center justify-center mx-auto text-[#8C2711]">
           <ShieldAlert className="w-7 h-7" />
         </div>
-        <h2 className="text-xl font-serif-display font-bold text-[#241A14]">Log In to View Your Orders</h2>
+        <h1 className="text-xl font-serif-display font-bold text-[#241A14]">Log In to View Your Orders</h1>
         <p className="text-xs text-[#665141]">
           Order history is tied to your account. Log in or sign up to see past acquisitions.
         </p>
@@ -107,7 +107,7 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
   return (
     <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto space-y-8">
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-serif-display font-bold text-[#241A14]">My Orders</h2>
+        <h1 className="text-3xl font-serif-display font-bold text-[#241A14]">My Orders</h1>
         <p className="text-sm text-[#5C4A3C]">{user.email}</p>
       </div>
 
@@ -161,11 +161,11 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-bold text-[#8C2711]">{order.order_number}</span>
-                <span className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[order.status] || ''}`}>
+                <span className={`text-[12px] uppercase font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[order.status] || ''}`}>
                   {order.status.replace('_', ' ')}
                 </span>
               </div>
-              <div className="text-[11px] text-[#7A6452] mt-1">
+              <div className="text-[12px] text-[#7A6452] mt-1">
                 {new Date(order.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </div>
             </div>

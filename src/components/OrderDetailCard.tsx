@@ -68,7 +68,7 @@ export const OrderDetailCard: React.FC<OrderDetailCardProps> = ({ order, items }
             <div key={item.id} className="flex items-center justify-between text-xs p-2.5 bg-[#FAF5EA] rounded border border-[#E8DEC8]">
               <div>
                 <div className="font-medium text-[#241A14]">{item.painting_title}</div>
-                <div className="text-[10px] text-[#7A6452]">
+                <div className="text-[12px] text-[#7A6452]">
                   {item.frame} · {item.edition_type === 'original' ? 'Original' : 'Museum Print'}
                 </div>
               </div>

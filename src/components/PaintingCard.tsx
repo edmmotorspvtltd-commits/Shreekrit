@@ -98,25 +98,27 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
           }}
         />
 
-        {/* Top Badges */}
-        <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none">
+        {/* Top Badges — stacked vertically on mobile (max 2: the style
+            badge hides below sm) instead of wrapping awkwardly side by
+            side when all three can be present at once. */}
+        <div className="absolute top-2.5 inset-x-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 pointer-events-none items-start">
           <div className="flex items-center gap-1.5">
-            <span className="bg-[#241A14]/80 backdrop-blur-sm text-[#FAF5EA] text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded shadow-sm">
+            <span className="hidden sm:inline-block bg-[#241A14]/80 backdrop-blur-sm text-[#FAF5EA] text-[12px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded shadow-sm">
               {(t.styles as Record<string, string>)[painting.style] || painting.style}
             </span>
             {painting.isOriginal && (
-              <span className="bg-[#8C2711]/90 text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+              <span className="bg-[#8C2711]/90 text-white text-[12px] font-medium px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
                 <Sparkles className="w-2.5 h-2.5" /> {t.detail.original}
               </span>
             )}
           </div>
 
           {!painting.isAvailable ? (
-            <span className="bg-[#782414] text-white text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded shadow">
+            <span className="bg-[#782414] text-white text-[12px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded shadow">
               {t.gallery.soldOut}
             </span>
           ) : (
-            <span className="bg-[#FAF5EA]/90 backdrop-blur-sm text-[#3E5C38] border border-[#3E5C38]/30 text-[10px] font-semibold px-2 py-0.5 rounded">
+            <span className="sm:bg-[#FAF5EA]/90 sm:backdrop-blur-sm text-[#3E5C38] sm:border border-[#3E5C38]/30 text-[12px] font-semibold px-2 py-0.5 rounded hidden sm:inline-block">
               ✓
             </span>
           )}
@@ -152,7 +154,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
 
         {/* Completion Hours ribbon */}
         <div className="absolute bottom-2 left-2 pointer-events-none">
-          <span className="text-[10px] text-[#FAF5EA] bg-[#241A14]/70 backdrop-blur-sm px-1.5 py-0.5 rounded">
+          <span className="text-[12px] text-[#FAF5EA] bg-[#241A14]/70 backdrop-blur-sm px-1.5 py-0.5 rounded">
             {painting.completionHours} {t.gallery.hoursWorked}
           </span>
         </div>
@@ -178,7 +180,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
             <span className="font-medium hover:text-[#8C2711] transition-colors">
               {t.gallery.byArtist} {painting.artistName}
             </span>
-            <span className="text-[#877260] font-mono text-[11px]">
+            <span className="text-[#877260] font-mono text-[12px]">
               {painting.dimensions.inches}
             </span>
           </div>
@@ -191,7 +193,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
         {/* Pricing & Footer Actions */}
         <div className="pt-4 mt-3 border-t border-[#E8DEC8] flex items-center justify-between">
           <div>
-            <span className="block text-[10px] uppercase tracking-wider text-[#8A7665] font-medium">
+            <span className="block text-[12px] uppercase tracking-wider text-[#8A7665] font-medium">
               {t.gallery.sortPriceAsc.split(':')[0]}
             </span>
             <span className="font-serif-display text-xl font-bold text-[#241A14]">
@@ -203,7 +205,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
             <button
               type="button"
               onClick={() => onSelect(painting)}
-              className="px-2.5 sm:px-3 py-1.5 rounded border border-[#8C2711]/40 text-[#8C2711] hover:bg-[#8C2711] hover:text-[#FAF5EA] text-xs font-medium transition-colors cursor-pointer"
+              className="min-h-[44px] sm:min-h-0 inline-flex items-center px-2.5 sm:px-3 py-1.5 rounded border border-[#8C2711]/40 text-[#8C2711] hover:bg-[#8C2711] hover:text-[#FAF5EA] text-xs font-medium transition-colors cursor-pointer"
             >
               {t.gallery.detailsBtn}
             </button>
@@ -212,12 +214,12 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
                 type="button"
                 onClick={() => onQuickAdd(painting)}
                 aria-label={`Add ${painting.title} to cart`}
-                className="p-2 sm:p-1.5 rounded bg-[#8C2711] hover:bg-[#6E1C0A] text-white transition-colors cursor-pointer flex items-center justify-center min-w-[34px] min-h-[34px]"
+                className="p-2 sm:p-1.5 rounded bg-[#8C2711] hover:bg-[#6E1C0A] text-white transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] sm:min-w-[34px] sm:min-h-[34px]"
               >
                 <ShoppingBag className="w-4 h-4" />
               </button>
             ) : (
-              <span className="text-[11px] text-[#8C2711] italic font-medium">
+              <span className="text-[12px] text-[#8C2711] italic font-medium">
                 {t.gallery.soldOut}
               </span>
             )}

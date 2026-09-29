@@ -105,6 +105,7 @@ export const TRANSLATIONS = {
       inspectZoom: '3.5× Brushwork Loupe',
       addToCart: 'Reserve in Cart',
       buyNow: 'Direct Collector Acquisition',
+      buyNowShort: 'Buy Now',
       commissionSister: 'Commission Bespoke Sister Work',
       certificateNotice: 'Accompanied by signed Certificate of Authenticity with artist thumbprint.',
       fairTradeNotice: '85%+ proceeds paid directly to the artisan bank account in Bihar.',
@@ -247,7 +248,8 @@ export const TRANSLATIONS = {
       yearsExp: 'yrs experience',
       viewBodyOfWork: 'View Body of Work',
       portfolioTitle: 'Portfolio of Original Canvases',
-      requestCommission: 'Request Custom Commission from'
+      requestCommission: 'Request Custom Commission from',
+      styleSpecialist: 'Specialist'
     },
     blog: {
       badge: 'From the Guild Journal',
@@ -366,6 +368,7 @@ export const TRANSLATIONS = {
       inspectZoom: '३.५× सूक्ष्म लेंस से देखें',
       addToCart: 'झोली में जोड़ें',
       buyNow: 'सीधे प्राप्त करें (अभी खरीदें)',
+      buyNowShort: 'अभी खरीदें',
       commissionSister: 'समान कलाकृति का विशेष आदेश दें',
       certificateNotice: 'कलाकार के हस्ताक्षर व अंगूठे के निशान वाले प्रामाणिकता पत्र के साथ।',
       fairTradeNotice: '८५%+ मूल्य सीधे बिहार के शिल्पकार के खाते में स्थानांतरित।',
@@ -508,7 +511,8 @@ export const TRANSLATIONS = {
       yearsExp: 'वर्षों की साधना',
       viewBodyOfWork: 'इनकी कलाकृतियां देखें',
       portfolioTitle: 'कलाकार की मूल कृतियों का संग्रह',
-      requestCommission: 'विशेष चित्र का अनुरोध करें:'
+      requestCommission: 'विशेष चित्र का अनुरोध करें:',
+      styleSpecialist: 'विशेषज्ञ'
     },
     blog: {
       badge: 'गिल्ड पत्रिका से',
@@ -627,6 +631,7 @@ export const TRANSLATIONS = {
       inspectZoom: '३.५× सूक्ष्म लेंस सँ देखू',
       addToCart: 'झोरी मे राखू',
       buyNow: 'सोझहि प्राप्त करू (आबहि खरीदू)',
+      buyNowShort: 'आबहि खरीदू',
       commissionSister: 'एहन विशिष्ट रचनाक आदेश दिअ',
       certificateNotice: 'कलाकारक हस्ताक्षर आ अँगूठाक निशानक प्रामाणिकता पत्रक संग।',
       fairTradeNotice: '८५%+ दाम सोझहि मिथिलाक कलाकारक बैंक खाता मे हस्तांतरित।',
@@ -769,7 +774,8 @@ export const TRANSLATIONS = {
       yearsExp: 'वर्षक साधना',
       viewBodyOfWork: 'कलाकृतिक संग्रह देखू',
       portfolioTitle: 'कलाकारक मूल कृतिक संग्रह',
-      requestCommission: 'विशेष चित्रक आदेश दिअ:'
+      requestCommission: 'विशेष चित्रक आदेश दिअ:',
+      styleSpecialist: 'विशेषज्ञ'
     },
     blog: {
       badge: 'गिल्ड पत्रिका सँ',

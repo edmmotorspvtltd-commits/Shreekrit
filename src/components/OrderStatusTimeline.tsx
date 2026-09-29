@@ -36,7 +36,7 @@ export const OrderStatusTimeline: React.FC<OrderStatusTimelineProps> = ({ status
           <React.Fragment key={step.key}>
             <div className="flex flex-col items-center gap-1 min-w-[64px]">
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-[12px] font-bold border-2 ${
                   isReached
                     ? 'bg-[#8C2711] border-[#8C2711] text-white'
                     : 'bg-[#FAF5EA] border-[#D5C3A5] text-[#A08D78]'
@@ -45,7 +45,7 @@ export const OrderStatusTimeline: React.FC<OrderStatusTimelineProps> = ({ status
                 {isComplete ? <Check className="w-3.5 h-3.5" /> : i + 1}
               </div>
               <span
-                className={`text-[10px] text-center font-medium ${
+                className={`text-[12px] text-center font-medium ${
                   isCurrent ? 'text-[#8C2711] font-bold' : isReached ? 'text-[#5A4535]' : 'text-[#A08D78]'
                 }`}
               >

@@ -14,8 +14,15 @@ interface StoryChapter {
   motifs: string[];
 }
 
-export const VisualStoryTimeline: React.FC = () => {
+interface VisualStoryTimelineProps {
+  // See ArtistsSection's isPageHeading — same reasoning, this component
+  // is reused both as a home-page teaser and as standalone page content.
+  isPageHeading?: boolean;
+}
+
+export const VisualStoryTimeline: React.FC<VisualStoryTimelineProps> = ({ isPageHeading = false }) => {
   const { t, language } = useLanguage();
+  const HeadingTag = isPageHeading ? 'h1' : 'h2';
   const [activeIdx, setActiveIdx] = useState(0);
 
   const CHAPTERS: StoryChapter[] = [
@@ -96,9 +103,9 @@ export const VisualStoryTimeline: React.FC = () => {
             <Feather className="w-3.5 h-3.5 text-[#C94A29]" />
             <span>{t.storyTimeline.badge}</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14]">
+          <HeadingTag className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14]">
             {t.storyTimeline.title}
-          </h2>
+          </HeadingTag>
           <p className="text-sm sm:text-base text-[#5C4A3C]">
             {t.storyTimeline.subtitle}
           </p>
@@ -116,11 +123,11 @@ export const VisualStoryTimeline: React.FC = () => {
                   : 'bg-[#F2E5D3]/60 border-transparent hover:border-[#D5C2A7]'
               }`}
             >
-              <div className="flex items-center justify-between text-[11px] font-mono text-[#8C2711] font-semibold">
+              <div className="flex items-center justify-between text-[12px] font-mono text-[#8C2711] font-semibold">
                 <span>Chapter {ch.step}</span>
                 {activeIdx === idx && <Sparkles className="w-3 h-3 text-[#C94A29]" />}
               </div>
-              <div className="font-serif text-sm font-bold text-[#241A14] mt-0.5 truncate">
+              <div className="font-serif text-sm font-bold text-[#241A14] mt-0.5 line-clamp-2">
                 {ch.title}
               </div>
             </button>
@@ -141,7 +148,7 @@ export const VisualStoryTimeline: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-3 inset-x-4 text-white text-xs flex items-center justify-between">
                 <span className="font-medium drop-shadow">{currentChapter.caption}</span>
-                <span className="bg-black/60 px-2 py-0.5 rounded text-[10px] font-mono">
+                <span className="bg-black/60 px-2 py-0.5 rounded text-[12px] font-mono">
                   Stage {currentChapter.step}
                 </span>
               </div>
@@ -168,7 +175,7 @@ export const VisualStoryTimeline: React.FC = () => {
             </p>
 
             <div className="space-y-2 pt-2 border-t border-[#E8DEC8]">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#735D4B] block">
+              <span className="text-[12px] font-semibold uppercase tracking-wider text-[#735D4B] block">
                 {language === 'mai' ? 'पारम्परिक तत्व आ सामग्री:' : language === 'hi' ? 'पारंपरिक तत्व एवं सामग्री:' : 'Traditional Elements & Materials:'}
               </span>
               <div className="flex flex-wrap gap-2">

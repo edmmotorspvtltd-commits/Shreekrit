@@ -73,9 +73,9 @@ export const BlogSection: React.FC = () => {
             <Feather className="w-3.5 h-3.5 text-[#C94A29]" />
             <span>{t.blog.badge}</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14]">
+          <h1 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14]">
             {t.blog.title}
-          </h2>
+          </h1>
           <p className="text-sm sm:text-base text-[#5C4A3C]">
             {t.blog.subtitle}
           </p>
@@ -105,7 +105,7 @@ export const BlogSection: React.FC = () => {
                     className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   {post.isPlaceholder && (
-                    <span className="absolute top-2.5 left-2.5 bg-[#241A14]/80 backdrop-blur-sm text-[#FAF5EA] text-[10px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded shadow-sm">
+                    <span className="absolute top-2.5 left-2.5 bg-[#241A14]/80 backdrop-blur-sm text-[#FAF5EA] text-[12px] uppercase font-semibold tracking-wider px-2 py-0.5 rounded shadow-sm">
                       Placeholder
                     </span>
                   )}
@@ -119,7 +119,7 @@ export const BlogSection: React.FC = () => {
                     >
                       {post.title}
                     </h3>
-                    <div className="flex items-center gap-3 text-[11px] text-[#877260]">
+                    <div className="flex items-center gap-3 text-[12px] text-[#877260]">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         {formatDate(post.date, locale)}

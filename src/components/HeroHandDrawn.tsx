@@ -54,7 +54,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
   };
 
   return (
-    <section className="relative min-h-[92vh] flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-24 pb-16 overflow-hidden paper-bg">
+    <section className="relative sm:min-h-[92vh] flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-6 sm:pt-24 pb-16 overflow-hidden paper-bg">
       {/* Subtle background decorative double borders */}
       <div className="absolute inset-x-4 top-20 bottom-8 pointer-events-none border border-[#78350F]/15 rounded-sm">
         <div className="absolute inset-1 border border-dashed border-[#C94A29]/20" />
@@ -109,9 +109,9 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                 {stage === 'coloring' && t.hero.colorPhase}
                 {stage === 'completed' && t.hero.finalPhase}
               </span>
-              <button 
+              <button
                 onClick={handleReplay}
-                className="inline-flex items-center gap-1 text-[#8C2711] hover:text-[#5C1A0B] underline text-xs cursor-pointer transition-colors"
+                className="inline-flex items-center gap-1 text-[#8C2711] hover:text-[#5C1A0B] underline text-xs cursor-pointer transition-colors py-3 -my-3 px-1 -mx-1"
               >
                 <RotateCcw className="w-3 h-3" /> Replay
               </button>
@@ -120,7 +120,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
             <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               <button
                 onClick={() => { setAutoProgress(false); setStage('drawing'); }}
-                className={`py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs rounded border transition-all text-center truncate ${
+                className={`min-h-[44px] flex items-center justify-center py-1.5 px-1 sm:px-2 text-[12px] sm:text-xs rounded border transition-all text-center leading-tight ${
                   stage === 'drawing'
                     ? 'border-[#8C2711] bg-[#8C2711] text-white font-medium shadow-sm'
                     : 'border-[#D9C8B0] bg-[#FAF5EA] text-[#5C4A3C] hover:border-[#8C2711]/40'
@@ -130,7 +130,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               </button>
               <button
                 onClick={() => { setAutoProgress(false); setStage('coloring'); }}
-                className={`py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs rounded border transition-all text-center truncate ${
+                className={`min-h-[44px] flex items-center justify-center py-1.5 px-1 sm:px-2 text-[12px] sm:text-xs rounded border transition-all text-center leading-tight ${
                   stage === 'coloring'
                     ? 'border-[#C94A29] bg-[#C94A29] text-white font-medium shadow-sm'
                     : 'border-[#D9C8B0] bg-[#FAF5EA] text-[#5C4A3C] hover:border-[#C94A29]/40'
@@ -140,7 +140,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               </button>
               <button
                 onClick={() => { setAutoProgress(false); setStage('completed'); }}
-                className={`py-1.5 px-1 sm:px-2 text-[11px] sm:text-xs rounded border transition-all text-center truncate ${
+                className={`min-h-[44px] flex items-center justify-center py-1.5 px-1 sm:px-2 text-[12px] sm:text-xs rounded border transition-all text-center leading-tight ${
                   stage === 'completed'
                     ? 'border-[#2A4B7C] bg-[#2A4B7C] text-white font-medium shadow-sm'
                     : 'border-[#D9C8B0] bg-[#FAF5EA] text-[#5C4A3C] hover:border-[#2A4B7C]/40'
@@ -176,15 +176,15 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
           <div className="pt-4 border-t border-[#E8DEC8] grid grid-cols-3 divide-x divide-[#D9CDB7] text-center text-xs text-[#6B5747]">
             <div className="px-1.5">
               <span className="block font-serif-display text-base sm:text-lg font-bold text-[#241A14]">100%</span>
-              <span className="text-[10px] sm:text-xs">Direct to Artisans</span>
+              <span className="text-[12px] sm:text-xs">Direct to Artisans</span>
             </div>
             <div className="px-1.5">
               <span className="block font-serif-display text-base sm:text-lg font-bold text-[#241A14]">Original</span>
-              <span className="text-[10px] sm:text-xs">Certified Folk Art</span>
+              <span className="text-[12px] sm:text-xs">Certified Folk Art</span>
             </div>
             <div className="px-1.5">
               <span className="block font-serif-display text-base sm:text-lg font-bold text-[#241A14]">Global</span>
-              <span className="text-[10px] sm:text-xs">Insured Shipping</span>
+              <span className="text-[12px] sm:text-xs">Insured Shipping</span>
             </div>
           </div>
         </motion.div>
@@ -218,7 +218,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               <span className="font-serif italic font-semibold text-[#8C2711]">
                 Kalpavriksha (Sacred Cosmic Tree of Mithila)
               </span>
-              <span className="bg-[#FAF5EA] px-2 py-0.5 rounded border border-[#D5C3A5] font-mono text-[10px]">
+              <span className="bg-[#FAF5EA] px-2 py-0.5 rounded border border-[#D5C3A5] font-mono text-[12px]">
                 {stage === 'drawing' ? 'Kachni Line Phase' : stage === 'coloring' ? 'Bharni Pigment Phase' : 'Museum Finished'}
               </span>
             </div>
@@ -462,7 +462,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               </svg>
 
               {/* Master signature seal watermark */}
-              <div className="absolute bottom-4 right-5 font-serif-display text-[11px] text-[#8C2711]/60 tracking-wider flex items-center gap-1">
+              <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider flex items-center gap-1">
                 <span>अम्बिका देवी / Ambika Devi</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]/50" />
                 <span>Jitwarpur, Bihar</span>
@@ -478,28 +478,28 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               <div className="flex items-center gap-2">
                 <span 
                   title="Lamp Black (Kajal from Mustard Oil Lamps)"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#261A12] text-white text-[10px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#261A12] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   Lamp Black
                 </span>
                 <span 
                   title="Turmeric (Haldi) simmered with gum arabic"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E5A93C] text-[#241A14] text-[10px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E5A93C] text-[#241A14] text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]" />
                   Raw Turmeric
                 </span>
                 <span 
                   title="Vermillion (Sindoor) with Peepal Resin"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#C94A29] text-white text-[10px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#C94A29] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   Vermillion
                 </span>
                 <span 
                   title="Natural Indigo (Neel) from Bettiah"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#2A4B7C] text-white text-[10px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#2A4B7C] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C]" />
                   Natural Indigo

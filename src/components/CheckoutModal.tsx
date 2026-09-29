@@ -248,14 +248,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {step !== 'confirmation' && (
           <div className="px-6 py-2 bg-[#FAF5EA] border-b border-[#E0D0B8] flex items-center justify-center gap-8 text-xs">
             <span className={`flex items-center gap-1.5 font-medium ${step === 'shipping' ? 'text-[#8C2711]' : 'text-[#426B43]'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 'shipping' ? 'bg-[#8C2711] text-white' : 'bg-[#426B43] text-white'}`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[12px] ${step === 'shipping' ? 'bg-[#8C2711] text-white' : 'bg-[#426B43] text-white'}`}>
                 {step === 'payment' ? '✓' : '1'}
               </span>
               {t.checkout.stepShipping}
             </span>
             <div className="w-8 h-px bg-[#D5C2A7]" />
             <span className={`flex items-center gap-1.5 font-medium ${step === 'payment' ? 'text-[#8C2711]' : 'text-[#877260]'}`}>
-              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 'payment' ? 'bg-[#8C2711] text-white' : 'bg-[#EAE0CD] text-[#7A6452]'}`}>
+              <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[12px] ${step === 'payment' ? 'bg-[#8C2711] text-white' : 'bg-[#EAE0CD] text-[#7A6452]'}`}>
                 2
               </span>
               {t.checkout.stepPayment}
@@ -282,6 +282,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       type="text"
                       name="fullName"
                       required
+                      autoComplete="name"
                       value={formData.fullName}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -295,6 +296,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       type="email"
                       name="email"
                       required
+                      autoComplete="email"
+                      inputMode="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -310,6 +313,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     type="tel"
                     name="phone"
                     required
+                    autoComplete="tel"
+                    inputMode="tel"
                     value={formData.phone}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -324,13 +329,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     type="text"
                     name="addressLine1"
                     required
+                    autoComplete="address-line1"
                     value={formData.addressLine1}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   <div>
                     <label className="block text-xs font-semibold text-[#5A4535] mb-1">
                       {t.checkout.city}
@@ -339,6 +345,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       type="text"
                       name="city"
                       required
+                      autoComplete="address-level2"
                       value={formData.city}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -352,12 +359,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       type="text"
                       name="state"
                       required
+                      autoComplete="address-level1"
                       value={formData.state}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                     />
                   </div>
-                  <div>
+                  <div className="col-span-2 sm:col-span-1">
                     <label className="block text-xs font-semibold text-[#5A4535] mb-1">
                       {t.checkout.postalCode}
                     </label>
@@ -365,6 +373,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       type="text"
                       name="postalCode"
                       required
+                      autoComplete="postal-code"
+                      inputMode="numeric"
                       value={formData.postalCode}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -379,6 +389,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <select
                     name="country"
                     required
+                    autoComplete="country-name"
                     value={formData.country}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
@@ -426,7 +437,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-[#241A14] truncate">{item.painting.title}</div>
-                        <div className="text-[10px] text-[#7A6452] truncate">
+                        <div className="text-[12px] text-[#7A6452] truncate">
                           {item.frame} · {item.editionType === 'original' ? 'Original' : 'Museum Print'}
                         </div>
                       </div>
@@ -452,7 +463,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                 </div>
 
-                <div className="p-2.5 bg-[#FAF5EA] rounded border border-[#D5C3A5] text-[11px] text-[#695343] space-y-1">
+                <div className="p-2.5 bg-[#FAF5EA] rounded border border-[#D5C3A5] text-[12px] text-[#695343] space-y-1">
                   <div className="font-semibold text-[#8C2711] flex items-center gap-1">
                     <Award className="w-3.5 h-3.5" /> Fair-Trade Direct Promise
                   </div>
@@ -552,7 +563,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
               {/* Printable Certificate of Authenticity Preview Card */}
               <div className="p-6 bg-[#FFFDF9] rounded-lg border-2 border-[#8C2711] shadow-md text-left space-y-4 relative overflow-hidden">
-                <div className="absolute top-2 right-3 text-[10px] font-mono text-[#8C2711]/60">
+                <div className="absolute top-2 right-3 text-[12px] font-mono text-[#8C2711]/60">
                   OFFICIAL GUILD REGISTRATION
                 </div>
 
@@ -560,7 +571,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <h5 className="font-serif-display font-bold text-xl text-[#8C2711]">
                     Shreekrit Certificate of Authenticity
                   </h5>
-                  <p className="text-[11px] text-[#7A6452] italic">
+                  <p className="text-[12px] text-[#7A6452] italic">
                     {completedOrder.items[0]?.editionType === 'print'
                       ? 'Certified Limited Giclée Edition of Madhubani Folk Art, Bihar, India'
                       : 'Certified Hand-Painted Original Folk Art of Madhubani, Bihar, India'}
@@ -569,19 +580,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-[#8C7665] block text-[10px]">Collector / Custodian</span>
+                    <span className="text-[#8C7665] block text-[12px]">Collector / Custodian</span>
                     <span className="font-bold text-[#241A14]">{completedOrder.shippingAddress.fullName}</span>
                   </div>
                   <div>
-                    <span className="text-[#8C7665] block text-[10px]">Date of Certification</span>
+                    <span className="text-[#8C7665] block text-[12px]">Date of Certification</span>
                     <span className="font-bold text-[#241A14]">{completedOrder.orderDate}</span>
                   </div>
                   <div>
-                    <span className="text-[#8C7665] block text-[10px]">Estimated Delivery to Door</span>
+                    <span className="text-[#8C7665] block text-[12px]">Estimated Delivery to Door</span>
                     <span className="font-bold text-[#426B43]">{completedOrder.estimatedDeliveryDate}</span>
                   </div>
                   <div>
-                    <span className="text-[#8C7665] block text-[10px]">
+                    <span className="text-[#8C7665] block text-[12px]">
                       {completedOrder.items[0]?.editionType === 'print' ? 'Print Edition Certificate ID' : 'Registry Certificate ID'}
                     </span>
                     <span className="font-mono font-bold text-[#8C2711]">
@@ -593,7 +604,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {completedOrder.items.length > 1 && (
                   <div className="pt-2 border-t border-[#E0D0B8] space-y-1">
                     {completedOrder.items.slice(1).map((item, i) => (
-                      <div key={i} className="flex justify-between text-[10px] text-[#7A6452]">
+                      <div key={i} className="flex justify-between text-[12px] text-[#7A6452]">
                         <span>{item.paintingTitle} ({item.editionType === 'print' ? 'Print' : 'Original'})</span>
                         <span className="font-mono font-bold text-[#8C2711]">{item.certificateNumber}</span>
                       </div>

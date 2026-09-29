@@ -8,14 +8,21 @@ interface ArtistsSectionProps {
   artists: Artist[];
   onSelectArtist: (artist: Artist) => void;
   onOpenCommission: (artistName?: string) => void;
+  // true when this section is the page's own top-level heading (the
+  // standalone Master Artists view) rather than a teaser embedded within
+  // the home page, which already has its own <h1> — keeps exactly one
+  // <h1> per view instead of either zero or two.
+  isPageHeading?: boolean;
 }
 
 export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
   artists,
   onSelectArtist,
-  onOpenCommission
+  onOpenCommission,
+  isPageHeading = false
 }) => {
   const { t } = useLanguage();
+  const HeadingTag = isPageHeading ? 'h1' : 'h2';
   return (
     <section id="artists-section" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#F5EDE0] border-t border-[#DFCDB5]">
       <div className="max-w-7xl mx-auto space-y-12">
@@ -25,9 +32,9 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
             <Feather className="w-3.5 h-3.5 text-[#C94A29]" />
             <span>{t.artists.badge}</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14]">
+          <HeadingTag className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14]">
             {t.artists.title}
-          </h2>
+          </HeadingTag>
           <p className="text-sm sm:text-base text-[#5C4A3C]">
             {t.artists.subtitle}
           </p>
@@ -58,14 +65,14 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
                   <div className="text-xs font-serif italic text-[#8C2711]">
                     {artist.maithiliName}
                   </div>
-                  <div className="flex items-center justify-center gap-1 text-[11px] text-[#7A6452]">
+                  <div className="flex items-center justify-center gap-1 text-[12px] text-[#7A6452]">
                     <MapPin className="w-3 h-3 text-[#8C2711]" />
                     <span>{artist.village}, {artist.district}</span>
                   </div>
                 </div>
 
                 <div className="text-center">
-                  <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#EAE0CD] text-[10px] uppercase font-semibold text-[#523F31]">
+                  <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#EAE0CD] text-[12px] uppercase font-semibold text-[#523F31]">
                     {artist.specialtyStyle} {t.artists.styleSpecialist}
                   </span>
                 </div>
@@ -76,11 +83,11 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
               </div>
 
               <div className="pt-4 mt-4 border-t border-[#E8DEC8] flex items-center justify-between text-xs">
-                <span className="text-[#877260] font-medium text-[11px]">
-                  {artist.yearsOfExperience} {t.artists.yrsExperience}
+                <span className="text-[#877260] font-medium text-[12px]">
+                  {artist.yearsOfExperience} {t.artists.yearsExp}
                 </span>
-                <span className="text-[#8C2711] font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  {t.artists.viewWork} <ArrowRight className="w-3 h-3" />
+                <span className="text-[#8C2711] font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform py-3 -my-3 pl-1 -ml-1">
+                  {t.artists.viewBodyOfWork} <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
             </div>

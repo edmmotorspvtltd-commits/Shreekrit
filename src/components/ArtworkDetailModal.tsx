@@ -103,7 +103,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
           <div className="flex items-center gap-2 text-xs text-[#735A47]">
             <span className="font-serif italic font-semibold text-[#8C2711]">Mithilā Heritage Archives</span>
             <span>•</span>
-            <span className="font-mono text-[11px]">COA #{painting.certificateId}</span>
+            <span className="font-mono text-[12px]">COA #{painting.certificateId}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
               title="Share Painting"
             >
               <Share2 className="w-4 h-4" />
-              {copiedLink && <span className="text-[10px] text-[#8C2711] font-semibold">Link Copied!</span>}
+              {copiedLink && <span className="text-[12px] text-[#8C2711] font-semibold">Link Copied!</span>}
             </button>
             <button
               onClick={onClose}
@@ -138,38 +138,41 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                 <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto max-w-full">
                   <button
                     onClick={() => { setActiveViewMode('artwork'); setZoomLevel(1); }}
-                    className={`px-2.5 sm:px-3 py-1 text-xs rounded transition-all cursor-pointer whitespace-nowrap ${
+                    className={`min-h-[44px] px-2.5 sm:px-3 py-1 text-xs rounded transition-all cursor-pointer flex items-center whitespace-nowrap flex-shrink-0 ${
                       activeViewMode === 'artwork'
                         ? 'bg-[#8C2711] text-white font-medium shadow-sm'
                         : 'text-[#614936] hover:bg-[#EAE0CD]'
                     }`}
                   >
-                    Full Canvas
+                    <span className="sm:hidden">Canvas</span>
+                    <span className="hidden sm:inline">Full Canvas</span>
                   </button>
                   <button
                     onClick={() => { setActiveViewMode('macro'); setZoomLevel(2.5); }}
-                    className={`px-2.5 sm:px-3 py-1 text-xs rounded transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap ${
+                    className={`min-h-[44px] px-2.5 sm:px-3 py-1 text-xs rounded transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap flex-shrink-0 ${
                       activeViewMode === 'macro'
                         ? 'bg-[#8C2711] text-white font-medium shadow-sm'
                         : 'text-[#614936] hover:bg-[#EAE0CD]'
                     }`}
                   >
-                    <ZoomIn className="w-3.5 h-3.5" />
-                    Macro Brushwork
+                    <ZoomIn className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="sm:hidden">Macro</span>
+                    <span className="hidden sm:inline">Macro Brushwork</span>
                   </button>
                   <button
                     onClick={() => { setActiveViewMode('in-room'); setZoomLevel(1); }}
-                    className={`px-2.5 sm:px-3 py-1 text-xs rounded transition-all cursor-pointer whitespace-nowrap ${
+                    className={`min-h-[44px] px-2.5 sm:px-3 py-1 text-xs rounded transition-all cursor-pointer flex items-center whitespace-nowrap flex-shrink-0 ${
                       activeViewMode === 'in-room'
                         ? 'bg-[#8C2711] text-white font-medium shadow-sm'
                         : 'text-[#614936] hover:bg-[#EAE0CD]'
                     }`}
                   >
-                    In-Room Scale
+                    <span className="sm:hidden">In-Room</span>
+                    <span className="hidden sm:inline">In-Room Scale</span>
                   </button>
                 </div>
 
-                <div className="text-[11px] text-[#7A6452] hidden sm:flex items-center gap-1">
+                <div className="text-[12px] text-[#7A6452] hidden sm:flex items-center gap-1">
                   <Maximize2 className="w-3 h-3 text-[#8C2711]" />
                   <span>Hover to zoom into pigment</span>
                 </div>
@@ -221,7 +224,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                           top: `${lensPos.y}%`
                         }}
                       >
-                        <div className="absolute top-1 right-1 px-1 bg-[#241A14] text-white text-[8px] rounded font-mono">
+                        <div className="absolute top-1 right-1 px-1 bg-[#241A14] text-white text-[12px] rounded font-mono">
                           {activeViewMode === 'macro' ? '3.5×' : '2.2×'}
                         </div>
                       </div>
@@ -248,7 +251,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="absolute bottom-3 left-3 bg-[#FAF5EA]/90 backdrop-blur-sm px-2 py-1 rounded text-[11px] text-[#4A3222] font-medium border border-[#D5C3A5]">
+                    <div className="absolute bottom-3 left-3 bg-[#FAF5EA]/90 backdrop-blur-sm px-2 py-1 rounded text-[12px] text-[#4A3222] font-medium border border-[#D5C3A5]">
                       Realistic Living Room Scale (30" × 22")
                     </div>
                   </div>
@@ -274,7 +277,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     }`}
                   >
                     <img src={img} alt={`Detail ${idx + 1}`} referrerPolicy="no-referrer" onError={handleImageError} className="w-full h-full object-cover" />
-                    <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[8px] text-center">Macro</span>
+                    <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[12px] text-center">Macro</span>
                   </button>
                 ))}
                 <button
@@ -284,7 +287,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                   }`}
                 >
                   <img src={painting.inRoomImage} alt="In Room" referrerPolicy="no-referrer" onError={handleImageError} className="w-full h-full object-cover" />
-                  <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[8px] text-center">Room</span>
+                  <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[12px] text-center">Room</span>
                 </button>
               </div>
 
@@ -300,7 +303,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       <span className="font-serif-display font-semibold text-[#241A14] block mb-0.5 text-sm">
                         {motif.name}
                       </span>
-                      <p className="text-[#665141] leading-relaxed text-[11px]">
+                      <p className="text-[#665141] leading-relaxed text-[12px]">
                         {motif.meaning}
                       </p>
                     </div>
@@ -362,7 +365,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     <div className="font-serif-display font-bold text-sm text-[#241A14] hover:text-[#8C2711] transition-colors">
                       {language === 'mai' && artist.maithiliName ? `${artist.maithiliName} (${artist.name})` : artist.name}
                     </div>
-                    <div className="text-[11px] text-[#695343] flex items-center gap-1">
+                    <div className="text-[12px] text-[#695343] flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-[#8C2711]" />
                       <span>{artist.village}, {artist.district}, Bihar</span>
                     </div>
@@ -406,7 +409,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       <span className="font-semibold text-xs text-[#241A14]">{t.detail.original}</span>
                       {editionType === 'original' && <Check className="w-3.5 h-3.5 text-[#8C2711]" />}
                     </div>
-                    <span className="text-[10px] text-[#826A57] block mt-0.5">One-of-a-kind original on handmade Lokta paper with artist signature</span>
+                    <span className="text-[12px] text-[#826A57] block mt-0.5">One-of-a-kind original on handmade Lokta paper with artist signature</span>
                   </button>
 
                   <button
@@ -422,7 +425,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       <span className="font-semibold text-xs text-[#241A14]">Limited Giclée Print</span>
                       {editionType === 'print' && <Check className="w-3.5 h-3.5 text-[#8C2711]" />}
                     </div>
-                    <span className="text-[10px] text-[#826A57] block mt-0.5">Edition of 50 on 310gsm German etching paper with stamped seal</span>
+                    <span className="text-[12px] text-[#826A57] block mt-0.5">Edition of 50 on 310gsm German etching paper with stamped seal</span>
                   </button>
                 </div>
               </div>
@@ -454,14 +457,14 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                           name="frame-option"
                           checked={selectedFrame === opt.name}
                           onChange={() => setSelectedFrame(opt.name as FrameOption)}
-                          className="accent-[#8C2711]"
+                          className="accent-[#8C2711] w-4 h-4 flex-shrink-0"
                         />
                         <div>
                           <span className="text-[#241A14] block">{opt.name}</span>
-                          <span className="text-[10px] text-[#7A6452]">{opt.description}</span>
+                          <span className="text-[12px] text-[#7A6452]">{opt.description}</span>
                         </div>
                       </div>
-                      <span className="font-mono text-[11px] text-[#523F31] font-semibold whitespace-nowrap pl-2">
+                      <span className="font-mono text-[12px] text-[#523F31] font-semibold whitespace-nowrap pl-2">
                         {opt.priceINR === 0 ? 'Free' : formatPrice(opt.priceINR, currency)}
                       </span>
                     </label>
@@ -495,14 +498,14 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
               <div className="p-4 rounded-md bg-[#F0E4D2] border border-[#D8C7AF] space-y-4">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="text-[10px] uppercase font-semibold tracking-wider text-[#735D4B] block">
+                    <span className="text-[12px] uppercase font-semibold tracking-wider text-[#735D4B] block">
                       Total Investment ({currency})
                     </span>
                     <span className="font-serif-display text-3xl font-bold text-[#241A14]">
                       {formatPrice(totalPriceINR, currency)}
                     </span>
                   </div>
-                  <div className="text-right text-[11px] text-[#735D4B]">
+                  <div className="text-right text-[12px] text-[#735D4B]">
                     <span>Includes Insurance</span>
                     <br />
                     <span className="text-[#426B43] font-semibold">{t.detail.freeShipping}</span>
@@ -538,7 +541,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       <span className="text-xs font-bold uppercase tracking-wider text-[#8C2711] block mb-1">
                         Acquired by Private Collector
                       </span>
-                      <p className="text-[11px] text-[#5C4535]">
+                      <p className="text-[12px] text-[#5C4535]">
                         This original has entered a private gallery in Kyoto. You can commission a similar custom sister artwork directly from {artist.name}.
                       </p>
                     </div>
@@ -554,7 +557,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
 
                     {!notifySuccess ? (
                       <div className="pt-2">
-                        <label className="text-[11px] text-[#695444] block mb-1 font-medium">
+                        <label className="text-[12px] text-[#695444] block mb-1 font-medium">
                           Notify me when similar pieces become available:
                         </label>
                         <form 
@@ -592,7 +595,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
               {/* Certificate of Authenticity Stamp Detail */}
               <div className="p-3 rounded border border-dashed border-[#C5B39A] bg-[#FAF5EA] flex items-center gap-3">
                 <Award className="w-8 h-8 text-[#C94A29] flex-shrink-0" />
-                <div className="text-[11px] text-[#665141]">
+                <div className="text-[12px] text-[#665141]">
                   <span className="font-semibold text-[#241A14] block">Government Registered Artisan Registry</span>
                   Includes physical parchment certificate bearing the artist's original thumb impression/signature, registered with the Madhubani Handicraft Guild.
                 </div>
@@ -630,7 +633,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                       <h4 className="font-serif text-sm font-bold text-[#241A14] truncate group-hover:text-[#8C2711]">
                         {rel.title}
                       </h4>
-                      <p className="text-[11px] text-[#7A604D] truncate">{rel.artistName}</p>
+                      <p className="text-[12px] text-[#7A604D] truncate">{rel.artistName}</p>
                       <p className="text-xs font-bold text-[#241A14] mt-0.5">
                         {formatPrice(rel.priceINR, currency)}
                       </p>
@@ -642,6 +645,40 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
           )}
 
         </div>
+
+        {/* Sticky mobile buy bar — the full buy/cart buttons above live
+            near the bottom of a long scrollable panel (framing options,
+            specs, etc. all come first), so on a phone they can be well
+            over a screen's worth of scrolling away. This keeps the
+            primary action reachable at all times without hunting. */}
+        {painting.isAvailable && (
+          <div className="sm:hidden flex items-center gap-2 px-4 py-3 border-t border-[#E2D2BC] bg-[#F4EADB]">
+            <div className="flex-1 min-w-0">
+              <div className="text-[12px] uppercase font-semibold tracking-wider text-[#735D4B] truncate">
+                Total
+              </div>
+              <div className="font-serif-display text-lg font-bold text-[#241A14] truncate">
+                {formatPrice(totalPriceINR, currency)}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onAddToCart(painting, selectedFrame, framePrice, editionType, basePrice)}
+              aria-label={t.detail.addToCart}
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded border border-[#8C2711] text-[#8C2711] bg-[#FAF5EA] cursor-pointer flex-shrink-0"
+            >
+              <ShoppingBag className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onDirectBuy(painting, selectedFrame, framePrice, editionType, basePrice)}
+              className="min-h-[44px] px-4 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md flex items-center justify-center gap-1.5 cursor-pointer flex-shrink-0 whitespace-nowrap"
+            >
+              <Sparkles className="w-4 h-4 flex-shrink-0" />
+              <span>{t.detail.buyNowShort}</span>
+            </button>
+          </div>
+        )}
       </motion.div>
     </div>
   );

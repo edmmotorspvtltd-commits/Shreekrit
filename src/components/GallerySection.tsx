@@ -119,9 +119,9 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
           <Sparkles className="w-3.5 h-3.5 text-[#C94A29]" />
           <span>{t.gallery.badge}</span>
         </div>
-        <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif-display font-bold text-[#241A14]">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif-display font-bold text-[#241A14]">
           {t.gallery.title}
-        </h2>
+        </h1>
         <p className="text-xs sm:text-base text-[#5C4A3C]">
           {t.gallery.subtitle}
         </p>
@@ -182,7 +182,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
               <button
                 key={theme}
                 onClick={() => setSelectedTheme(theme)}
-                className={`px-3 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer font-medium ${
+                className={`min-h-[44px] inline-flex items-center px-3 py-1.5 rounded-full whitespace-nowrap transition-all cursor-pointer font-medium ${
                   selectedTheme === theme
                     ? 'bg-[#8C2711] text-white shadow-xs'
                     : 'bg-[#F2E5D3]/70 text-[#523F31] hover:bg-[#EAE0CD]'

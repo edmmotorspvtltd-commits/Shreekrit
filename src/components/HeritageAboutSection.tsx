@@ -6,13 +6,19 @@ import { useLanguage } from '../context/LanguageContext';
 interface HeritageAboutSectionProps {
   onExploreGallery: () => void;
   onOpenCommission: () => void;
+  // See ArtistsSection's isPageHeading — same reasoning, this component
+  // is reused both as a home-page teaser and as the standalone Heritage
+  // Lore / Artisan Journey page content.
+  isPageHeading?: boolean;
 }
 
 export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
   onExploreGallery,
-  onOpenCommission
+  onOpenCommission,
+  isPageHeading = false
 }) => {
   const { t, language } = useLanguage();
+  const HeadingTag = isPageHeading ? 'h1' : 'h2';
 
   const stylesInfo = [
     {
@@ -74,9 +80,9 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
               <span>{t.heritage.badge}</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14] leading-tight">
+            <HeadingTag className="text-3xl sm:text-4xl font-serif-display font-bold text-[#241A14] leading-tight">
               {t.heritage.title}
-            </h2>
+            </HeadingTag>
 
             <p className="text-sm sm:text-base text-[#5C4A3C] leading-relaxed">
               {t.heritage.p1}
@@ -114,7 +120,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
                 <span className="font-serif italic text-[#8C2711]">
                   {language === 'mai' ? 'दुहरी मांगलिक रेखांकन दैवीय ऊर्जा के कैनवास भीतर सुरक्षित राखैत अछि।' : language === 'hi' ? 'दोहरी पवित्र रेखांकन दैवीय ऊर्जा को कैनवास के भीतर सुरक्षित रखती है।' : 'Sacred double-line boundaries seal divine energy within the canvas.'}
                 </span>
-                <span className="font-mono text-[10px]">Lokta Parchment</span>
+                <span className="font-mono text-[12px]">Lokta Parchment</span>
               </div>
             </div>
           </div>
@@ -146,7 +152,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
                     {style.title}
                   </h4>
                 </div>
-                <p className="text-[11px] text-[#695444] leading-relaxed">
+                <p className="text-[12px] text-[#695444] leading-relaxed">
                   {style.meaning}
                 </p>
               </div>
@@ -173,7 +179,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
             <div className="space-y-1">
               <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat1Num}</span>
               <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat1Label}</h5>
-              <p className="text-[11px] text-[#695444]">
+              <p className="text-[12px] text-[#695444]">
                 {t.heritage.stat1Desc}
               </p>
             </div>
@@ -181,7 +187,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
             <div className="space-y-1">
               <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat2Num}</span>
               <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat2Label}</h5>
-              <p className="text-[11px] text-[#695444]">
+              <p className="text-[12px] text-[#695444]">
                 {t.heritage.stat2Desc}
               </p>
             </div>
@@ -189,7 +195,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
             <div className="space-y-1">
               <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat3Num}</span>
               <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat3Label}</h5>
-              <p className="text-[11px] text-[#695444]">
+              <p className="text-[12px] text-[#695444]">
                 {t.heritage.stat3Desc}
               </p>
             </div>

@@ -133,7 +133,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
             <h5 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
               {t.footer.artisanGuild}
             </h5>
-            <p className="text-[11px] leading-relaxed text-[#9E8A7A]">
+            <p className="text-[12px] leading-relaxed text-[#9E8A7A]">
               Mithila Folk Art Guild<br />
               Jitwarpur & Ranti Centers,<br />
               Madhubani District, Bihar 847211, India<br />
@@ -143,7 +143,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         </div>
 
         {/* Bottom Copyright & Guarantee */}
-        <div className="pt-8 border-t border-[#3D2C22] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C7665] gap-4">
+        <div className="pt-8 border-t border-[#3D2C22] flex flex-col sm:flex-row items-center justify-between text-[12px] text-[#8C7665] gap-4">
           <div>
             © {new Date().getFullYear()} Shreekrit Fine Arts. {t.footer.rights}
           </div>

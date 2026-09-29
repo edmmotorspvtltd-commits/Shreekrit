@@ -119,28 +119,29 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       </h4>
                       <button
                         onClick={() => onRemoveItem(idx)}
-                        className="text-[#994736] hover:text-[#7A1F10] p-1 transition-colors cursor-pointer"
+                        className="text-[#994736] hover:text-[#7A1F10] p-3.5 -m-2 transition-colors cursor-pointer"
                         title="Remove from cart"
+                        aria-label="Remove from cart"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    <div className="text-[11px] text-[#7A604D] truncate">
+                    <div className="text-[12px] text-[#7A604D] truncate">
                       {t.gallery.byArtist} {item.painting.artistName}
                     </div>
 
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[11px] text-[#8C2711] bg-[#F4EBDB] px-1.5 py-0.5 rounded inline-block font-mono">
+                      <span className="text-[12px] text-[#8C2711] bg-[#F4EBDB] px-1.5 py-0.5 rounded inline-block font-mono">
                         {item.frame}
                       </span>
-                      <span className="text-[11px] text-[#3E5C38] bg-[#E8F0E5] px-1.5 py-0.5 rounded inline-block font-mono">
+                      <span className="text-[12px] text-[#3E5C38] bg-[#E8F0E5] px-1.5 py-0.5 rounded inline-block font-mono">
                         {item.editionType === 'original' ? 'Original' : 'Museum Print'}
                       </span>
                     </div>
 
                     <div className="mt-2 flex items-center justify-between text-xs">
-                      <span className="text-[#6E5948] text-[10px]">
+                      <span className="text-[#6E5948] text-[12px]">
                         {item.painting.dimensions.inches}
                       </span>
                       <span className="font-bold text-[#241A14] font-serif-display text-sm">
@@ -157,7 +158,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           {items.length > 0 && (
             <div className="p-5 border-t border-[#E0D0B8] bg-[#F4EADB] space-y-3">
               {/* International Shipping Guarantee */}
-              <div className="flex items-center gap-2 text-[11px] text-[#3E5C38] bg-[#E8F0E5] p-2 rounded border border-[#C6DCBF]">
+              <div className="flex items-center gap-2 text-[12px] text-[#3E5C38] bg-[#E8F0E5] p-2 rounded border border-[#C6DCBF]">
                 <Truck className="w-4 h-4 flex-shrink-0" />
                 <span>{t.cart.shippingGuarantee}</span>
               </div>
@@ -182,7 +183,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              <div className="flex items-center justify-center gap-2 text-[10px] text-[#7A6452]">
+              <div className="flex items-center justify-center gap-2 text-[12px] text-[#7A6452]">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#8C2711]" />
                 <span>{t.cart.coaNotice}</span>
               </div>

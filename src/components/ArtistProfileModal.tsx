@@ -87,7 +87,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                 </span>
                 <span className="px-2.5 py-1 rounded bg-[#EAE0CD] text-[#241A14] font-medium flex items-center gap-1">
                   <Calendar className="w-3 h-3 text-[#8C2711]" />
-                  {artist.yearsOfExperience} {t.artists.yrsExperience}
+                  {artist.yearsOfExperience} {t.artists.yearsExp}
                 </span>
               </div>
 
@@ -103,7 +103,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
 
               {/* Accolades & Awards */}
               <div className="space-y-1 pt-1">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#735D4B] block">
+                <span className="text-[12px] font-semibold uppercase tracking-wider text-[#735D4B] block">
                   Honors & National Recognition:
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -122,7 +122,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                   className="px-4 py-2 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer inline-flex items-center gap-1.5"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>{t.artists.commissionBtn} ({artist.name.split(' ')[0]})</span>
+                  <span>{t.artists.requestCommission} ({artist.name.split(' ')[0]})</span>
                 </button>
               </div>
             </div>
@@ -162,7 +162,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                       <h5 className="font-serif font-bold text-sm text-[#241A14] group-hover:text-[#8C2711] line-clamp-1">
                         {(language === 'mai' || language === 'hi') && painting.maithiliTitle ? painting.maithiliTitle : painting.title}
                       </h5>
-                      <span className="text-[10px] text-[#7A6452] block">{painting.dimensions.inches}</span>
+                      <span className="text-[12px] text-[#7A6452] block">{painting.dimensions.inches}</span>
                     </div>
                     <span className="font-serif-display font-bold text-xs text-[#241A14]">
                       {formatPrice(painting.priceINR, currency)}

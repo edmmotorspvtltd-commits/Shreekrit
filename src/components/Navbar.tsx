@@ -78,7 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Tagline below logo — hidden on the smallest screens to save
                 vertical/horizontal space; the logo image itself carries the
                 brand name */}
-            <span className="hidden sm:block font-serif text-[9px] sm:text-[10px] text-[#8C2711] tracking-widest uppercase font-semibold whitespace-nowrap">
+            <span className="hidden sm:block font-serif text-[12px] sm:text-[12px] text-[#8C2711] tracking-widest uppercase font-semibold whitespace-nowrap">
               Authentic Folk Art Archive
             </span>
           </div>
@@ -151,12 +151,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setLanguageDropdownOpen(!languageDropdownOpen);
                   setCurrencyDropdownOpen(false);
                 }}
-                className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full hover:bg-[#F0E4D2] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer"
+                className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full hover:bg-[#F0E4D2] text-[12px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer"
                 aria-label="Select language"
               >
                 <Languages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8C2711] flex-shrink-0" />
                 <span className="hidden 2xl:inline font-medium">{currentLang.nativeName}</span>
-                <span className="text-[10px] px-1 py-0.2 rounded bg-[#EFE4D2] text-[#8C2711] font-mono font-bold">
+                <span className="text-[12px] px-1 py-0.2 rounded bg-[#EFE4D2] text-[#8C2711] font-mono font-bold">
                   {currentLang.scriptBadge}
                 </span>
                 <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#7A6452] flex-shrink-0" />
@@ -167,7 +167,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   id="language-dropdown-menu"
                   className="absolute right-0 mt-1 w-44 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100"
                 >
-                  <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#7A6452] border-b border-[#E8DEC8]">
+                  <div className="px-3 py-1 text-[12px] font-semibold uppercase tracking-wider text-[#7A6452] border-b border-[#E8DEC8]">
                     {t.nav.language} / Language
                   </div>
                   {LANGUAGES.map((item) => (
@@ -182,12 +182,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="w-5 text-center text-[10px] font-bold py-0.5 px-1 bg-[#E8DEC8] rounded text-[#3D2819]">
+                        <span className="w-5 text-center text-[12px] font-bold py-0.5 px-1 bg-[#E8DEC8] rounded text-[#3D2819]">
                           {item.scriptBadge}
                         </span>
                         <div>
                           <div className="font-medium text-xs">{item.nativeName}</div>
-                          <div className="text-[10px] text-[#7A6452]">{item.label}</div>
+                          <div className="text-[12px] text-[#7A6452]">{item.label}</div>
                         </div>
                       </div>
                       {language === item.code && <Check className="w-3.5 h-3.5 text-[#8C2711]" />}
@@ -208,18 +208,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setCurrencyDropdownOpen(!currencyDropdownOpen);
                   setLanguageDropdownOpen(false);
                 }}
-                className="px-2 py-1 rounded-full hover:bg-[#F0E4D2] text-[11px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 transition-colors cursor-pointer"
+                className="px-2 py-1 rounded-full hover:bg-[#F0E4D2] text-[12px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 transition-colors cursor-pointer"
                 aria-label="Select currency"
               >
                 <Globe className="w-3 h-3 text-[#8C2711] flex-shrink-0" />
                 <span className="font-mono font-bold text-[#8C2711]">{CURRENCY_RATES[currency]?.symbol}</span>
-                <span className="font-sans font-medium text-[11px] sm:text-xs">{currency}</span>
+                <span className="font-sans font-medium text-[12px] sm:text-xs">{currency}</span>
                 <ChevronDown className="w-2.5 h-2.5 text-[#7A6452] flex-shrink-0" />
               </button>
 
               {currencyDropdownOpen && (
                 <div className="absolute right-0 mt-1 w-32 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#7A6452] border-b border-[#E8DEC8]">
+                  <div className="px-2.5 py-1 text-[12px] font-semibold uppercase tracking-wider text-[#7A6452] border-b border-[#E8DEC8]">
                     {t.nav.currency}
                   </div>
                   {currencies.map((curr) => (
@@ -288,7 +288,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="absolute right-0 mt-1 w-52 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
                   {user ? (
                     <>
-                      <div className="px-3 py-2 text-[11px] text-[#7A6452] border-b border-[#E8DEC8] truncate">
+                      <div className="px-3 py-2 text-[12px] text-[#7A6452] border-b border-[#E8DEC8] truncate">
                         {user.email}
                       </div>
                       <button
@@ -332,12 +332,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenCart}
               id="navbar-cart-btn"
-              className="relative p-1.5 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
+              className="relative p-3 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
               aria-label="Open cart"
             >
-              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-[#8C2711]" />
+              <ShoppingBag className="w-5 h-5 text-[#8C2711]" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#8C2711] text-white text-[9px] sm:text-[10px] font-bold flex items-center justify-center shadow">
+                <span className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#8C2711] text-white text-[12px] sm:text-[12px] font-bold flex items-center justify-center shadow">
                   {cartCount}
                 </span>
               )}
@@ -346,10 +346,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 rounded text-[#241A14] hover:bg-[#F3EADA] cursor-pointer"
+              className="md:hidden p-3 rounded text-[#241A14] hover:bg-[#F3EADA] cursor-pointer"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
 
@@ -361,7 +361,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="md:hidden bg-[#FAF5EA] border-b border-[#E0D0B8] px-4 pt-2 pb-6 space-y-3 shadow-lg">
           {/* Mobile Language Switcher */}
           <div className="py-2 border-b border-[#E8DEC8]">
-            <div className="text-[11px] font-semibold text-[#7A6452] uppercase mb-1.5">
+            <div className="text-[12px] font-semibold text-[#7A6452] uppercase mb-1.5">
               {t.nav.language} (Language)
             </div>
             <div className="grid grid-cols-3 gap-1.5">
@@ -376,7 +376,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <span className="block font-semibold">{item.nativeName}</span>
-                  <span className="text-[9px] opacity-80">{item.label}</span>
+                  <span className="text-[12px] opacity-80">{item.label}</span>
                 </button>
               ))}
             </div>
@@ -384,7 +384,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Mobile Currency Switcher */}
           <div className="py-2 border-b border-[#E8DEC8]">
-            <div className="text-[11px] font-semibold text-[#7A6452] uppercase mb-1.5 flex items-center justify-between">
+            <div className="text-[12px] font-semibold text-[#7A6452] uppercase mb-1.5 flex items-center justify-between">
               <span>{t.nav.currency} (Currency)</span>
               <span className="font-mono text-[#8C2711] font-bold text-xs">{CURRENCY_RATES[currency]?.symbol} {currency}</span>
             </div>
@@ -400,7 +400,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <span className="block font-mono text-xs font-bold leading-none">{CURRENCY_RATES[curr]?.symbol}</span>
-                  <span className="block text-[9px] mt-0.5">{curr}</span>
+                  <span className="block text-[12px] mt-0.5">{curr}</span>
                 </button>
               ))}
             </div>
@@ -448,7 +448,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="py-2 border-b border-[#E8DEC8] space-y-2">
             {user ? (
               <>
-                <div className="text-[11px] text-[#7A6452] truncate">{user.email}</div>
+                <div className="text-[12px] text-[#7A6452] truncate">{user.email}</div>
                 <button
                   onClick={() => {
                     onNavigate('my-orders');

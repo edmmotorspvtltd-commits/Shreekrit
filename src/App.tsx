@@ -281,7 +281,7 @@ export default function App() {
 
                 <button
                   onClick={() => setActiveSection('gallery')}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer group"
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer group py-3 -my-3 px-1 -mx-1"
                 >
                   <span>{t.featured.viewAll}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -334,7 +334,19 @@ export default function App() {
 
         {activeSection === 'story' && (
           <div className="pt-6">
-            <VisualStoryTimeline />
+            <VisualStoryTimeline isPageHeading />
+            {/* Explicit boundary marker — without this, Heritage Lore's
+                content ran straight on from the story timeline above it
+                with nothing to signal a new section had started. */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center gap-4 py-8">
+                <div className="h-px flex-1 bg-[#D5C3A5]" />
+                <span className="text-xs uppercase tracking-widest font-semibold text-[#8C2711] whitespace-nowrap">
+                  {t.nav.heritage}
+                </span>
+                <div className="h-px flex-1 bg-[#D5C3A5]" />
+              </div>
+            </div>
             <HeritageAboutSection
               onExploreGallery={() => setActiveSection('gallery')}
               onOpenCommission={() => handleOpenCommission()}
@@ -345,6 +357,7 @@ export default function App() {
         {activeSection === 'heritage' && (
           <div className="pt-6">
             <HeritageAboutSection
+              isPageHeading
               onExploreGallery={() => setActiveSection('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
@@ -354,6 +367,7 @@ export default function App() {
         {!isDataLoading && !dataError && activeSection === 'artists' && (
           <div className="pt-6">
             <ArtistsSection
+              isPageHeading
               artists={artists}
               onSelectArtist={(artist) => setSelectedArtist(artist)}
               onOpenCommission={handleOpenCommission}
