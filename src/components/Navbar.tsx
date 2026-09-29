@@ -218,13 +218,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="hidden sm:block w-px h-5 bg-[#E2D4BF] mx-1" />
 
-            {/* Sell Your Art / Artist Onboarding Button */}
+            {/* Sell Your Art / Artist Onboarding Button — ghost style like the
+                language/currency switchers, not a boxed CTA: Custom
+                Commission is the one action in this row that should read as
+                a solid button, since buyers are the typical visitor. */}
             <button
               onClick={onOpenArtistApplication}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#8C2711] text-[#8C2711] hover:bg-[#F0E4D2] text-xs font-semibold transition-all cursor-pointer"
+              className="hidden lg:inline-flex items-center gap-1 xl:gap-1.5 px-2 xl:px-2.5 py-1.5 rounded-full hover:bg-[#F0E4D2] text-[#8C2711] text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
             >
-              <Feather className="w-3.5 h-3.5" />
-              <span>{t.nav.forArtisans}</span>
+              <Feather className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="hidden xl:inline">{t.nav.forArtisans}</span>
             </button>
 
             {/* Custom Commission Button */}
