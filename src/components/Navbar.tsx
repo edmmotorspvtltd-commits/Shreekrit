@@ -59,13 +59,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick('home')}
             className="flex items-center gap-2 sm:gap-3 cursor-pointer group select-none flex-shrink-0"
           >
-            {/* Hand-drawn Mithila Sun/Peacock Logo Medallion */}
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8C2711] flex items-center justify-center text-[#FAF5EA] shadow-sm border border-[#C94A29]/60 group-hover:scale-105 transition-transform flex-shrink-0">
-              <svg width="20" height="20" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="8" />
-                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-                <circle cx="12" cy="12" r="3" fill="#E5A93C" />
-              </svg>
+            {/* Shreekrit 4K Logo */}
+            <div className="w-10 h-10 sm:w-14 sm:h-14 group-hover:scale-105 transition-transform flex-shrink-0">
+              <img
+                src="/shreekrit-logo-4k.png"
+                alt="Shreekrit Logo"
+                className="w-full h-full object-contain"
+                draggable={false}
+              />
             </div>
 
             <div>

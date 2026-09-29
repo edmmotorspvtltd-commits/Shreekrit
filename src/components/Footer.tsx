@@ -29,9 +29,14 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-12 border-b border-[#47362B]">
           <div className="lg:col-span-6 space-y-4">
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-[#8C2711] flex items-center justify-center text-white text-xs font-serif font-bold">
-                M
-              </span>
+              <div className="w-10 h-10 flex-shrink-0">
+                <img
+                  src="/shreekrit-logo-4k.png"
+                  alt="Shreekrit Logo"
+                  className="w-full h-full object-contain"
+                  draggable={false}
+                />
+              </div>
               <span className="font-serif-display text-2xl font-bold tracking-tight">
                 {t.footer.title}
               </span>
