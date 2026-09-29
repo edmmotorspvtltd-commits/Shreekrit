@@ -6,10 +6,11 @@ import {
   Award, ArrowRight, Printer, AlertCircle
 } from 'lucide-react';
 import { CartItem, CurrencyCode, ShippingAddress, OrderConfirmation } from '../types';
-import { formatPrice } from '../utils/currency';
+import { formatPrice, convertPrice } from '../utils/currency';
 import { SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../data/paintings';
 import { useLanguage } from '../context/LanguageContext';
-import { openRazorpayCheckout } from '../utils/razorpay';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClearCart
 }) => {
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   if (!isOpen) return null;
 
   const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
@@ -76,87 +78,131 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setPaymentError(null);
 
     try {
-      // Server recomputes every price from the database and creates the
-      // real Razorpay order — the client never decides what gets charged.
-      const createRes = await fetch('/api/orders/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            paintingId: item.painting.id,
-            editionType: item.editionType,
-            frame: item.frame
-          })),
-          shipping: formData,
-          currency
-        })
-      });
-      const createData = await createRes.json();
-      if (!createRes.ok) {
-        throw new Error(createData.error || 'Could not start checkout');
-      }
+      // No real payment gateway is wired up yet (separate, already-flagged
+      // future work) — this simulates processing latency so the flow feels
+      // real, then writes a genuine order record to Supabase. Nothing is
+      // charged; status is only ever 'paid' after this simulated success,
+      // never before.
+      await new Promise((resolve) => setTimeout(resolve, 1400));
 
-      // No Razorpay keys configured yet — the server already recorded a
-      // clearly-marked test_paid order (see api/orders/create.ts) and
-      // handed back a full confirmation directly, skipping the real
-      // gateway entirely. Nothing was charged.
-      if (createData.testMode) {
-        setIsProcessing(false);
-        setCompletedOrder(createData as OrderConfirmation);
-        setStep('confirmation');
-        onClearCart();
+      const itemsPayload = items.map((item) => ({
+        painting_id: item.painting.id,
+        painting_title: item.painting.title,
+        edition_type: item.editionType,
+        unit_price_inr: item.unitPriceINR,
+        frame: item.frame,
+        frame_price_inr: item.framePriceINR
+      }));
 
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#8C2711', '#E5A93C', '#2A4B7C', '#426B43']
-        });
-        return;
-      }
+      const totalAmountDisplay = convertPrice(grandTotalINR, currency);
+      const estimatedDelivery = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
+      const estimatedDeliveryISO = estimatedDelivery.toISOString().slice(0, 10);
 
-      await openRazorpayCheckout({
-        keyId: createData.keyId,
-        amountPaise: createData.amountPaise,
-        razorpayOrderId: createData.razorpayOrderId,
-        prefill: {
-          name: formData.fullName,
-          email: formData.email,
-          contact: formData.phone
-        },
-        onDismiss: () => setIsProcessing(false),
-        onSuccess: async (response) => {
-          const verifyRes = await fetch('/api/orders/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              dbOrderId: createData.dbOrderId,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
-            })
-          });
-          const order: OrderConfirmation = await verifyRes.json();
-          if (!verifyRes.ok) {
-            throw new Error((order as any).error || 'Payment could not be verified');
-          }
+      let orderRow: { order_number: string; created_at: string };
+      let orderItemRows: {
+        painting_id: string;
+        painting_title: string;
+        edition_type: string;
+        unit_price_inr: number | string;
+        frame: string;
+        frame_price_inr: number | string;
+      }[];
 
-          setIsProcessing(false);
-          setCompletedOrder(order);
-          setStep('confirmation');
-          onClearCart();
+      if (user) {
+        // Logged-in: a direct RLS-gated insert — auth.uid() is derived
+        // server-side from the session, so user_id can't be spoofed here.
+        const { data: insertedOrder, error: orderError } = await supabase
+          .from('orders')
+          .insert({
+            user_id: user.id,
+            status: 'paid',
+            currency,
+            total_amount_inr: grandTotalINR,
+            total_amount_display: totalAmountDisplay,
+            shipping_address: formData,
+            payment_method: 'razorpay',
+            estimated_delivery_date: estimatedDeliveryISO
+          })
+          .select()
+          .single();
 
-          confetti({
-            particleCount: 80,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#8C2711', '#E5A93C', '#2A4B7C', '#426B43']
-          });
-        },
-        onFailure: (description) => {
-          setIsProcessing(false);
-          setPaymentError(description);
+        if (orderError || !insertedOrder) {
+          throw new Error(orderError?.message || 'Could not create order');
         }
+
+        const { data: insertedItems, error: itemsError } = await supabase
+          .from('order_items')
+          .insert(itemsPayload.map((item) => ({ ...item, order_id: insertedOrder.id })))
+          .select();
+
+        if (itemsError) {
+          throw new Error(itemsError.message);
+        }
+
+        orderRow = insertedOrder;
+        orderItemRows = insertedItems ?? [];
+      } else {
+        // Guest: routed through the create_guest_order() SECURITY DEFINER
+        // function (see supabase/schema.sql) rather than a client-writable
+        // insert — guest_email is set from a validated parameter, not a
+        // spoofable column, and the order + items are created atomically.
+        const { data, error } = await supabase.rpc('create_guest_order', {
+          p_guest_email: formData.email,
+          p_currency: currency,
+          p_total_amount_inr: grandTotalINR,
+          p_total_amount_display: totalAmountDisplay,
+          p_shipping_address: formData,
+          p_payment_method: 'razorpay',
+          p_status: 'paid',
+          p_estimated_delivery_date: estimatedDeliveryISO,
+          p_items: itemsPayload
+        });
+
+        if (error || !data) {
+          throw new Error(error?.message || 'Could not create order');
+        }
+
+        orderRow = data.order;
+        orderItemRows = data.items ?? [];
+      }
+
+      const orderDate = new Date(orderRow.created_at);
+      const confirmation: OrderConfirmation = {
+        orderRef: orderRow.order_number,
+        items: orderItemRows.map((row, i) => ({
+          paintingId: row.painting_id,
+          paintingTitle: row.painting_title,
+          editionType: row.edition_type as CartItem['editionType'],
+          frame: row.frame,
+          framePriceINR: Number(row.frame_price_inr),
+          unitPriceINR: Number(row.unit_price_inr),
+          // Derived from the real order_number, not a random client-side
+          // string — deterministic and traceable back to the DB row.
+          certificateNumber: `${orderRow.order_number}-${String(i + 1).padStart(2, '0')}`
+        })),
+        shippingAddress: formData,
+        totalINR: grandTotalINR,
+        currency,
+        shippingCostINR,
+        paymentMethod: 'razorpay',
+        // Always true today since no real gateway is wired up — keeps the
+        // existing TEST MODE banner accurate until Razorpay integration
+        // lands.
+        testMode: true,
+        orderDate: orderDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        estimatedDeliveryDate: estimatedDelivery.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      };
+
+      setIsProcessing(false);
+      setCompletedOrder(confirmation);
+      setStep('confirmation');
+      onClearCart();
+
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#8C2711', '#E5A93C', '#2A4B7C', '#426B43']
       });
     } catch (err) {
       setIsProcessing(false);
@@ -204,14 +250,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 'shipping' ? 'bg-[#8C2711] text-white' : 'bg-[#426B43] text-white'}`}>
                 {step === 'payment' ? '✓' : '1'}
               </span>
-              {t.checkout.shippingTitle}
+              {t.checkout.stepShipping}
             </span>
             <div className="w-8 h-px bg-[#D5C2A7]" />
             <span className={`flex items-center gap-1.5 font-medium ${step === 'payment' ? 'text-[#8C2711]' : 'text-[#877260]'}`}>
               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${step === 'payment' ? 'bg-[#8C2711] text-white' : 'bg-[#EAE0CD] text-[#7A6452]'}`}>
                 2
               </span>
-              {t.checkout.paymentTitle}
+              {t.checkout.stepPayment}
             </span>
           </div>
         )}
@@ -223,7 +269,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               {/* Shipping Fields */}
               <div className="lg:col-span-7 space-y-4">
                 <h4 className="font-serif-display text-lg font-bold text-[#241A14]">
-                  {t.checkout.shippingTitle}
+                  {t.checkout.stepShipping}
                 </h4>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -355,7 +401,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     type="submit"
                     className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <span>{t.checkout.continuePayment}</span>
+                    <span>{t.checkout.continueBtn}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -418,18 +464,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <form onSubmit={handlePaymentSubmit} className="max-w-xl mx-auto space-y-6">
               <div className="text-center space-y-1">
                 <h4 className="font-serif-display text-2xl font-bold text-[#241A14]">
-                  Secure Payment via Razorpay
+                  Review & Confirm Order
                 </h4>
                 <p className="text-xs text-[#6B5747]">
-                  Cards, UPI, netbanking, and wallets — all transactions are encrypted with 256-bit SSL protocols.
+                  Real payment processing isn't live yet — confirming below simulates a successful payment so you
+                  can preview the full order flow. No card, UPI, or bank details are collected.
                 </p>
               </div>
 
               <div className="bg-[#F4EADB] p-5 rounded border border-[#DFCDB3] flex items-center gap-3">
                 <Lock className="w-5 h-5 text-[#2A4B7C] flex-shrink-0" />
                 <p className="text-xs text-[#5A4535]">
-                  You'll be taken to Razorpay's secure checkout to complete payment. Shreekrit never sees or
-                  stores your card, UPI, or bank details.
+                  Your order — items, shipping address, and total — is still saved for real once confirmed. Only the
+                  payment step itself is a preview; a real gateway is separate, already-planned future work.
                 </p>
               </div>
 
@@ -462,11 +509,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   className="flex-1 py-3 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isProcessing ? (
-                    <span className="animate-pulse">Opening Razorpay...</span>
+                    <span className="animate-pulse">{t.checkout.processing}</span>
                   ) : (
                     <>
                       <Lock className="w-4 h-4" />
-                      <span>{t.checkout.payNow} ({formatPrice(grandTotalINR, currency)})</span>
+                      <span>{t.checkout.payBtn} {formatPrice(grandTotalINR, currency)}</span>
                     </>
                   )}
                 </button>
@@ -479,8 +526,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               {completedOrder.testMode && (
                 <div className="bg-[#FBEAE5] border border-[#C94A29]/40 rounded p-3 text-xs text-[#8C2711] font-semibold flex items-center justify-center gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  TEST MODE — Razorpay isn't configured yet. Nothing was charged; this preview lets you review the
-                  confirmation and certificate layout ahead of real payments going live.
+                  TEST MODE — real payment processing isn't live yet. Nothing was charged, but this order and its
+                  items are saved for real, so you can review the confirmation and certificate layout ahead of
+                  real payments going live.
                 </div>
               )}
 
@@ -493,7 +541,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   Order Reference: {completedOrder.orderRef}
                 </span>
                 <h4 className="text-2xl sm:text-3xl font-serif-display font-bold text-[#241A14] mt-1">
-                  {t.checkout.orderSuccess}
+                  {t.checkout.confirmedTitle}
                 </h4>
                 <p className="text-xs sm:text-sm text-[#665141] mt-2 max-w-md mx-auto">
                   A formal notification has been dispatched to {completedOrder.shippingAddress.email}. The master artisan in Madhubani has been notified to prepare the custom certificate of authenticity.

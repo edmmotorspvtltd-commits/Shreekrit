@@ -11,10 +11,18 @@ import { CURRENCY_RATES } from '../data/paintings';
 // shipping costs change.
 export const INTERNATIONAL_MARKUP = 1.15;
 
-export const formatPrice = (amountINR: number, currency: CurrencyCode = 'INR'): string => {
+// Numeric conversion only, no formatting — used wherever a raw number is
+// needed (e.g. writing total_amount_display to the orders table) rather
+// than a display string. formatPrice below wraps this for rendering.
+export const convertPrice = (amountINR: number, currency: CurrencyCode = 'INR'): number => {
   const rateInfo = CURRENCY_RATES[currency] || CURRENCY_RATES.INR;
   const markup = currency === 'INR' ? 1 : INTERNATIONAL_MARKUP;
-  const converted = amountINR * rateInfo.rateFromINR * markup;
+  return amountINR * rateInfo.rateFromINR * markup;
+};
+
+export const formatPrice = (amountINR: number, currency: CurrencyCode = 'INR'): string => {
+  const rateInfo = CURRENCY_RATES[currency] || CURRENCY_RATES.INR;
+  const converted = convertPrice(amountINR, currency);
 
   if (currency === 'INR') {
     return new Intl.NumberFormat('en-IN', {
