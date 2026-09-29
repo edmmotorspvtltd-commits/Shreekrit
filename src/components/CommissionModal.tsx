@@ -94,7 +94,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                     placeholder="Your full name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
                 <div>
@@ -107,7 +107,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
               </div>
@@ -120,7 +120,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   <select
                     value={formData.artist}
                     onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
                     {artists.map(a => (
                       <option key={a.id} value={a.name}>{a.name} ({a.village})</option>
@@ -135,7 +135,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   <select
                     value={formData.theme}
                     onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
                     <option value="Tree of Life with Personal Family Motifs">Sacred Tree of Life (Kalpavriksha)</option>
                     <option value="Radha Krishna Divine Love">Radha Krishna under Kadamba</option>
@@ -155,7 +155,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   <select
                     value={formData.size}
                     onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
                     <option value={'Medium (24" × 18")'}>{'Medium (24" × 18" / 60 × 45 cm)'}</option>
                     <option value={'Large Wall Canvas (36" × 24")'}>{'Large Wall Canvas (36" × 24" / 90 × 60 cm)'}</option>
@@ -172,7 +172,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                     placeholder="e.g. $800 – $1,500 USD"
                     value={formData.budgetRange}
                     onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
               </div>
@@ -185,7 +185,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                   rows={3}
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                  className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   placeholder={t.commission.notesPlaceholder}
                 />
               </div>

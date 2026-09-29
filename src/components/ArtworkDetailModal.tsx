@@ -566,7 +566,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                             placeholder="Enter your email"
                             value={notifyEmail}
                             onChange={(e) => setNotifyEmail(e.target.value)}
-                            className="px-2.5 py-1.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs flex-grow focus:outline-[#8C2711]"
+                            className="px-2.5 py-1.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-base flex-grow focus:outline-[#8C2711]"
                           />
                           <button
                             type="submit"

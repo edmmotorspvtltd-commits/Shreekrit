@@ -116,7 +116,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                   placeholder="Your full name"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                  className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                 />
               </div>
 
@@ -130,7 +130,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                     required
                     value={formData.village}
                     onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
                 <div>
@@ -142,7 +142,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                     required
                     value={formData.district}
                     onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
                 <div>
@@ -154,7 +154,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                     required
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
               </div>
@@ -170,7 +170,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                     placeholder="+91 XXXXX XXXXX"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
                 <div>
@@ -183,7 +183,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
               </div>
@@ -199,7 +199,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                     required
                     value={formData.yearsOfExperience}
                     onChange={(e) => setFormData({ ...formData, yearsOfExperience: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
                 <div>
@@ -209,7 +209,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                   <select
                     value={formData.primaryStyle}
                     onChange={(e) => setFormData({ ...formData, primaryStyle: e.target.value as PaintingStyle })}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
                     {PAINTING_STYLES.map((style) => (
                       <option key={style} value={style}>
@@ -229,7 +229,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                   required
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                  className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   placeholder={t.artistApplication.bioPlaceholder}
                 />
               </div>
@@ -242,7 +242,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                   type="text"
                   value={formData.sampleWork}
                   onChange={(e) => setFormData({ ...formData, sampleWork: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                  className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   placeholder={t.artistApplication.sampleWorkPlaceholder}
                 />
               </div>

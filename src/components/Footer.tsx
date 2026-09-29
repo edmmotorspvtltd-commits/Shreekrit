@@ -70,7 +70,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
                   placeholder={t.footer.subscribePlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="px-3.5 py-2 rounded bg-[#33251D] border border-[#543F33] text-xs text-white placeholder-[#8A7669] flex-grow focus:outline-[#C94A29]"
+                  className="px-3.5 py-2 rounded bg-[#33251D] border border-[#543F33] text-base text-white placeholder-[#8A7669] flex-grow focus:outline-[#C94A29]"
                 />
                 <button
                   type="submit"

@@ -139,7 +139,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
               placeholder={t.gallery.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs text-[#241A14] placeholder-[#8C7665] focus:outline-[#8C2711]"
+              className="w-full pl-10 pr-4 py-2.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-base text-[#241A14] placeholder-[#8C7665] focus:outline-[#8C2711]"
             />
           </div>
 
@@ -148,7 +148,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="w-full px-3 py-2.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs text-[#241A14] font-medium focus:outline-[#8C2711]"
+              className="w-full px-3 py-2.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-base text-[#241A14] font-medium focus:outline-[#8C2711]"
             >
               <option value="featured">{t.gallery.sortFeatured}</option>
               <option value="price-asc">{t.gallery.sortPriceAsc}</option>
@@ -162,7 +162,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
             <select
               value={selectedAvailability}
               onChange={(e) => setSelectedAvailability(e.target.value)}
-              className="w-full px-3 py-2.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs text-[#241A14] font-medium focus:outline-[#8C2711]"
+              className="w-full px-3 py-2.5 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-base text-[#241A14] font-medium focus:outline-[#8C2711]"
             >
               <option value="All">{t.gallery.filterAll}</option>
               <option value="available">{t.gallery.filterAvailable}</option>
@@ -202,7 +202,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
               <select
                 value={selectedStyle}
                 onChange={(e) => setSelectedStyle(e.target.value)}
-                className="px-2.5 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs"
+                className="px-2.5 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-base"
               >
                 {styles.map(s => {
                   const styleLabel = (t.styles as Record<string, string>)[s] || s;
@@ -216,7 +216,7 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
               <select
                 value={selectedArtist}
                 onChange={(e) => setSelectedArtist(e.target.value)}
-                className="px-2.5 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-xs max-w-[170px] truncate"
+                className="px-2.5 py-1 rounded border border-[#D5C3A5] bg-[#FAF5EA] text-base max-w-[170px] truncate"
               >
                 <option value="All">{t.gallery.allArtists}</option>
                 {artists.map(a => (

@@ -215,7 +215,7 @@ export default function App() {
   const featuredPaintings = paintings.filter((p) => p.isFeatured).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#FAF5EA] text-[#241A14] flex flex-col relative selection:bg-[#C94A29]/20 selection:text-[#8C2711]">
+    <div className="min-h-screen bg-[#FAF5EA] text-[#241A14] flex flex-col relative selection:bg-[#C94A29]/20 selection:text-[#8C2711]" style={{ overflowX: 'clip' }}>
       {/* Background Layered Parallax Floating Motifs */}
       <ParallaxMotifs />
 

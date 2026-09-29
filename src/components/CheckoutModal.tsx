@@ -283,7 +283,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       required
                       value={formData.fullName}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                      className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                     />
                   </div>
                   <div>
@@ -296,7 +296,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       required
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                      className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                     />
                   </div>
                 </div>
@@ -311,7 +311,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     required
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
 
@@ -325,7 +325,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     required
                     value={formData.addressLine1}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   />
                 </div>
 
@@ -340,7 +340,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       required
                       value={formData.city}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                      className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                     />
                   </div>
                   <div>
@@ -353,7 +353,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       required
                       value={formData.state}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                      className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                     />
                   </div>
                   <div>
@@ -366,7 +366,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       required
                       value={formData.postalCode}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                      className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                     />
                   </div>
                 </div>
@@ -380,7 +380,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     required
                     value={formData.country}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 text-xs rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
+                    className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
                   >
                     <option value="" disabled>Select a country</option>
                     <option value="United States">United States</option>

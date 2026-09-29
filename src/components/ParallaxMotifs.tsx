@@ -52,7 +52,7 @@ export const ParallaxMotifs: React.FC = () => {
 
       {/* Motif 1: Sacred Surya (Sun) Mandala — Top right, rotating in 3D */}
       <motion.div
-        className="absolute -right-8 sm:right-6 top-24 opacity-25 md:opacity-35"
+        className="hidden md:block absolute -right-8 sm:right-6 top-24 opacity-25 md:opacity-35"
         style={{
           y: suryaY,
           rotateZ: suryaRotate,
@@ -89,7 +89,7 @@ export const ParallaxMotifs: React.FC = () => {
 
       {/* Motif 2: Auspicious Matsya (Twin Peaked Fish) — Mid-left edge with fluid 3D swimming tilt */}
       <motion.div
-        className="absolute -left-6 sm:left-4 top-1/3 opacity-25 md:opacity-35"
+        className="hidden md:block absolute -left-6 sm:left-4 top-1/3 opacity-25 md:opacity-35"
         style={{
           y: fishY,
           x: fishX,
@@ -118,7 +118,7 @@ export const ParallaxMotifs: React.FC = () => {
 
       {/* Motif 3: Peacock Feather Eye (Mayura Pankh) — Right-center floating gently */}
       <motion.div
-        className="absolute -right-6 sm:right-8 top-1/2 opacity-25 md:opacity-35"
+        className="hidden md:block absolute -right-6 sm:right-8 top-1/2 opacity-25 md:opacity-35"
         style={{
           y: peacockY,
           rotateZ: peacockRotate,
@@ -143,7 +143,7 @@ export const ParallaxMotifs: React.FC = () => {
 
       {/* Motif 4: Sacred Lotus of Kamla (Padma) — Lower left with natural opening breathing motion */}
       <motion.div
-        className="absolute -left-8 sm:left-10 top-3/4 opacity-25 md:opacity-35"
+        className="hidden md:block absolute -left-8 sm:left-10 top-3/4 opacity-25 md:opacity-35"
         style={{
           y: lotusY,
           rotateZ: lotusRotate,
@@ -171,7 +171,7 @@ export const ParallaxMotifs: React.FC = () => {
 
       {/* Motif 5: Auspicious Kalash Vessel & Sprout — Floating in lower right corner */}
       <motion.div
-        className="absolute -right-8 sm:right-12 bottom-32 opacity-20 md:opacity-30"
+        className="hidden md:block absolute -right-8 sm:right-12 bottom-32 opacity-20 md:opacity-30"
         style={{
           y: kalashY,
           rotateZ: kalashRotate,

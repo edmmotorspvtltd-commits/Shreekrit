@@ -51,16 +51,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF5EA]/95 backdrop-blur-md border-b border-[#E2D4BF] shadow-xs">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24 sm:h-28">
-          
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-w-0">
+        <div className="flex items-center justify-between h-16 sm:h-24 md:h-28 min-w-0">
+
           {/* Brand Logo and Tagline */}
-          <div 
+          <div
             onClick={() => handleNavClick('home')}
-            className="flex flex-col items-center justify-center cursor-pointer group select-none flex-shrink-0"
+            className="flex flex-col items-center justify-center cursor-pointer group select-none flex-shrink min-w-0"
           >
             {/* Shreekrit Logo */}
-            <div className="w-24 h-14 sm:w-28 sm:h-16 group-hover:scale-105 transition-transform flex-shrink-0 mb-1">
+            <div className="w-14 h-9 sm:w-24 sm:h-14 md:w-28 md:h-16 group-hover:scale-105 transition-transform flex-shrink-0 mb-0 sm:mb-1">
               <img
                 src="/shreekrit-logo.png"
                 alt="Shreekrit"
@@ -68,8 +68,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 draggable={false}
               />
             </div>
-            {/* Tagline below logo */}
-            <span className="font-serif text-[9px] sm:text-[10px] text-[#8C2711] tracking-widest uppercase font-semibold whitespace-nowrap">
+            {/* Tagline below logo — hidden on the smallest screens to save
+                vertical/horizontal space; the logo image itself carries the
+                brand name */}
+            <span className="hidden sm:block font-serif text-[9px] sm:text-[10px] text-[#8C2711] tracking-widest uppercase font-semibold whitespace-nowrap">
               Authentic Folk Art Archive
             </span>
           </div>
@@ -127,9 +129,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Controls: Language Selector, Currency, Custom Commission, Cart Button */}
-          <div className="flex items-center gap-0.5">
-            {/* Language Selector Switcher */}
-            <div className="relative">
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            {/* Language Selector Switcher — hidden on mobile; the mobile
+                drawer menu has its own language switcher below, so this
+                would be a redundant, space-consuming duplicate in the
+                header row on small screens */}
+            <div className="relative hidden md:block">
               <button
                 type="button"
                 id="language-switcher-btn"
@@ -183,8 +188,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            {/* Currency Selector (Sleek and compact INR box) */}
-            <div className="relative">
+            {/* Currency Selector (Sleek and compact INR box) — hidden on
+                mobile for the same reason as the language switcher above;
+                the mobile drawer has its own currency switcher. */}
+            <div className="relative hidden md:block">
               <button
                 type="button"
                 id="currency-switcher-btn"
@@ -225,7 +232,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            <div className="hidden sm:block w-px h-5 bg-[#E2D4BF] mx-0.5" />
+            <div className="hidden md:block w-px h-5 bg-[#E2D4BF] mx-0.5" />
 
             {/* Sell Your Art / Artist Onboarding Button — ghost style like the
                 language/currency switchers, not a boxed CTA: Custom
@@ -251,8 +258,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* My Account — icon-only ghost button, dropdown for details.
                 Kept minimal on purpose: the row is already at its width
                 budget at 1280-1440px, so this stays the same footprint as
-                the cart button rather than showing an email inline. */}
-            <div className="relative">
+                the cart button rather than showing an email inline. Hidden
+                on mobile — the drawer menu has its own account section, and
+                the mobile header row is limited to logo/cart/hamburger. */}
+            <div className="relative hidden md:block">
               <button
                 type="button"
                 onClick={() => {
