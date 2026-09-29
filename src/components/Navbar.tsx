@@ -59,11 +59,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick('home')}
             className="flex flex-col items-center justify-center cursor-pointer group select-none flex-shrink-0"
           >
-            {/* Shreekrit 4K Logo */}
-            <div className="w-20 h-14 sm:w-24 sm:h-16 group-hover:scale-105 transition-transform flex-shrink-0 mb-1">
+            {/* Shreekrit Logo */}
+            <div className="w-24 h-14 sm:w-28 sm:h-16 group-hover:scale-105 transition-transform flex-shrink-0 mb-1">
               <img
-                src="/shreekrit-logo-4k.png"
-                alt="Shreekrit Logo"
+                src="/shreekrit-logo.png"
+                alt="Shreekrit"
                 className="w-full h-full object-contain"
                 draggable={false}
               />

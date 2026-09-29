@@ -28,25 +28,25 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         {/* Top Newsletter & Cultural Invitation Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-12 border-b border-[#47362B]">
           <div className="lg:col-span-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 flex-shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 flex-shrink-0 rounded-full bg-[#FAF5EA] p-1.5">
                 <img
-                  src="/shreekrit-logo-4k.png"
+                  src="/shreekrit-emblem.png"
                   alt="Shreekrit Logo"
                   className="w-full h-full object-contain"
                   draggable={false}
                 />
               </div>
               <span className="font-serif-display text-2xl font-bold tracking-tight">
-                {t.footer.title}
+                Shreekrit
               </span>
             </div>
             <p className="text-xs sm:text-sm text-[#C9B6A6] leading-relaxed max-w-md">
-              {t.footer.desc}
+              {t.footer.tagline}
             </p>
             <div className="flex items-center gap-4 text-xs text-[#E5A93C]">
               <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> {t.footer.certified}
+                <ShieldCheck className="w-3.5 h-3.5" /> {t.footer.certifiedOriginals}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
                 <input
                   type="email"
                   required
-                  placeholder={t.footer.emailPlaceholder}
+                  placeholder={t.footer.subscribePlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="px-3.5 py-2 rounded bg-[#33251D] border border-[#543F33] text-xs text-white placeholder-[#8A7669] flex-grow focus:outline-[#C94A29]"
@@ -82,7 +82,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               </form>
             ) : (
               <div className="text-xs text-[#7FB078] flex items-center gap-1 py-2">
-                <Check className="w-4 h-4" /> {t.footer.subscribedSuccess}
+                <Check className="w-4 h-4" /> {t.footer.subscribedMsg}
               </div>
             )}
           </div>
@@ -92,7 +92,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-xs text-[#C9B6A6]">
           <div className="space-y-3">
             <h5 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-              {t.footer.collectionCol}
+              {t.footer.theCollection}
             </h5>
             <ul className="space-y-2">
               <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कल्पवृक्ष (जीवनक वृक्ष)' : 'Kalpavriksha (Tree of Life)'}</button></li>
@@ -105,7 +105,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
 
           <div className="space-y-3">
             <h5 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-              {t.footer.stylesCol}
+              {t.footer.canonicalStyles}
             </h5>
             <ul className="space-y-2">
               <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कचनी (महीन रेखांकन)' : 'Kachni (Line Hatching)'}</button></li>
@@ -117,7 +117,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
 
           <div className="space-y-3">
             <h5 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-              {t.footer.patronageCol}
+              {t.footer.patronageCustom}
             </h5>
             <ul className="space-y-2">
               <li><button onClick={onOpenCommission} className="hover:text-white cursor-pointer text-[#E5A93C] font-medium">{t.nav.commission}</button></li>
@@ -131,7 +131,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
 
           <div className="space-y-3">
             <h5 className="font-serif text-sm font-bold text-white uppercase tracking-wider">
-              {t.footer.guildCol}
+              {t.footer.artisanGuild}
             </h5>
             <p className="text-[11px] leading-relaxed text-[#9E8A7A]">
               Mithila Folk Art Guild<br />
@@ -145,7 +145,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         {/* Bottom Copyright & Guarantee */}
         <div className="pt-8 border-t border-[#3D2C22] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C7665] gap-4">
           <div>
-            © {new Date().getFullYear()} Shreekrit Fine Arts. {t.footer.rightsReserved}
+            © {new Date().getFullYear()} Shreekrit Fine Arts. {t.footer.rights}
           </div>
           <div className="flex items-center gap-4">
             <span>{language === 'mai' ? 'प्राकृतिक रंग प्रमाणीकरण' : language === 'hi' ? 'प्राकृतिक रंग प्रमाणीकरण' : 'Natural Pigment Verification'}</span>
