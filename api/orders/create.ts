@@ -1,5 +1,6 @@
 export const config = { runtime: 'edge' };
 import { sql } from '../_lib/db';
+import { sendOrderConfirmation, sendOrderAlertToStore } from '../_lib/email';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO, SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../../src/data/paintings';
 
 interface RequestItem {
@@ -142,12 +143,32 @@ export default async function handler(req: Request) {
 
       const paidAt = new Date(inserted[0].paid_at);
       const estimatedDelivery = new Date(paidAt.getTime() + 8 * 24 * 60 * 60 * 1000);
+      const orderDate = paidAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const estimatedDeliveryDate = estimatedDelivery.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+      // Send emails (fire-and-forget — never block the order response)
+      const emailData = {
+        customerName: shipping.fullName,
+        customerEmail: shipping.email,
+        orderRef,
+        orderDate,
+        estimatedDelivery: estimatedDeliveryDate,
+        items: resolvedItems,
+        subtotalINR,
+        shippingINR,
+        totalINR,
+        shippingAddress: shipping,
+      };
+      Promise.allSettled([
+        sendOrderConfirmation(emailData),
+        sendOrderAlertToStore(emailData),
+      ]).catch(() => { /* swallow — email must never break checkout */ });
 
       return new Response(JSON.stringify({
         testMode: true,
         orderRef,
-        orderDate: paidAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        estimatedDeliveryDate: estimatedDelivery.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        orderDate,
+        estimatedDeliveryDate,
         shippingAddress: shipping,
         totalINR,
         currency,

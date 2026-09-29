@@ -1,5 +1,6 @@
 export const config = { runtime: 'edge' };
 import { sql } from './_lib/db';
+import { sendArtistApplicationConfirmation, sendArtistApplicationAlertToStore } from './_lib/email';
 
 const VALID_STYLES = ['Kachni', 'Bharni', 'Godna', 'Tantrik', 'Kohbar'];
 
@@ -55,6 +56,20 @@ export default async function handler(req: Request) {
       )
       RETURNING id
     `;
+
+    // Send emails (fire-and-forget)
+    Promise.allSettled([
+      sendArtistApplicationConfirmation({
+        artistName: fullName, artistEmail: email,
+        village, district, state, phone,
+        primaryStyle, yearsOfExperience: yearsNum, bio
+      }),
+      sendArtistApplicationAlertToStore({
+        artistName: fullName, artistEmail: email,
+        village, district, state, phone,
+        primaryStyle, yearsOfExperience: yearsNum, bio
+      }),
+    ]).catch(() => { /* swallow */ });
 
     return new Response(JSON.stringify({ id: inserted[0].id }), {
       status: 200,
