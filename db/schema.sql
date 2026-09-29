@@ -90,5 +90,24 @@ CREATE TABLE IF NOT EXISTS order_items (
   certificate_number TEXT
 );
 
+CREATE TABLE IF NOT EXISTS artist_applications (
+  id SERIAL PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  village TEXT NOT NULL,
+  district TEXT NOT NULL,
+  state TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT NOT NULL,
+  years_of_experience INT NOT NULL,
+  primary_style TEXT NOT NULL,
+  bio TEXT NOT NULL,
+  sample_work TEXT,
+  -- pending | approved | rejected — reviewed manually until an admin
+  -- dashboard exists to action these from a UI.
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE INDEX IF NOT EXISTS idx_paintings_artist_id ON paintings(artist_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_artist_applications_status ON artist_applications(status);

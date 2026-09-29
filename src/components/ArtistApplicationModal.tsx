@@ -11,12 +11,10 @@ interface ArtistApplicationModalProps {
 
 const PAINTING_STYLES: PaintingStyle[] = ['Kachni', 'Bharni', 'Godna', 'Tantrik', 'Kohbar'];
 
-// TODO: This is a temporary bridge — form submissions go straight to a
-// Formspree inbox because this repo has no backend yet (cart/currency are
-// localStorage-only, see App.tsx). Replace with a real API endpoint +
-// admin review dashboard once one exists, so applications can be tracked,
-// approved, and turned into artist records instead of living in an inbox.
-const FORMSPREE_FORM_ID = import.meta.env.VITE_ARTIST_APPLICATION_FORMSPREE_ID as string | undefined;
+// TODO: Applications land in the artist_applications table (status
+// 'pending') with no admin UI yet — review them via a SQL client against
+// Neon until a review dashboard exists to approve/reject and turn one
+// into a real artists row.
 
 export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
   isOpen,
@@ -47,29 +45,18 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!FORMSPREE_FORM_ID) {
-      setError(t.artistApplication.errorMsg);
-      return;
-    }
-
     setIsSubmitting(true);
     setError(null);
 
     try {
-      const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+      const response = await fetch('/api/artist-applications', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify({
-          formType: 'Artist Guild Application',
-          ...formData
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
-        throw new Error('Form submission failed');
+        throw new Error('Application submission failed');
       }
 
       setSubmitted(true);
