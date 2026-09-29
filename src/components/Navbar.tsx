@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
   ShoppingBag, Menu, X, Sparkles, Globe,
-  ChevronDown, Languages, Check, Feather
+  ChevronDown, Languages, Check, Feather, User, LogOut, Package
 } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { LANGUAGES } from '../i18n/translations';
 
 interface NavbarProps {
@@ -17,6 +18,7 @@ interface NavbarProps {
   onOpenCart: () => void;
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
+  onOpenAuth: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -27,13 +29,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   cartCount,
   onOpenCart,
   onOpenCommission,
-  onOpenArtistApplication
+  onOpenArtistApplication,
+  onOpenAuth
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
 
   const { language, setLanguage, t } = useLanguage();
+  const { user, signOut } = useAuth();
 
   const currencies: CurrencyCode[] = ['INR', 'USD', 'EUR', 'GBP', 'JPY'];
 
@@ -74,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-3 lg:gap-4 text-[13px] 2xl:text-sm font-medium text-[#4A3525]">
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] 2xl:text-sm font-medium text-[#4A3525]">
             <button
               onClick={() => handleNavClick('home')}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
@@ -126,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Controls: Language Selector, Currency, Custom Commission, Cart Button */}
-          <div className="flex items-center gap-0.5 sm:gap-1">
+          <div className="flex items-center gap-0.5">
             {/* Language Selector Switcher */}
             <div className="relative">
               <button
@@ -140,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-label="Select language"
               >
                 <Languages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8C2711] flex-shrink-0" />
-                <span className="hidden sm:inline font-medium">{currentLang.nativeName}</span>
+                <span className="hidden 2xl:inline font-medium">{currentLang.nativeName}</span>
                 <span className="text-[10px] px-1 py-0.2 rounded bg-[#EFE4D2] text-[#8C2711] font-mono font-bold">
                   {currentLang.scriptBadge}
                 </span>
@@ -224,7 +229,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
-            <div className="hidden sm:block w-px h-5 bg-[#E2D4BF] mx-1" />
+            <div className="hidden sm:block w-px h-5 bg-[#E2D4BF] mx-0.5" />
 
             {/* Sell Your Art / Artist Onboarding Button — ghost style like the
                 language/currency switchers, not a boxed CTA: Custom
@@ -241,11 +246,73 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Custom Commission Button */}
             <button
               onClick={onOpenCommission}
-              className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8C2711] text-white hover:bg-[#6E1C0A] text-xs font-semibold transition-all cursor-pointer shadow-sm"
+              className="hidden lg:inline-flex items-center gap-1 lg:gap-1.5 px-2 lg:px-2.5 py-1.5 rounded-full bg-[#8C2711] text-white hover:bg-[#6E1C0A] text-xs font-semibold transition-all cursor-pointer shadow-sm whitespace-nowrap"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>{t.nav.customCommission}</span>
             </button>
+
+            {/* My Account — icon-only ghost button, dropdown for details.
+                Kept minimal on purpose: the row is already at its width
+                budget at 1280-1440px, so this stays the same footprint as
+                the cart button rather than showing an email inline. */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountDropdownOpen(!accountDropdownOpen);
+                  setLanguageDropdownOpen(false);
+                  setCurrencyDropdownOpen(false);
+                }}
+                className="p-1.5 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
+                aria-label="Account"
+              >
+                <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#8C2711]" />
+              </button>
+
+              {accountDropdownOpen && (
+                <div className="absolute right-0 mt-1 w-52 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
+                  {user ? (
+                    <>
+                      <div className="px-3 py-2 text-[11px] text-[#7A6452] border-b border-[#E8DEC8] truncate">
+                        {user.email}
+                      </div>
+                      <button
+                        onClick={() => {
+                          onNavigate('my-orders');
+                          setAccountDropdownOpen(false);
+                        }}
+                        className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-[#F3EADA] transition-colors cursor-pointer text-[#4A3222]"
+                      >
+                        <Package className="w-3.5 h-3.5 text-[#8C2711]" />
+                        <span>My Orders</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          signOut();
+                          setAccountDropdownOpen(false);
+                        }}
+                        className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-[#F3EADA] transition-colors cursor-pointer text-[#4A3222]"
+                      >
+                        <LogOut className="w-3.5 h-3.5 text-[#8C2711]" />
+                        <span>Log Out</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onOpenAuth();
+                        setAccountDropdownOpen(false);
+                      }}
+                      className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-[#F3EADA] transition-colors cursor-pointer text-[#4A3222]"
+                    >
+                      <User className="w-3.5 h-3.5 text-[#8C2711]" />
+                      <span>Log In / Sign Up</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Cart Drawer Trigger */}
             <button
@@ -361,6 +428,46 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {t.nav.blog}
           </button>
+          {/* Mobile Account Section */}
+          <div className="py-2 border-b border-[#E8DEC8] space-y-2">
+            {user ? (
+              <>
+                <div className="text-[11px] text-[#7A6452] truncate">{user.email}</div>
+                <button
+                  onClick={() => {
+                    onNavigate('my-orders');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full py-2.5 border border-[#8C2711] text-[#8C2711] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Package className="w-3.5 h-3.5" />
+                  <span>My Orders</span>
+                </button>
+                <button
+                  onClick={() => {
+                    signOut();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full py-2.5 border border-[#D5C3A5] text-[#4A3222] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Log Out</span>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  onOpenAuth();
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full py-2.5 border border-[#8C2711] text-[#8C2711] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Log In / Sign Up</span>
+              </button>
+            )}
+          </div>
+
           <div className="pt-2 space-y-2">
             <button
               onClick={() => {

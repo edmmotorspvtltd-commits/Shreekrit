@@ -30,6 +30,7 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { CommissionModal } from './components/CommissionModal';
 import { ArtistApplicationModal } from './components/ArtistApplicationModal';
+import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
 
 export default function App() {
@@ -106,6 +107,7 @@ export default function App() {
   const [commissionArtist, setCommissionArtist] = useState<string | undefined>(undefined);
   const [commissionTheme, setCommissionTheme] = useState<string | undefined>(undefined);
   const [isArtistApplicationOpen, setIsArtistApplicationOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -227,6 +229,7 @@ export default function App() {
         onOpenCart={() => setIsCartOpen(true)}
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
+        onOpenAuth={() => setIsAuthOpen(true)}
       />
 
       {/* Main Views Container */}
@@ -461,6 +464,16 @@ export default function App() {
           <ArtistApplicationModal
             isOpen={isArtistApplicationOpen}
             onClose={() => setIsArtistApplicationOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Login / Sign Up Modal */}
+      <AnimatePresence>
+        {isAuthOpen && (
+          <AuthModal
+            isOpen={isAuthOpen}
+            onClose={() => setIsAuthOpen(false)}
           />
         )}
       </AnimatePresence>
