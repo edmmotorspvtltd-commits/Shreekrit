@@ -1,7 +1,6 @@
 import { sql } from './_lib/db';
+
 export const config = { runtime: 'edge' };
-
-
 
 export default async function handler(req: Request) {
   if (req.method !== 'GET') {
