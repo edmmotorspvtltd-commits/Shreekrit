@@ -50,9 +50,14 @@ function layout(content: string, previewText = '') {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;border-radius:12px;overflow:hidden;border:1px solid #E2D4BF;">
         <tr>
-          <td style="background:#8C2711;padding:28px 40px;text-align:center;">
-            <p style="margin:0;color:#FAF5EA;font-size:22px;font-weight:700;letter-spacing:1px;">SHREEKRIT</p>
-            <p style="margin:4px 0 0;color:#E5A93C;font-size:10px;letter-spacing:3px;text-transform:uppercase;">Authentic Folk Art Archive</p>
+          <td style="background:#FAF5EA;border-bottom:3px solid #8C2711;padding:24px 40px;text-align:center;">
+            <img
+              src="https://shreekrit.in/shreekrit-logo.png"
+              width="160"
+              alt="SHREEKRIT"
+              style="display:block;margin:0 auto;width:160px;height:auto;color:#8C2711;font-size:22px;font-weight:700;letter-spacing:1px;"
+            />
+            <p style="margin:6px 0 0;color:#8C2711;font-size:10px;letter-spacing:3px;text-transform:uppercase;">Authentic Folk Art Archive</p>
           </td>
         </tr>
         <tr>
