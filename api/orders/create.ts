@@ -159,7 +159,7 @@ export default async function handler(req: Request) {
         totalINR,
         shippingAddress: shipping,
       };
-      Promise.allSettled([
+      await Promise.allSettled([
         sendOrderConfirmation(emailData),
         sendOrderAlertToStore(emailData),
       ]).catch(() => { /* swallow — email must never break checkout */ });

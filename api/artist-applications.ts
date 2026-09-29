@@ -57,8 +57,8 @@ export default async function handler(req: Request) {
       RETURNING id
     `;
 
-    // Send emails (fire-and-forget)
-    Promise.allSettled([
+    // Send emails (awaiting so Edge function doesn't terminate early)
+    await Promise.allSettled([
       sendArtistApplicationConfirmation({
         artistName: fullName, artistEmail: email,
         village, district, state, phone,
