@@ -3,6 +3,11 @@ import { Truck, MapPin, Package } from 'lucide-react';
 import { OrderRecord, OrderItemRecord } from '../types';
 import { OrderStatusTimeline } from './OrderStatusTimeline';
 
+// TODO: status/tracking_number/tracking_carrier are updated manually via
+// the Supabase Table Editor for now (no admin UI exists yet — deliberately
+// out of scope for this MVP). This component just renders whatever's in
+// those columns; a real admin dashboard to edit them from a UI is planned
+// future work, not built here.
 interface OrderDetailCardProps {
   order: OrderRecord;
   items: OrderItemRecord[];
