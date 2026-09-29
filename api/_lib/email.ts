@@ -3,26 +3,36 @@
 // From address : Shreekrit <shreekrit06@gmail.com>
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Resend } from 'resend';
-
 const SENDER = 'Shreekrit <hello@shreekrit.in>';
 const STORE_EMAIL = 'shreekrit06@gmail.com';
 
-function resend() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error('RESEND_API_KEY is not set');
-  return new Resend(key);
-}
-
 // Wrapper to always set reply_to so customer replies go to Gmail
 async function sendEmail(to: string, subject: string, html: string) {
-  return resend().emails.send({
-    from: SENDER,
-    to,
-    replyTo: STORE_EMAIL,
-    subject,
-    html
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    console.warn('RESEND_API_KEY is not set. Emails will not be sent.');
+    return;
+  }
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: SENDER,
+      to,
+      reply_to: STORE_EMAIL,
+      subject,
+      html
+    })
   });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Failed to send email via Resend:', errorText);
+  }
 }
 
 // ── Shared layout ────────────────────────────────────────────────────────────
