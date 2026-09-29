@@ -114,10 +114,11 @@ export interface ShippingAddress {
   country: string;
 }
 
-// One paid line item as the server records it — assembled from
-// api/orders/verify.ts's response, not fabricated client-side. The
-// certificate number is a real sequential value from order_items.id
-// (see db/schema.sql), not derived from the order id.
+// One paid line item as CheckoutModal assembles it right after a
+// successful order write to Supabase (see handlePaymentSubmit in
+// CheckoutModal.tsx and supabase/schema.sql) — not fabricated client-side.
+// The certificate number is derived from the real DB order_number, not a
+// random client-side string.
 export interface ConfirmedOrderItem {
   paintingId: string;
   paintingTitle: string;
@@ -141,4 +142,40 @@ export interface OrderConfirmation {
   testMode?: boolean;
   orderDate: string;
   estimatedDeliveryDate: string;
+}
+
+export type OrderStatus = 'pending_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
+// A row as it actually comes back from Supabase (orders/order_items via
+// supabase-js or the get_guest_order/create_guest_order RPCs) — snake_case
+// on purpose, matching supabase/schema.sql's columns directly rather than
+// remapping to camelCase, since these are read straight off query results
+// in MyOrdersSection.tsx / TrackOrderModal.tsx / CheckoutModal.tsx.
+export interface OrderRecord {
+  id: string;
+  order_number: string;
+  user_id: string | null;
+  guest_email: string | null;
+  status: OrderStatus;
+  currency: string;
+  total_amount_inr: number;
+  total_amount_display: number;
+  shipping_address: ShippingAddress;
+  payment_method: string;
+  tracking_number: string | null;
+  tracking_carrier: string | null;
+  estimated_delivery_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrderItemRecord {
+  id: string;
+  order_id: string;
+  painting_id: string;
+  painting_title: string;
+  edition_type: string;
+  unit_price_inr: number;
+  frame: string;
+  frame_price_inr: number;
 }

@@ -6,9 +6,10 @@ interface FooterProps {
   onNavigate: (section: string) => void;
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
+  onOpenTrackOrder: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, onOpenArtistApplication }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, onOpenArtistApplication, onOpenTrackOrder }) => {
   const { t, language } = useLanguage();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
@@ -119,6 +120,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               <li><button onClick={() => onNavigate('heritage')} className="hover:text-white cursor-pointer">{t.nav.heritage}</button></li>
               <li><button onClick={() => onNavigate('artists')} className="hover:text-white cursor-pointer">{t.nav.artists}</button></li>
               <li><button onClick={onOpenArtistApplication} className="hover:text-white cursor-pointer text-[#E5A93C] font-medium">{t.nav.forArtisans}</button></li>
+              <li><button onClick={onOpenTrackOrder} className="hover:text-white cursor-pointer">Track Your Order</button></li>
             </ul>
           </div>
 

@@ -24,6 +24,8 @@ import { VisualStoryTimeline } from './components/VisualStoryTimeline';
 import { HeritageAboutSection } from './components/HeritageAboutSection';
 import { ArtistsSection } from './components/ArtistsSection';
 import { BlogSection } from './components/BlogSection';
+import { MyOrdersSection } from './components/MyOrdersSection';
+import { TrackOrderModal } from './components/TrackOrderModal';
 import { ArtworkDetailModal } from './components/ArtworkDetailModal';
 import { ArtistProfileModal } from './components/ArtistProfileModal';
 import { CartDrawer } from './components/CartDrawer';
@@ -108,6 +110,7 @@ export default function App() {
   const [commissionTheme, setCommissionTheme] = useState<string | undefined>(undefined);
   const [isArtistApplicationOpen, setIsArtistApplicationOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isTrackOrderOpen, setIsTrackOrderOpen] = useState(false);
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -363,6 +366,12 @@ export default function App() {
             <BlogSection />
           </div>
         )}
+
+        {activeSection === 'my-orders' && (
+          <div className="pt-6">
+            <MyOrdersSection onOpenAuth={() => setIsAuthOpen(true)} />
+          </div>
+        )}
       </main>
 
       {/* Flagship Artwork Detail Modal with High-Res Zoom Loupe & In-Room Scale */}
@@ -478,6 +487,16 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Guest Order Tracking Modal */}
+      <AnimatePresence>
+        {isTrackOrderOpen && (
+          <TrackOrderModal
+            isOpen={isTrackOrderOpen}
+            onClose={() => setIsTrackOrderOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -503,6 +522,7 @@ export default function App() {
         }}
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
+        onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
       />
     </div>
   );
