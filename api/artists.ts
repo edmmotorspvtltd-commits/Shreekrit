@@ -1,4 +1,5 @@
 import { sql } from './_lib/db';
+export const config = { runtime: 'edge' };
 
 
 

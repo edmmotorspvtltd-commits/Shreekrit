@@ -1,3 +1,4 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sendCommissionConfirmationToCustomer, sendCommissionAlertToStore } from './_lib/email';
 
 interface RequestBody {
@@ -9,22 +10,15 @@ interface RequestBody {
   timeline?: string;
 }
 
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  let body: RequestBody;
-  try {
-    body = await req.json() as RequestBody;
-  } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
-  }
-
-  const { customerName, customerEmail, subject, description, budget, timeline } = body || {};
+  const { customerName, customerEmail, subject, description, budget, timeline } = req.body || {};
 
   if (!customerName || !customerEmail || !subject || !description) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
@@ -33,12 +27,9 @@ export default async function handler(req: Request) {
       sendCommissionAlertToStore({ customerName, customerEmail, subject, description, budget, timeline }),
     ]);
 
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(200).json({ ok: true });
   } catch (err) {
     console.error('POST /api/commissions failed:', err);
-    return new Response(JSON.stringify({ error: 'Failed to send commission emails' }), { status: 500 });
+    return res.status(500).json({ error: 'Failed to send commission emails' });
   }
 }

@@ -1,3 +1,4 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { sql } from '../_lib/db';
 import { sendOrderConfirmation, sendOrderAlertToStore } from '../_lib/email';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO, SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../../src/data/paintings';
@@ -24,29 +25,21 @@ interface RequestBody {
   currency: string;
 }
 
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  // Razorpay isn't wired up yet by design (deferred until real keys are
-  // ready) — rather than block all checkout testing, fall through to a
-  // clearly-labeled test-mode path below instead of a real gateway call.
   const testMode = !keyId || !keySecret;
 
-  let body;
-  try {
-    body = await req.json() as RequestBody;
-  } catch (err) {
-    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
-  }
+  const body = req.body as RequestBody;
   
   const { items, shipping, currency } = body || {};
 
   if (!items?.length || !shipping?.fullName || !shipping?.email || !shipping?.phone || !shipping?.addressLine1) {
-    return new Response(JSON.stringify({ error: 'Missing cart items or shipping details' }), { status: 400 });
+    return res.status(400).json({ error: 'Missing cart items or shipping details' });
   }
 
   try {
@@ -66,15 +59,15 @@ export default async function handler(req: Request) {
       const rows = await db`SELECT id, title, price_inr, is_available FROM paintings WHERE id = ${item.paintingId}`;
       const painting = rows[0];
       if (!painting) {
-        return new Response(JSON.stringify({ error: `Unknown painting: ${item.paintingId}` }), { status: 400 });
+        return res.status(400).json({ error: `Unknown painting: ${item.paintingId}` });
       }
       if (item.editionType === 'original' && !painting.is_available) {
-        return new Response(JSON.stringify({ error: `"${painting.title}" is no longer available as an original` }), { status: 409 });
+        return res.status(409).json({ error: `"${painting.title}" is no longer available as an original` });
       }
 
       const frameOption = FRAME_OPTIONS.find((f) => f.name === item.frame);
       if (!frameOption) {
-        return new Response(JSON.stringify({ error: `Unknown frame option: ${item.frame}` }), { status: 400 });
+        return res.status(400).json({ error: `Unknown frame option: ${item.frame}` });
       }
 
       const unitPriceINR = item.editionType === 'original'
@@ -163,7 +156,7 @@ export default async function handler(req: Request) {
         sendOrderAlertToStore(emailData),
       ]).catch(() => { /* swallow — email must never break checkout */ });
 
-      return new Response(JSON.stringify({
+      return res.status(200).json({
         testMode: true,
         orderRef,
         orderDate,
@@ -174,7 +167,7 @@ export default async function handler(req: Request) {
         shippingCostINR: shippingINR,
         paymentMethod: 'razorpay',
         items: resolvedItems.map((item, i) => ({ ...item, certificateNumber: insertedItems[i].certificateNumber }))
-      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      });
     }
 
     const razorpayRes = await fetch('https://api.razorpay.com/v1/orders', {
@@ -193,7 +186,7 @@ export default async function handler(req: Request) {
     if (!razorpayRes.ok) {
       const errText = await razorpayRes.text();
       console.error('Razorpay order creation failed:', errText);
-      return new Response(JSON.stringify({ error: 'Payment gateway rejected the order' }), { status: 502 });
+      return res.status(502).json({ error: 'Payment gateway rejected the order' });
     }
 
     const razorpayOrder: { id: string } = await razorpayRes.json();
@@ -226,16 +219,16 @@ export default async function handler(req: Request) {
       `;
     }
 
-    return new Response(JSON.stringify({
+    return res.status(200).json({
       testMode: false,
       keyId,
       razorpayOrderId: razorpayOrder.id,
       amountPaise,
       dbOrderId,
       orderRef
-    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    });
   } catch (err) {
     console.error('POST /api/orders/create failed:', err);
-    return new Response(JSON.stringify({ error: 'Failed to create order' }), { status: 500 });
+    return res.status(500).json({ error: 'Failed to create order' });
   }
 }

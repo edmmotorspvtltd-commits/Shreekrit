@@ -1,4 +1,4 @@
-
+export const config = { runtime: 'edge' };
 import { sql } from '../_lib/db';
 
 interface RequestBody {
