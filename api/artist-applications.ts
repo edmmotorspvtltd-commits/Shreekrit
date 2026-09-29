@@ -1,4 +1,3 @@
-export const config = { runtime: 'edge' };
 import { sql } from './_lib/db';
 import { sendArtistApplicationConfirmation, sendArtistApplicationAlertToStore } from './_lib/email';
 

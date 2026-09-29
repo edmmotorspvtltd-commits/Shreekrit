@@ -1,4 +1,3 @@
-export const config = { runtime: 'edge' };
 import { sendNewsletterWelcome } from './_lib/email';
 
 export default async function handler(req: Request) {

@@ -1,4 +1,3 @@
-export const config = { runtime: 'edge' };
 import { sql } from '../_lib/db';
 import { sendOrderConfirmation, sendOrderAlertToStore } from '../_lib/email';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO, SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../../src/data/paintings';

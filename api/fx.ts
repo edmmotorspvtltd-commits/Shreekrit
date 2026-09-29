@@ -1,4 +1,3 @@
-export const config = { runtime: 'edge' };
 const TARGET_CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY'];
 
 export default async function handler(req: Request) {

@@ -1,17 +1,41 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Shreekrit — centralised email helper (Resend)
+// Shreekrit — centralised email helper (Nodemailer / Gmail SMTP)
 // From address : Shreekrit <shreekrit06@gmail.com>
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const SENDER = 'Shreekrit <shreekrit06@gmail.com>';
 const STORE_EMAIL = 'shreekrit06@gmail.com';
+const SENDER = `"Shreekrit" <${STORE_EMAIL}>`;
 
-function resend() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error('RESEND_API_KEY is not set');
-  return new Resend(key);
+function getTransporter() {
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!pass) {
+    console.warn('GMAIL_APP_PASSWORD is not set. Emails will not be sent.');
+  }
+  
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: STORE_EMAIL,
+      pass: pass || 'dummy-password',
+    },
+  });
+}
+
+async function sendMail(to: string, subject: string, html: string) {
+  if (!process.env.GMAIL_APP_PASSWORD) {
+    console.log(`[Email skipped] Subject: ${subject} | To: ${to}`);
+    return;
+  }
+  
+  const transporter = getTransporter();
+  return transporter.sendMail({
+    from: SENDER,
+    to,
+    subject,
+    html,
+  });
 }
 
 // ── Shared layout ────────────────────────────────────────────────────────────
@@ -109,12 +133,11 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
     <p style="margin:0;font-size:13px;color:#5C4A3A;line-height:1.7;">Questions? Write to <a href="mailto:shreekrit06@gmail.com" style="color:#8C2711;">shreekrit06@gmail.com</a></p>
   `;
 
-  return resend().emails.send({
-    from: SENDER,
-    to: data.customerEmail,
-    subject: `Order Confirmed: ${data.orderRef} — Shreekrit`,
-    html: layout(body, `Your order ${data.orderRef} is confirmed! Est. delivery: ${data.estimatedDelivery}`),
-  });
+  return sendMail(
+    data.customerEmail,
+    `Order Confirmed: ${data.orderRef} — Shreekrit`,
+    layout(body, `Your order ${data.orderRef} is confirmed! Est. delivery: ${data.estimatedDelivery}`)
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -140,12 +163,11 @@ export async function sendOrderAlertToStore(data: OrderEmailData) {
     <ul style="margin:0;padding-left:20px;font-size:13px;color:#241A14;line-height:2;">${itemList}</ul>
   `;
 
-  return resend().emails.send({
-    from: SENDER,
-    to: STORE_EMAIL,
-    subject: `[New Order] ${data.orderRef} — &#8377;${data.totalINR.toLocaleString('en-IN')} from ${data.customerName}`,
-    html: layout(body, `New order from ${data.customerName}`),
-  });
+  return sendMail(
+    STORE_EMAIL,
+    `[New Order] ${data.orderRef} — &#8377;${data.totalINR.toLocaleString('en-IN')} from ${data.customerName}`,
+    layout(body, `New order from ${data.customerName}`)
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -172,7 +194,7 @@ export async function sendCommissionConfirmationToCustomer(data: CommissionEmail
     ${divider}
     <p style="margin:0;font-size:13px;color:#5C4A3A;">Questions? Write to <a href="mailto:shreekrit06@gmail.com" style="color:#8C2711;">shreekrit06@gmail.com</a></p>
   `;
-  return resend().emails.send({ from: SENDER, to: data.customerEmail, subject: `Commission Request Received — Shreekrit`, html: layout(body) });
+  return sendMail(data.customerEmail, `Commission Request Received — Shreekrit`, layout(body));
 }
 
 export async function sendCommissionAlertToStore(data: CommissionEmailData) {
@@ -186,7 +208,7 @@ export async function sendCommissionAlertToStore(data: CommissionEmailData) {
     </table>
     <p style="margin:0;font-size:13px;color:#241A14;background:#FAF5EA;padding:14px;border-radius:6px;border-left:3px solid #8C2711;">${data.description}</p>
   `;
-  return resend().emails.send({ from: SENDER, to: STORE_EMAIL, subject: `[Commission] ${data.subject} — from ${data.customerName}`, html: layout(body) });
+  return sendMail(STORE_EMAIL, `[Commission] ${data.subject} — from ${data.customerName}`, layout(body));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -214,7 +236,7 @@ export async function sendArtistApplicationConfirmation(data: ArtistApplicationE
       <tr><td style="font-size:12px;color:#8C7060;padding-top:8px;">Location</td><td style="font-size:13px;color:#241A14;text-align:right;padding-top:8px;">${data.village}, ${data.district}, ${data.state}</td></tr>
     </table>
   `;
-  return resend().emails.send({ from: SENDER, to: data.artistEmail, subject: `Artist Application Received — Shreekrit`, html: layout(body) });
+  return sendMail(data.artistEmail, `Artist Application Received — Shreekrit`, layout(body));
 }
 
 export async function sendArtistApplicationAlertToStore(data: ArtistApplicationEmailData) {
@@ -230,7 +252,7 @@ export async function sendArtistApplicationAlertToStore(data: ArtistApplicationE
     </table>
     <p style="margin:0;font-size:13px;color:#241A14;background:#FAF5EA;padding:14px;border-radius:6px;border-left:3px solid #8C2711;">${data.bio}</p>
   `;
-  return resend().emails.send({ from: SENDER, to: STORE_EMAIL, subject: `[Artist Application] ${data.artistName} — ${data.primaryStyle}`, html: layout(body) });
+  return sendMail(STORE_EMAIL, `[Artist Application] ${data.artistName} — ${data.primaryStyle}`, layout(body));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -243,7 +265,7 @@ export async function sendNewsletterWelcome(subscriberEmail: string) {
     ${divider}
     <p style="margin:0;font-size:12px;color:#8C7060;">To unsubscribe, reply "Unsubscribe" to <a href="mailto:shreekrit06@gmail.com" style="color:#8C2711;">shreekrit06@gmail.com</a></p>
   `;
-  return resend().emails.send({ from: SENDER, to: subscriberEmail, subject: `Welcome to the Shreekrit Gazette!`, html: layout(body) });
+  return sendMail(subscriberEmail, `Welcome to the Shreekrit Gazette!`, layout(body));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -269,5 +291,5 @@ export async function sendOrderShipped(data: ShippingEmailData) {
       <tr><td style="font-size:12px;color:#8C7060;padding-top:8px;">Est. Delivery</td><td style="font-size:13px;color:#241A14;text-align:right;padding-top:8px;">${data.estimatedDelivery}</td></tr>
     </table>
   `;
-  return resend().emails.send({ from: SENDER, to: data.customerEmail, subject: `Your Shreekrit order ${data.orderRef} is on its way!`, html: layout(body) });
+  return sendMail(data.customerEmail, `Your Shreekrit order ${data.orderRef} is on its way!`, layout(body));
 }

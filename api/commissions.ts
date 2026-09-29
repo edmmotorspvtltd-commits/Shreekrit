@@ -1,4 +1,3 @@
-export const config = { runtime: 'edge' };
 import { sendCommissionConfirmationToCustomer, sendCommissionAlertToStore } from './_lib/email';
 
 interface RequestBody {
