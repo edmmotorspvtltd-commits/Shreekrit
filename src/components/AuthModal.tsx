@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, Mail, Lock, Check, AlertCircle, ShieldCheck, Heart } from 'lucide-react';
+import { X, Mail, Lock, Check, AlertCircle, ShieldCheck, Heart, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
@@ -13,6 +13,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Set only for signup, when Supabase requires email confirmation before
@@ -114,7 +115,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <Mail className="w-4 h-4 text-[#8C2711] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     id="auth-email"
+                    name="email"
                     type="email"
+                    autoComplete="username"
                     required
                     placeholder="you@example.com"
                     value={email}
@@ -131,15 +134,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <Lock className="w-4 h-4 text-[#8C2711] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     id="auth-password"
-                    type="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     required
                     minLength={6}
                     placeholder="At least 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2.5 text-base rounded border border-[#D5C3A5] bg-white/70 focus:outline-[#8C2711]"
+                    className="w-full pl-9 pr-11 py-2.5 text-base rounded border border-[#D5C3A5] bg-white/70 focus:outline-[#8C2711]"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 p-2.5 rounded text-[#7A6452] hover:text-[#8C2711] cursor-pointer"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
+                {mode === 'signup' && (
+                  <p className="mt-2 flex items-start gap-1.5 text-[11px] text-[#7A6452] leading-snug">
+                    <KeyRound className="w-3.5 h-3.5 text-[#E5A93C] flex-shrink-0 mt-px" />
+                    <span>Tip: when your browser asks, choose <strong>Save password</strong> so you can log in and track your orders easily.</span>
+                  </p>
+                )}
               </div>
 
               {error && (
@@ -162,6 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 onClick={() => {
                   setMode(mode === 'login' ? 'signup' : 'login');
                   setError(null);
+                  setShowPassword(false);
                 }}
                 className="w-full text-center text-xs text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer"
               >
