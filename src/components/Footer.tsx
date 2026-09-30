@@ -142,7 +142,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               <li><button onClick={() => onNavigate('story')} className="hover:text-white cursor-pointer">{t.nav.story}</button></li>
               <li><button onClick={() => onNavigate('heritage')} className="hover:text-white cursor-pointer">{t.nav.heritage}</button></li>
               <li><button onClick={() => onNavigate('artists')} className="hover:text-white cursor-pointer">{t.nav.artists}</button></li>
-              <li><button onClick={onOpenTrackOrder} className="hover:text-white cursor-pointer">Track Your Order</button></li>
             </ul>
           </div>
 
