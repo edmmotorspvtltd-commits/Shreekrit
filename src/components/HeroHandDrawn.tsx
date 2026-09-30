@@ -78,7 +78,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
         </svg>
       </div>
 
-      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center relative z-10">
+      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-y-14 gap-x-10 lg:gap-16 items-center relative z-10">
         {/* Left column: Storytelling Headline and Context */}
         <motion.div 
           initial={{ opacity: 0, y: 24 }}
@@ -214,11 +214,11 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
             <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#8C2711] pointer-events-none" />
 
             {/* Canvas Header & Pigment Badge */}
-            <div className="flex items-center justify-between px-2 py-1 mb-2 text-xs text-[#7A604D] border-b border-[#E2D2BC]">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between px-8 py-1.5 mb-2 text-xs text-[#7A604D] border-b border-[#E2D2BC]">
               <span className="font-serif italic font-semibold text-[#8C2711]">
                 Kalpavriksha (Sacred Cosmic Tree of Mithila)
               </span>
-              <span className="bg-[#FAF5EA] px-2 py-0.5 rounded border border-[#D5C3A5] font-mono text-[12px]">
+              <span className="self-start sm:self-auto whitespace-nowrap bg-[#FAF5EA] px-2 py-0.5 rounded border border-[#D5C3A5] font-mono text-[12px]">
                 {stage === 'drawing' ? 'Kachni Line Phase' : stage === 'coloring' ? 'Bharni Pigment Phase' : 'Museum Finished'}
               </span>
             </div>
@@ -522,31 +522,31 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                 <Palette className="w-3.5 h-3.5 text-[#C94A29]" />
                 Traditional Natural Pigments:
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 min-w-0">
                 <span 
                   title="Lamp Black (Kajal from Mustard Oil Lamps)"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#261A12] text-white text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#261A12] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   Lamp Black
                 </span>
                 <span 
                   title="Turmeric (Haldi) simmered with gum arabic"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E5A93C] text-[#241A14] text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#E5A93C] text-[#241A14] text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]" />
                   Raw Turmeric
                 </span>
                 <span 
                   title="Vermillion (Sindoor) with Peepal Resin"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#C94A29] text-white text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#C94A29] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   Vermillion
                 </span>
                 <span 
                   title="Natural Indigo (Neel) from Bettiah"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#2A4B7C] text-white text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#2A4B7C] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C]" />
                   Natural Indigo
