@@ -129,6 +129,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {t.nav.blog}
               </button>
             )}
+            <button
+              onClick={onOpenCommission}
+              className="whitespace-nowrap text-[#E5A93C] hover:text-[#8C2711] transition-colors cursor-pointer font-medium"
+            >
+              {t.nav.customCommission}
+            </button>
+            <button
+              onClick={onOpenArtistApplication}
+              className="whitespace-nowrap text-[#E5A93C] hover:text-[#8C2711] transition-colors cursor-pointer font-medium"
+            >
+              {t.nav.forArtisans}
+            </button>
           </nav>
 
           {/* Right Controls: Cart and mobile menu. Language, currency, Sell Your Art,
@@ -205,6 +217,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               {t.nav.blog}
             </button>
           )}
+          <button
+            onClick={() => { onOpenCommission(); setMobileMenuOpen(false); }}
+            className="w-full text-left py-2 text-sm font-medium text-[#E5A93C] border-b border-[#E8DEC8]"
+          >
+            {t.nav.customCommission}
+          </button>
+          <button
+            onClick={() => { onOpenArtistApplication(); setMobileMenuOpen(false); }}
+            className="w-full text-left py-2 text-sm font-medium text-[#E5A93C]"
+          >
+            {t.nav.forArtisans}
+          </button>
         </div>
       )}
     </header>
