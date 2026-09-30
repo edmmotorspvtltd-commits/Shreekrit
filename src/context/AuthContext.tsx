@@ -33,7 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    // Without an explicit redirect, Supabase sends the verification link to the
+    // dashboard "Site URL" (localhost:3000 by default), which breaks for real users.
+    // VITE_SITE_URL overrides; otherwise use whichever origin the user signed up on.
+    const siteUrl = (import.meta.env.VITE_SITE_URL as string | undefined) || window.location.origin;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: siteUrl },
+    });
     return { error: error?.message ?? null };
   };
 
