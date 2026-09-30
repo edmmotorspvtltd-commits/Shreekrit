@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, User, Send, Check, AlertCircle } from 'lucide-react';
+import { X, Mail, Lock, Check, AlertCircle, ShieldCheck, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
@@ -9,8 +9,6 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
   const { signIn, signUp } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
@@ -43,34 +41,51 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-[#1A120B]/75 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-sm bg-[#FAF5EA] rounded-lg shadow-2xl border border-[#D5C3A5] overflow-hidden my-auto max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-sm bg-[#FAF5EA] rounded-lg shadow-2xl border border-[#D5C3A5] paper-bg overflow-hidden my-auto max-h-[92vh] flex flex-col"
       >
-        <div className="p-4 sm:p-5 border-b border-[#E0D0B8] bg-[#F4EADB] flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="p-1.5 rounded bg-[#8C2711] text-white">
-              <User className="w-4 h-4" />
-            </span>
-            <h3 className="font-serif-display font-bold text-lg text-[#241A14]">
-              {mode === 'login' ? 'Log In' : 'Sign Up'}
-            </h3>
-          </div>
+        <div className="h-1.5 bg-gradient-to-r from-[#8C2711] via-[#E5A93C] to-[#2A4B7C] flex-shrink-0" />
 
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-[#EAE0CD] text-[#241A14] transition-colors cursor-pointer"
-            aria-label="Close modal"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-3 p-2 rounded-full hover:bg-[#EAE0CD] text-[#241A14] transition-colors cursor-pointer z-10"
+          aria-label="Close modal"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="px-6 pt-6 pb-4 text-center bg-[#F4EADB] border-b border-[#E0D0B8] flex-shrink-0">
+          <img
+            src="/shreekrit-logo.png"
+            alt="Shreekrit"
+            className="h-16 w-auto mx-auto object-contain"
+            draggable={false}
+          />
+          <p className="mt-1 font-serif text-[11px] text-[#8C2711] tracking-widest uppercase font-semibold">
+            Authentic Folk Art Archive
+          </p>
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">
+          {!confirmationPending && (
+            <div className="text-center mb-5">
+              <h3 className="font-serif-display font-bold text-2xl text-[#241A14]">
+                {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
+              </h3>
+              <p className="mt-1 text-xs text-[#665141]">
+                {mode === 'login'
+                  ? 'Log in to track your orders and manage your collection.'
+                  : 'Join Shreekrit to track orders and collect original Mithila art.'}
+              </p>
+            </div>
+          )}
           {confirmationPending ? (
             <div className="text-center py-4 space-y-4">
               <div className="w-14 h-14 rounded-full bg-[#E8F0E5] border border-[#426B43] flex items-center justify-center mx-auto text-[#426B43]">
@@ -92,31 +107,39 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#5A4535] mb-1">
+                <label htmlFor="auth-email" className="block text-xs font-semibold text-[#5A4535] mb-1">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
-                />
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-[#8C2711] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    id="auth-email"
+                    type="email"
+                    required
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 text-base rounded border border-[#D5C3A5] bg-white/70 focus:outline-[#8C2711]"
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#5A4535] mb-1">
+                <label htmlFor="auth-password" className="block text-xs font-semibold text-[#5A4535] mb-1">
                   Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  placeholder="At least 6 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"
-                />
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-[#8C2711] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    id="auth-password"
+                    type="password"
+                    required
+                    minLength={6}
+                    placeholder="At least 6 characters"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 text-base rounded border border-[#D5C3A5] bg-white/70 focus:outline-[#8C2711]"
+                  />
+                </div>
               </div>
 
               {error && (
@@ -131,8 +154,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 disabled={isSubmitting}
                 className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                <Send className="w-4 h-4" />
-                <span>{isSubmitting ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Sign Up'}</span>
+                <span>{isSubmitting ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Create Account'}</span>
               </button>
 
               <button
@@ -147,6 +169,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </button>
             </form>
           )}
+        </div>
+
+        <div className="px-6 py-3 bg-[#F4EADB] border-t border-[#E0D0B8] flex items-center justify-center gap-4 text-[11px] text-[#7A6452] flex-shrink-0">
+          <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-[#426B43]" /> Certified Originals</span>
+          <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5 text-[#C94A29]" /> Direct from Artisans</span>
         </div>
       </motion.div>
     </div>
