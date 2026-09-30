@@ -295,3 +295,21 @@ export async function sendOrderShipped(data: ShippingEmailData) {
   `;
   return sendEmail(data.customerEmail, `Your Shreekrit order ${data.orderRef} is on its way!`, layout(body));
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. VERIFICATION EMAIL
+// ─────────────────────────────────────────────────────────────────────────────
+export async function sendVerificationEmail(email: string, link: string) {
+  const body = `
+    <h2 style="margin:0 0 6px;font-size:20px;color:#241A14;">Confirm your collector account</h2>
+    <p style="margin:0 0 24px;color:#5C4A3A;font-size:14px;line-height:1.7;">Thank you for applying to be a verified collector. Please confirm your email address to log in.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+      <tr><td align="center">
+        <a href="${link}" style="display:inline-block;padding:12px 24px;background:#8C2711;color:#FFFFFF;text-decoration:none;font-size:14px;font-weight:600;border-radius:4px;letter-spacing:1px;text-transform:uppercase;">Confirm Email Address</a>
+      </td></tr>
+    </table>
+    ${divider}
+    <p style="margin:0;font-size:12px;color:#8C7060;">If you did not request this, you can safely ignore this email.</p>
+  `;
+  return sendEmail(email, `Confirm your Shreekrit Account`, layout(body, 'Confirm your email to access your collector account'));
+}

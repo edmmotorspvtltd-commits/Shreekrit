@@ -6,6 +6,9 @@ const json = (body: unknown, status = 200) =>
 // Creates the Supabase auth user server-side, already marked as confirmed, so
 // signup needs no verification email/link. Uses the service_role key, which must
 // only ever exist as a server environment variable (never VITE_-prefixed).
+import { createClient } from '@supabase/supabase-js';
+import { sendVerificationEmail } from './_lib/email';
+
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
@@ -28,25 +31,39 @@ export default async function handler(req: Request) {
     return json({ error: 'Signup is temporarily unavailable. Please try again later.' }, 500);
   }
 
+  const supabase = createClient(supabaseUrl, serviceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
+
   try {
-    const res = await fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/admin/users`, {
-      method: 'POST',
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password, email_confirm: true }),
+    // We generate the signup link directly. This creates the user (unverified)
+    // and returns the verification URL that we can email ourselves.
+    const { data, error } = await supabase.auth.admin.generateLink({
+      type: 'signup',
+      email,
+      password,
     });
 
-    if (res.ok) return json({ ok: true });
-
-    const err = (await res.json().catch(() => ({}))) as { error_code?: string; msg?: string };
-    if (res.status === 422 || err.error_code === 'email_exists') {
-      return json({ error: 'An account with this email already exists. Please log in.' }, 409);
+    if (error) {
+      if (error.message.includes('already registered')) {
+         return json({ error: 'An account with this email already exists. Please log in.' }, 409);
+      }
+      console.error('Supabase generateLink error:', error);
+      return json({ error: 'Could not create your account. Please try again.' }, 500);
     }
-    console.error('Supabase admin createUser failed:', res.status, err);
-    return json({ error: 'Could not create your account. Please try again.' }, 500);
+
+    if (!data?.properties?.action_link) {
+      console.error('No action link returned from generateLink');
+      return json({ error: 'Could not generate verification link.' }, 500);
+    }
+
+    // Send our beautifully branded custom email via Resend
+    await sendVerificationEmail(email, data.properties.action_link);
+
+    return json({ ok: true });
   } catch (e) {
     console.error('Signup request failed:', e);
     return json({ error: 'Could not create your account. Please try again.' }, 500);

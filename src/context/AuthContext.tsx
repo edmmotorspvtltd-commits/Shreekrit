@@ -32,15 +32,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  // Account creation calls our custom /api/signup which uses Supabase admin to 
+  // generate a link and sends it via Resend with our beautiful custom HTML template.
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ 
-      email, 
-      password,
-      options: {
-        emailRedirectTo: window.location.origin
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        return { error: data.error || 'Could not create your account. Please try again.' };
       }
-    });
-    return { error: error?.message ?? null };
+    } catch {
+      return { error: 'Network error. Please check your connection and try again.' };
+    }
+    return { error: null };
   };
 
   const signIn = async (email: string, password: string) => {
