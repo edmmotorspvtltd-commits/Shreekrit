@@ -151,10 +151,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
           </div>
         </div>
 
-        {/* Language, currency and account — desktop only (mobile uses the header drawer).
-            Sell Your Art and Custom Commission are in the Patronage column above. */}
-        <div className="hidden md:flex flex-wrap items-center justify-between gap-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
-          <div className="flex flex-wrap items-center gap-5">
+        {/* Language, currency and account */}
+        <div className="flex flex-col md:flex-row flex-wrap items-center justify-between gap-6 md:gap-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
+          <div className="flex flex-wrap items-center justify-center gap-5">
             <label className="flex items-center gap-2">
               <Languages className="w-4 h-4 text-[#E5A93C]" />
               <span className="sr-only">{t.nav.language}</span>

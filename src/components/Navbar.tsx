@@ -167,52 +167,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#FAF5EA] border-b border-[#E0D0B8] px-4 pt-2 pb-6 space-y-3 shadow-lg">
-          {/* Mobile Language Switcher */}
-          <div className="py-2 border-b border-[#E8DEC8]">
-            <div className="text-[12px] font-semibold text-[#7A6452] uppercase mb-1.5">
-              {t.nav.language} (Language)
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-              {LANGUAGES.map((item) => (
-                <button
-                  key={item.code}
-                  onClick={() => setLanguage(item.code)}
-                  className={`py-1.5 px-2 rounded text-xs font-medium text-center border transition-all ${
-                    language === item.code 
-                      ? 'bg-[#8C2711] text-white border-[#8C2711] font-bold shadow-xs'
-                      : 'bg-[#F4EADA] text-[#3D2819] border-[#D5C3A5]'
-                  }`}
-                >
-                  <span className="block font-semibold">{item.nativeName}</span>
-                  <span className="text-[12px] opacity-80">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Mobile Currency Switcher */}
-          <div className="py-2 border-b border-[#E8DEC8]">
-            <div className="text-[12px] font-semibold text-[#7A6452] uppercase mb-1.5 flex items-center justify-between">
-              <span>{t.nav.currency} (Currency)</span>
-              <span className="font-mono text-[#8C2711] font-bold text-xs">{CURRENCY_RATES[currency]?.symbol} {currency}</span>
-            </div>
-            <div className="grid grid-cols-5 gap-1">
-              {currencies.map((curr) => (
-                <button
-                  key={curr}
-                  onClick={() => onCurrencyChange(curr)}
-                  className={`py-1.5 px-1 rounded text-center border transition-all cursor-pointer ${
-                    currency === curr
-                      ? 'bg-[#8C2711] text-white border-[#8C2711] font-bold shadow-xs'
-                      : 'bg-[#F4EADA] text-[#3D2819] border-[#D5C3A5]'
-                  }`}
-                >
-                  <span className="block font-mono text-xs font-bold leading-none">{CURRENCY_RATES[curr]?.symbol}</span>
-                  <span className="block text-[12px] mt-0.5">{curr}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
           <button
             onClick={() => handleNavClick('home')}
@@ -252,68 +206,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               {t.nav.blog}
             </button>
           )}
-          {/* Mobile Account Section */}
-          <div className="py-2 border-b border-[#E8DEC8] space-y-2">
-            {user ? (
-              <>
-                <div className="text-[12px] text-[#7A6452] truncate">{user.email}</div>
-                <button
-                  onClick={() => {
-                    onNavigate('my-orders');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-2.5 border border-[#8C2711] text-[#8C2711] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Package className="w-3.5 h-3.5" />
-                  <span>My Orders</span>
-                </button>
-                <button
-                  onClick={() => {
-                    signOut();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-2.5 border border-[#D5C3A5] text-[#4A3222] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Log Out</span>
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  onOpenAuth();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full py-2.5 border border-[#8C2711] text-[#8C2711] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <User className="w-3.5 h-3.5" />
-                <span>Log In / Sign Up</span>
-              </button>
-            )}
-          </div>
-
-          <div className="pt-2 space-y-2">
-            <button
-              onClick={() => {
-                onOpenArtistApplication();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full py-2.5 border border-[#8C2711] text-[#8C2711] rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Feather className="w-3.5 h-3.5" />
-              <span>{t.nav.forArtisans}</span>
-            </button>
-            <button
-              onClick={() => {
-                onOpenCommission();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full py-2.5 bg-[#8C2711] text-white rounded text-xs font-semibold text-center flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t.nav.customCommission}</span>
-            </button>
-          </div>
         </div>
       )}
     </header>
