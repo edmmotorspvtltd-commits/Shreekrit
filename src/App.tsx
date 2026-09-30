@@ -286,6 +286,7 @@ export default function App() {
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
       />
 
       {/* Main Views Container */}

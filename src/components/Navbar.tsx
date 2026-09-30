@@ -20,6 +20,7 @@ interface NavbarProps {
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
   onOpenAuth: () => void;
+  onOpenTrackOrder: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -31,7 +32,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCart,
   onOpenCommission,
   onOpenArtistApplication,
-  onOpenAuth
+  onOpenAuth,
+  onOpenTrackOrder
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -162,8 +164,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button onClick={() => onNavigate('my-orders')} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2">
                     <Package className="w-4 h-4" /> My Orders
                   </button>
+                  <button onClick={onOpenTrackOrder} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2">
+                    <Package className="w-4 h-4" /> Track Guest Order
+                  </button>
                   <button onClick={() => signOut()} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2 rounded-b-lg">
                     <LogOut className="w-4 h-4" /> Log Out
+                  </button>
+                </div>
+              )}
+              {!user && (
+                <div className="absolute right-0 mt-2 w-48 bg-[#FAF5EA] border border-[#E2D4BF] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <button onClick={onOpenAuth} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2 rounded-t-lg">
+                    <User className="w-4 h-4" /> Log In / Sign Up
+                  </button>
+                  <button onClick={onOpenTrackOrder} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2 rounded-b-lg">
+                    <Package className="w-4 h-4" /> Track Guest Order
                   </button>
                 </div>
               )}
@@ -264,14 +279,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button onClick={() => { onNavigate('my-orders'); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
                   <Package className="w-4 h-4" /> My Orders
                 </button>
+                <button onClick={() => { onOpenTrackOrder(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
+                  <Package className="w-4 h-4" /> Track Guest Order
+                </button>
                 <button onClick={() => { signOut(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
                   <LogOut className="w-4 h-4" /> Log Out
                 </button>
               </>
             ) : (
-              <button onClick={() => { onOpenAuth(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#8C2711] flex items-center gap-2">
-                <User className="w-4 h-4" /> Log In / Sign Up
-              </button>
+              <>
+                <button onClick={() => { onOpenAuth(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#8C2711] flex items-center gap-2">
+                  <User className="w-4 h-4" /> Log In / Sign Up
+                </button>
+                <button onClick={() => { onOpenTrackOrder(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#8C2711] flex items-center gap-2">
+                  <Package className="w-4 h-4" /> Track Guest Order
+                </button>
+              </>
             )}
           </div>
         </div>
