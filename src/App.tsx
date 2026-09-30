@@ -41,7 +41,27 @@ const AuthModal = React.lazy(() => import('./components/AuthModal').then(m => ({
 
 export default function App() {
   const { t, language } = useLanguage();
-  const [activeSection, setActiveSection] = useState<string>('home');
+  const validSections = ['home', 'gallery', 'story', 'heritage', 'artists', 'blog', 'my-orders'];
+  
+  const [activeSection, setActiveSection] = useState<string>(() => {
+    const path = window.location.pathname.replace(/^\/+/, '');
+    return validSections.includes(path) ? path : 'home';
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/^\/+/, '');
+      setActiveSection(validSections.includes(path) ? path : 'home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (section: string) => {
+    setActiveSection(section);
+    window.history.pushState(null, '', section === 'home' ? '/' : `/${section}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   const [currency, setCurrency] = useState<CurrencyCode>(() => {
     const saved = localStorage.getItem('mithila_currency');
     return (saved as CurrencyCode) || 'INR';
@@ -258,10 +278,7 @@ export default function App() {
       {/* Top Navigation */}
       <Navbar
         activeSection={activeSection}
-        onNavigate={(sec) => {
-          setActiveSection(sec);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={navigateTo}
         currency={currency}
         onCurrencyChange={handleCurrencyChange}
         cartCount={cart.length}
@@ -281,10 +298,7 @@ export default function App() {
                 const el = document.getElementById('featured-curation');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              onStoryClick={() => {
-                setActiveSection('heritage');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onStoryClick={() => navigateTo('heritage')}
             />
 
             {/* Curated "Featured Masterpieces" Strip */}
@@ -304,7 +318,7 @@ export default function App() {
                 </div>
 
                 <button
-                  onClick={() => setActiveSection('gallery')}
+                  onClick={() => navigateTo('gallery')}
                   className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer group py-3 -my-3 px-1 -mx-1"
                 >
                   <span>{t.featured.viewAll}</span>
@@ -337,10 +351,7 @@ export default function App() {
 
             {/* Heritage Lore & About */}
             <HeritageAboutSection
-              onExploreGallery={() => {
-                setActiveSection('gallery');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onExploreGallery={() => navigateTo('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
           </div>
@@ -372,7 +383,7 @@ export default function App() {
               </div>
             </div>
             <HeritageAboutSection
-              onExploreGallery={() => setActiveSection('gallery')}
+              onExploreGallery={() => navigateTo('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
           </div>
@@ -382,7 +393,7 @@ export default function App() {
           <div className="pt-6">
             <HeritageAboutSection
               isPageHeading
-              onExploreGallery={() => setActiveSection('gallery')}
+              onExploreGallery={() => navigateTo('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
           </div>
@@ -557,10 +568,7 @@ export default function App() {
 
       {/* Footer */}
       <Footer
-        onNavigate={(sec) => {
-          setActiveSection(sec);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={navigateTo}
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
         onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
