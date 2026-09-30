@@ -112,22 +112,22 @@ export const VisualStoryTimeline: React.FC<VisualStoryTimelineProps> = ({ isPage
         </div>
 
         {/* Story Navigator Stepper Tabs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 border-b border-[#D8C6AE] pb-4">
+        <div className="grid grid-cols-4 gap-1.5 md:gap-2 border-b border-[#D8C6AE] pb-4">
           {CHAPTERS.map((ch, idx) => (
             <button
               key={ch.id}
               onClick={() => setActiveIdx(idx)}
-              className={`p-3 rounded-md text-left transition-all cursor-pointer border ${
+              className={`p-2 md:p-3 rounded-md text-center md:text-left transition-all cursor-pointer border ${
                 activeIdx === idx
                   ? 'bg-[#FAF5EA] border-[#8C2711] shadow-md ring-1 ring-[#8C2711]'
                   : 'bg-[#F2E5D3]/60 border-transparent hover:border-[#D5C2A7]'
               }`}
             >
-              <div className="flex items-center justify-between text-[12px] font-mono text-[#8C2711] font-semibold">
-                <span>Chapter {ch.step}</span>
-                {activeIdx === idx && <Sparkles className="w-3 h-3 text-[#C94A29]" />}
+              <div className="flex items-center justify-center md:justify-between text-[12px] font-mono text-[#8C2711] font-semibold">
+                <span><span className="md:hidden">Ch </span><span className="hidden md:inline">Chapter </span>{ch.step}</span>
+                {activeIdx === idx && <Sparkles className="hidden md:block w-3 h-3 text-[#C94A29]" />}
               </div>
-              <div className="font-serif text-sm font-bold text-[#241A14] mt-0.5 line-clamp-2">
+              <div className="hidden md:block font-serif text-sm font-bold text-[#241A14] mt-0.5 line-clamp-2">
                 {ch.title}
               </div>
             </button>
