@@ -152,8 +152,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         </div>
 
         {/* Language, currency and account */}
-        <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-x-6 gap-y-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
-          <div className="flex items-center justify-center gap-4">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between gap-x-6 gap-y-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
+          <div className="flex items-center justify-start gap-4">
             <label className="flex items-center gap-1.5">
               <Languages className="w-4 h-4 text-[#E5A93C]" />
               <span className="sr-only">{t.nav.language}</span>
@@ -184,7 +184,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
             </label>
           </div>
 
-          <div className="flex flex-nowrap items-center justify-center gap-3 sm:gap-4 whitespace-nowrap">
+          <div className="flex flex-nowrap items-center justify-start gap-3 sm:gap-4 whitespace-nowrap">
             {user ? (
               <>
                 <span className="flex items-center gap-1.5 text-[#9E8A7A] min-w-0 max-w-[130px] sm:max-w-[220px] truncate">
