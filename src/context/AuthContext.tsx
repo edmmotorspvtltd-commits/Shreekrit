@@ -32,23 +32,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Account creation happens server-side (api/signup.ts) so the user is created
-  // already verified, then we log them straight in. No verification email/link.
   const signUp = async (email: string, password: string) => {
-    try {
-      const res = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { error?: string };
-        return { error: data.error || 'Could not create your account. Please try again.' };
+    const { error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        emailRedirectTo: window.location.origin
       }
-    } catch {
-      return { error: 'Network error. Please check your connection and try again.' };
-    }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    });
     return { error: error?.message ?? null };
   };
 

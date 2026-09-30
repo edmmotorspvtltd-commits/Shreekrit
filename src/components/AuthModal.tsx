@@ -16,6 +16,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +29,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     if (result.error) {
       setError(result.error);
+      return;
+    }
+
+    if (mode === 'signup') {
+      setSuccessMessage('Account created! Please check your email for the verification link.');
       return;
     }
 
@@ -140,9 +146,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
               )}
 
+              {successMessage && (
+                <div className="p-3 bg-[#E5EEE2] rounded border border-[#A4C4A5] text-xs text-[#426B43] font-medium flex items-center gap-2 text-center">
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !!successMessage}
                 className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>{isSubmitting ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Create Account'}</span>
@@ -153,6 +165,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 onClick={() => {
                   setMode(mode === 'login' ? 'signup' : 'login');
                   setError(null);
+                  setSuccessMessage(null);
                   setShowPassword(false);
                 }}
                 className="w-full text-center text-xs text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer"
