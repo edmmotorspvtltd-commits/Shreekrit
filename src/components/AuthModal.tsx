@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, Mail, Lock, Check, AlertCircle, ShieldCheck, Heart, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { X, Mail, Lock, AlertCircle, ShieldCheck, Heart, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
@@ -16,9 +16,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Set only for signup, when Supabase requires email confirmation before
-  // a session exists — there's nothing to log the user into yet.
-  const [confirmationPending, setConfirmationPending] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,11 +28,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
     if (result.error) {
       setError(result.error);
-      return;
-    }
-
-    if (mode === 'signup') {
-      setConfirmationPending(true);
       return;
     }
 
@@ -75,37 +67,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="p-6 overflow-y-auto flex-1">
-          {!confirmationPending && (
-            <div className="text-center mb-5">
-              <h3 className="font-serif-display font-bold text-2xl text-[#241A14]">
-                {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
-              </h3>
-              <p className="mt-1 text-xs text-[#665141]">
-                {mode === 'login'
-                  ? 'Log in to track your orders and manage your collection.'
-                  : 'Join Shreekrit to track orders and collect original Mithila art.'}
-              </p>
-            </div>
-          )}
-          {confirmationPending ? (
-            <div className="text-center py-4 space-y-4">
-              <div className="w-14 h-14 rounded-full bg-[#E8F0E5] border border-[#426B43] flex items-center justify-center mx-auto text-[#426B43]">
-                <Check className="w-7 h-7" />
-              </div>
-              <h4 className="text-lg font-serif-display font-bold text-[#241A14]">
-                Check Your Email
-              </h4>
-              <p className="text-xs text-[#665141]">
-                We sent a confirmation link to {email}. Confirm your address, then log in.
-              </p>
-              <button
-                onClick={onClose}
-                className="px-6 py-2.5 bg-[#8C2711] text-white rounded text-xs font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          ) : (
+          <div className="text-center mb-5">
+            <h3 className="font-serif-display font-bold text-2xl text-[#241A14]">
+              {mode === 'login' ? 'Welcome Back' : 'Create Your Account'}
+            </h3>
+            <p className="mt-1 text-xs text-[#665141]">
+              {mode === 'login'
+                ? 'Log in to track your orders and manage your collection.'
+                : 'Join Shreekrit to track orders and collect original Mithila art.'}
+            </p>
+          </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="auth-email" className="block text-xs font-semibold text-[#5A4535] mb-1">
@@ -189,7 +160,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
               </button>
             </form>
-          )}
         </div>
 
         <div className="px-6 py-3 bg-[#F4EADB] border-t border-[#E0D0B8] flex items-center justify-center gap-4 text-[11px] text-[#7A6452] flex-shrink-0">

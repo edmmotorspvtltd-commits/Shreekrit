@@ -32,16 +32,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
+  // Account creation happens server-side (api/signup.ts) so the user is created
+  // already verified, then we log them straight in. No verification email/link.
   const signUp = async (email: string, password: string) => {
-    // Without an explicit redirect, Supabase sends the verification link to the
-    // dashboard "Site URL" (localhost:3000 by default), which breaks for real users.
-    // VITE_SITE_URL overrides; otherwise use whichever origin the user signed up on.
-    const siteUrl = (import.meta.env.VITE_SITE_URL as string | undefined) || window.location.origin;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: siteUrl },
-    });
+    try {
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        return { error: data.error || 'Could not create your account. Please try again.' };
+      }
+    } catch {
+      return { error: 'Network error. Please check your connection and try again.' };
+    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
 
