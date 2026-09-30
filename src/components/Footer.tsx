@@ -33,7 +33,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
   return (
     <footer className="bg-[#241A14] text-[#FAF5EA] border-t-4 border-[#8C2711] pt-16 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-12">
-        
+
         {/* Top Newsletter & Cultural Invitation Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-12 border-b border-[#47362B]">
           <div className="lg:col-span-6 space-y-4">
@@ -209,7 +209,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         {/* Bottom Copyright & Guarantee */}
         <div className="pt-8 border-t border-[#3D2C22] flex flex-col sm:flex-row items-center justify-between text-[12px] text-[#8C7665] gap-4">
           <div>
-            © {new Date().getFullYear()} Shreekrit Fine Arts. {t.footer.rights}
+            © {new Date().getFullYear()} Shreekrit. {t.footer.rights}
           </div>
           <div className="flex items-center gap-4">
             <span>{language === 'mai' ? 'प्राकृतिक रंग प्रमाणीकरण' : language === 'hi' ? 'प्राकृतिक रंग प्रमाणीकरण' : 'Natural Pigment Verification'}</span>
