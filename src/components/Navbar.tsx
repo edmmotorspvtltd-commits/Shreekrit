@@ -131,22 +131,44 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
             <button
               onClick={onOpenCommission}
-              className="whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer"
+              className="whitespace-nowrap border border-[#8C2711] text-[#8C2711] hover:bg-[#8C2711] hover:text-[#FAF5EA] px-4 py-1.5 rounded-full transition-colors cursor-pointer text-sm font-medium"
             >
               {t.nav.customCommission}
             </button>
             <button
               onClick={onOpenArtistApplication}
-              className="whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer"
+              className="whitespace-nowrap border border-[#8C2711] text-[#8C2711] hover:bg-[#8C2711] hover:text-[#FAF5EA] px-4 py-1.5 rounded-full transition-colors cursor-pointer text-sm font-medium"
             >
               {t.nav.forArtisans}
             </button>
           </nav>
 
-          {/* Right Controls: Cart and mobile menu. Language, currency, Sell Your Art,
-              Custom Commission and Account live in the footer on desktop; the mobile
-              drawer has its own copies. */}
+          {/* Right Controls: Account, Cart and mobile menu. */}
           <div className="flex items-center gap-0.5 flex-shrink-0">
+            {/* Account Trigger */}
+            <div className="relative group hidden sm:block">
+              <button
+                onClick={() => user ? null : onOpenAuth()}
+                className="p-3 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer flex items-center"
+                aria-label="Account"
+              >
+                <User className="w-5 h-5 text-[#8C2711]" />
+              </button>
+              {user && (
+                <div className="absolute right-0 mt-2 w-48 bg-[#FAF5EA] border border-[#E2D4BF] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="px-4 py-3 border-b border-[#E2D4BF]">
+                    <p className="text-xs text-[#8C7665] truncate">{user.email}</p>
+                  </div>
+                  <button onClick={() => onNavigate('my-orders')} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2">
+                    <Package className="w-4 h-4" /> My Orders
+                  </button>
+                  <button onClick={() => signOut()} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2 rounded-b-lg">
+                    <LogOut className="w-4 h-4" /> Log Out
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Cart Drawer Trigger */}
             <button
               onClick={onOpenCart}
@@ -217,18 +239,41 @@ export const Navbar: React.FC<NavbarProps> = ({
               {t.nav.blog}
             </button>
           )}
-          <button
-            onClick={() => { onOpenCommission(); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
-          >
-            {t.nav.customCommission}
-          </button>
-          <button
-            onClick={() => { onOpenArtistApplication(); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14]"
-          >
-            {t.nav.forArtisans}
-          </button>
+          <div className="flex flex-col gap-2 pt-2 pb-4 border-b border-[#E8DEC8]">
+            <button
+              onClick={() => { onOpenCommission(); setMobileMenuOpen(false); }}
+              className="w-full text-center py-2 px-4 text-sm font-medium border border-[#8C2711] text-[#8C2711] rounded-md hover:bg-[#8C2711] hover:text-[#FAF5EA] transition-colors"
+            >
+              {t.nav.customCommission}
+            </button>
+            <button
+              onClick={() => { onOpenArtistApplication(); setMobileMenuOpen(false); }}
+              className="w-full text-center py-2 px-4 text-sm font-medium border border-[#8C2711] text-[#8C2711] rounded-md hover:bg-[#8C2711] hover:text-[#FAF5EA] transition-colors"
+            >
+              {t.nav.forArtisans}
+            </button>
+          </div>
+
+          <div className="pt-2">
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 py-2 text-sm text-[#8C7665]">
+                  <User className="w-4 h-4 text-[#8C2711]" />
+                  <span className="truncate">{user.email}</span>
+                </div>
+                <button onClick={() => { onNavigate('my-orders'); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
+                  <Package className="w-4 h-4" /> My Orders
+                </button>
+                <button onClick={() => { signOut(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
+                  <LogOut className="w-4 h-4" /> Log Out
+                </button>
+              </>
+            ) : (
+              <button onClick={() => { onOpenAuth(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#8C2711] flex items-center gap-2">
+                <User className="w-4 h-4" /> Log In / Sign Up
+              </button>
+            )}
+          </div>
         </div>
       )}
     </header>

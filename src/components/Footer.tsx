@@ -191,26 +191,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               </select>
             </label>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3 whitespace-nowrap">
-            {user ? (
-              <>
-                <span className="flex items-center gap-1.5 text-[#9E8A7A] min-w-0 max-w-[90px] sm:max-w-[220px] truncate">
-                  <User className="w-3.5 h-3.5 text-[#E5A93C] flex-shrink-0" />
-                  <span className="truncate">{user.email}</span>
-                </span>
-                <button onClick={() => onNavigate('my-orders')} className="flex items-center gap-1.5 hover:text-white cursor-pointer">
-                  <Package className="w-3.5 h-3.5" /> My Orders
-                </button>
-                <button onClick={() => signOut()} className="flex items-center gap-1.5 hover:text-white cursor-pointer">
-                  <LogOut className="w-3.5 h-3.5" /> Log Out
-                </button>
-              </>
-            ) : (
-              <button onClick={onOpenAuth} className="flex items-center gap-1.5 hover:text-white cursor-pointer text-[#E5A93C] font-medium">
-                <User className="w-3.5 h-3.5" /> Log In / Sign Up
-              </button>
-            )}
           </div>
         </div>
 
