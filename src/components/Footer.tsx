@@ -156,7 +156,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               Mithila Folk Art Guild<br />
               Jitwarpur & Ranti Centers,<br />
               Madhubani District, Bihar 847211, India<br />
-              curator@shreekrit.com
+              shreekrit06@gmail.com
             </p>
           </div>
         </div>
