@@ -520,21 +520,21 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
 
             {/* Same seal below the canvas on mobile, so long text never covers the artwork */}
             {stage === 'drawing' && (
-              <div className="sm:hidden mt-2 px-1 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5">
+              <div className="sm:hidden mt-2 px-1 whitespace-nowrap font-serif-display text-[10px] min-[380px]:text-[11px] text-[#8C2711]/60 tracking-normal flex items-center justify-end gap-x-1.5">
                 <span>अम्बिका देवी / Ambika Devi</span>
                 <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#8C2711]/50" />
                 <span>Jitwarpur, Bihar</span>
               </div>
             )}
             {stage === 'coloring' && (
-              <div className="sm:hidden mt-2 px-1 font-serif-display text-[12px] text-[#8C2711]/70 tracking-wider flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5">
+              <div className="sm:hidden mt-2 px-1 whitespace-nowrap font-serif-display text-[10px] min-[380px]:text-[11px] text-[#8C2711]/70 tracking-normal flex items-center justify-end gap-x-1.5">
                 <span>Ambika Devi Studio</span>
                 <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#E5A93C] animate-pulse" />
                 <span>Phase 2: Mineral Washes Infusing</span>
               </div>
             )}
             {stage === 'completed' && (
-              <div className="sm:hidden mt-2 px-1 font-serif-display text-[12px] text-[#8C2711] tracking-wider flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5">
+              <div className="sm:hidden mt-2 px-1 whitespace-nowrap font-serif-display text-[10px] min-[380px]:text-[11px] text-[#8C2711] tracking-normal flex items-center justify-end gap-x-1.5">
                 <span>अम्बिका देवी / Ambika Devi</span>
                 <span className="shrink-0 w-2 h-2 rounded-full bg-[#426B43] shadow-[0_0_6px_2px_rgba(66,107,67,0.6)]" />
                 <span>Consecrated Masterwork • Jitwarpur</span>
