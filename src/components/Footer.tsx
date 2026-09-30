@@ -152,16 +152,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         </div>
 
         {/* Language, currency and account */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-start md:justify-between gap-x-6 gap-y-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
-          <div className="flex items-center justify-start gap-4">
+        <div className="flex flex-row flex-wrap items-center justify-start md:justify-between gap-x-4 gap-y-3 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
+          <div className="flex items-center gap-3">
             <label className="flex items-center gap-1.5">
-              <Languages className="w-4 h-4 text-[#E5A93C]" />
+              <Languages className="w-3.5 h-3.5 text-[#E5A93C]" />
               <span className="sr-only">{t.nav.language}</span>
               <select
                 id="footer-language-select"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as typeof language)}
-                className="bg-[#33251D] border border-[#543F33] rounded px-2 py-1.5 text-xs text-white cursor-pointer focus:outline-[#C94A29]"
+                className="bg-[#33251D] border border-[#543F33] rounded px-1.5 py-1 text-[11px] text-white cursor-pointer focus:outline-[#C94A29]"
               >
                 {LANGUAGES.map((item) => (
                   <option key={item.code} value={item.code}>{item.nativeName === item.label ? item.label : `${item.nativeName} (${item.label})`}</option>
@@ -169,13 +169,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               </select>
             </label>
             <label className="flex items-center gap-1.5">
-              <Globe className="w-4 h-4 text-[#E5A93C]" />
+              <Globe className="w-3.5 h-3.5 text-[#E5A93C]" />
               <span className="sr-only">{t.nav.currency}</span>
               <select
                 id="footer-currency-select"
                 value={currency}
                 onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
-                className="bg-[#33251D] border border-[#543F33] rounded px-2 py-1.5 text-xs text-white cursor-pointer focus:outline-[#C94A29]"
+                className="bg-[#33251D] border border-[#543F33] rounded px-1.5 py-1 text-[11px] text-white cursor-pointer focus:outline-[#C94A29]"
               >
                 {currencies.map((curr) => (
                   <option key={curr} value={curr}>{CURRENCY_RATES[curr]?.symbol} {curr}</option>
@@ -184,10 +184,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
             </label>
           </div>
 
-          <div className="flex flex-nowrap items-center justify-start gap-3 sm:gap-4 whitespace-nowrap">
+          <div className="flex flex-wrap items-center gap-3 whitespace-nowrap">
             {user ? (
               <>
-                <span className="flex items-center gap-1.5 text-[#9E8A7A] min-w-0 max-w-[130px] sm:max-w-[220px] truncate">
+                <span className="flex items-center gap-1.5 text-[#9E8A7A] min-w-0 max-w-[90px] sm:max-w-[220px] truncate">
                   <User className="w-3.5 h-3.5 text-[#E5A93C] flex-shrink-0" />
                   <span className="truncate">{user.email}</span>
                 </span>
