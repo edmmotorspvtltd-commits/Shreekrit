@@ -42,9 +42,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   // Blog nav entry stays hidden until there's at least one real (non-
   // placeholder) post — no point sending visitors to a page that only
-  // says "Replace Before Launch". Reappears automatically once real
-  // content lands in blogPosts.ts.
-  const hasRealBlogContent = BLOG_POSTS.some((p) => !p.isPlaceholder);
+  // says "Replace Before Launch". (Temporarily forced to true for preview)
+  const hasRealBlogContent = true;
 
   const handleNavClick = (section: string) => {
     onNavigate(section);
