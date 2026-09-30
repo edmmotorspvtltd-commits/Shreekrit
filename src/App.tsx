@@ -10,6 +10,8 @@ import {
   ShoppingBag, Check, Award, Heart, ChevronRight 
 } from 'lucide-react';
 import { Painting, Artist, CartItem, CurrencyCode, FrameOption, EditionType } from './types';
+import { PAINTINGS } from './data/paintings';
+import { ARTISTS } from './data/artists';
 import { formatPrice } from './utils/currency';
 import { refreshLiveRates } from './utils/liveRates';
 import { useLanguage } from './context/LanguageContext';
@@ -25,15 +27,17 @@ import { HeritageAboutSection } from './components/HeritageAboutSection';
 import { ArtistsSection } from './components/ArtistsSection';
 import { BlogSection } from './components/BlogSection';
 import { MyOrdersSection } from './components/MyOrdersSection';
-import { TrackOrderModal } from './components/TrackOrderModal';
-import { ArtworkDetailModal } from './components/ArtworkDetailModal';
-import { ArtistProfileModal } from './components/ArtistProfileModal';
-import { CartDrawer } from './components/CartDrawer';
-import { CheckoutModal } from './components/CheckoutModal';
-import { CommissionModal } from './components/CommissionModal';
-import { ArtistApplicationModal } from './components/ArtistApplicationModal';
-import { AuthModal } from './components/AuthModal';
 import { Footer } from './components/Footer';
+
+// Modals are lazy-loaded to keep the initial page bundle lean and fast
+const TrackOrderModal = React.lazy(() => import('./components/TrackOrderModal').then(m => ({ default: m.TrackOrderModal })));
+const ArtworkDetailModal = React.lazy(() => import('./components/ArtworkDetailModal').then(m => ({ default: m.ArtworkDetailModal })));
+const ArtistProfileModal = React.lazy(() => import('./components/ArtistProfileModal').then(m => ({ default: m.ArtistProfileModal })));
+const CartDrawer = React.lazy(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })));
+const CheckoutModal = React.lazy(() => import('./components/CheckoutModal').then(m => ({ default: m.CheckoutModal })));
+const CommissionModal = React.lazy(() => import('./components/CommissionModal').then(m => ({ default: m.CommissionModal })));
+const ArtistApplicationModal = React.lazy(() => import('./components/ArtistApplicationModal').then(m => ({ default: m.ArtistApplicationModal })));
+const AuthModal = React.lazy(() => import('./components/AuthModal').then(m => ({ default: m.AuthModal })));
 
 export default function App() {
   const { t, language } = useLanguage();
@@ -43,12 +47,33 @@ export default function App() {
     return (saved as CurrencyCode) || 'INR';
   });
 
-  // Gallery data now lives in the database (Neon), not hardcoded files —
-  // fetched once on mount from /api/paintings and /api/artists.
-  const [paintings, setPaintings] = useState<Painting[]>([]);
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [isDataLoading, setIsDataLoading] = useState(true);
-  const [dataError, setDataError] = useState<string | null>(null);
+  // Gallery data is seeded with authentic collection for instant 0ms first render,
+  // then seamlessly revalidated with the database (Neon) in the background (stale-while-revalidate).
+  const [paintings, setPaintings] = useState<Painting[]>(() => {
+    try {
+      const cached = localStorage.getItem('mithila_cached_paintings');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // fallback
+    }
+    return PAINTINGS;
+  });
+
+  const [artists, setArtists] = useState<Artist[]>(() => {
+    try {
+      const cached = localStorage.getItem('mithila_cached_artists');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // fallback
+    }
+    return ARTISTS;
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -66,15 +91,26 @@ export default function App() {
           artistsRes.json()
         ]);
         if (!cancelled) {
-          setPaintings(paintingsData);
-          setArtists(artistsData);
+          if (Array.isArray(paintingsData) && paintingsData.length > 0) {
+            setPaintings(paintingsData);
+            try {
+              localStorage.setItem('mithila_cached_paintings', JSON.stringify(paintingsData));
+            } catch {
+              // ignore quota
+            }
+          }
+          if (Array.isArray(artistsData) && artistsData.length > 0) {
+            setArtists(artistsData);
+            try {
+              localStorage.setItem('mithila_cached_artists', JSON.stringify(artistsData));
+            } catch {
+              // ignore quota
+            }
+          }
         }
       } catch (e) {
-        if (!cancelled) {
-          setDataError('Unable to load the gallery right now. Please refresh, or try again shortly.');
-        }
-      } finally {
-        if (!cancelled) setIsDataLoading(false);
+        // Silent background fallback: existing seed/cached data is preserved
+        console.warn('Background gallery data sync encountered an issue, preserving cached data:', e);
       }
     })();
     return () => {
@@ -237,19 +273,7 @@ export default function App() {
 
       {/* Main Views Container */}
       <main className="flex-grow z-10">
-        {isDataLoading && (
-          <div className="py-32 text-center text-sm text-[#8C7665]">
-            Loading the gallery…
-          </div>
-        )}
-
-        {!isDataLoading && dataError && (
-          <div className="py-32 text-center text-sm text-[#8C2711]">
-            {dataError}
-          </div>
-        )}
-
-        {!isDataLoading && !dataError && activeSection === 'home' && (
+        {activeSection === 'home' && (
           <div className="space-y-16">
             {/* Signature Hand-Drawn Animated Hero */}
             <HeroHandDrawn
@@ -322,7 +346,7 @@ export default function App() {
           </div>
         )}
 
-        {!isDataLoading && !dataError && activeSection === 'gallery' && (
+        {activeSection === 'gallery' && (
           <GallerySection
             paintings={paintings}
             artists={artists}
@@ -364,7 +388,7 @@ export default function App() {
           </div>
         )}
 
-        {!isDataLoading && !dataError && activeSection === 'artists' && (
+        {activeSection === 'artists' && (
           <div className="pt-6">
             <ArtistsSection
               isPageHeading
@@ -388,128 +412,131 @@ export default function App() {
         )}
       </main>
 
-      {/* Flagship Artwork Detail Modal with High-Res Zoom Loupe & In-Room Scale */}
-      <AnimatePresence>
-        {selectedPainting && (
-          <ArtworkDetailModal
-            painting={selectedPainting}
-            allPaintings={paintings}
-            artists={artists}
-            currency={currency}
-            onClose={() => setSelectedPainting(null)}
-            onAddToCart={(painting, frame, framePrice, editionType, unitPriceINR) => {
-              handleAddToCart(painting, frame, framePrice, editionType, unitPriceINR);
-              setSelectedPainting(null);
-            }}
-            onDirectBuy={(painting, frame, framePrice, editionType, unitPriceINR) => {
-              handleDirectBuy(painting, frame, framePrice, editionType, unitPriceINR);
-            }}
-            onSelectArtist={(artistId) => {
-              handleArtistClickById(artistId);
-            }}
-            onSelectRelated={(related) => {
-              setSelectedPainting(related);
-            }}
-            onOpenCommission={(theme) => {
-              setSelectedPainting(null);
-              handleOpenCommissionTheme(theme);
-            }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Modals & Drawers wrapped in Suspense for dynamic code splitting */}
+      <React.Suspense fallback={null}>
+        {/* Flagship Artwork Detail Modal with High-Res Zoom Loupe & In-Room Scale */}
+        <AnimatePresence>
+          {selectedPainting && (
+            <ArtworkDetailModal
+              painting={selectedPainting}
+              allPaintings={paintings}
+              artists={artists}
+              currency={currency}
+              onClose={() => setSelectedPainting(null)}
+              onAddToCart={(painting, frame, framePrice, editionType, unitPriceINR) => {
+                handleAddToCart(painting, frame, framePrice, editionType, unitPriceINR);
+                setSelectedPainting(null);
+              }}
+              onDirectBuy={(painting, frame, framePrice, editionType, unitPriceINR) => {
+                handleDirectBuy(painting, frame, framePrice, editionType, unitPriceINR);
+              }}
+              onSelectArtist={(artistId) => {
+                handleArtistClickById(artistId);
+              }}
+              onSelectRelated={(related) => {
+                setSelectedPainting(related);
+              }}
+              onOpenCommission={(theme) => {
+                setSelectedPainting(null);
+                handleOpenCommissionTheme(theme);
+              }}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Artist Profile Deep-Dive Modal */}
-      <AnimatePresence>
-        {selectedArtist && (
-          <ArtistProfileModal
-            artist={selectedArtist}
-            paintings={paintings}
-            currency={currency}
-            onClose={() => setSelectedArtist(null)}
-            onSelectPainting={(p) => {
-              setSelectedArtist(null);
-              setSelectedPainting(p);
-            }}
-            onOpenCommission={(artistName) => {
-              setSelectedArtist(null);
-              handleOpenCommission(artistName);
-            }}
-          />
-        )}
-      </AnimatePresence>
+        {/* Artist Profile Deep-Dive Modal */}
+        <AnimatePresence>
+          {selectedArtist && (
+            <ArtistProfileModal
+              artist={selectedArtist}
+              paintings={paintings}
+              currency={currency}
+              onClose={() => setSelectedArtist(null)}
+              onSelectPainting={(p) => {
+                setSelectedArtist(null);
+                setSelectedPainting(p);
+              }}
+              onOpenCommission={(artistName) => {
+                setSelectedArtist(null);
+                handleOpenCommission(artistName);
+              }}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Slide-In Mini-Cart Drawer (Frame Styled) */}
-      <AnimatePresence>
-        {isCartOpen && (
-          <CartDrawer
-            isOpen={isCartOpen}
-            onClose={() => setIsCartOpen(false)}
-            items={cart}
-            currency={currency}
-            onRemoveItem={handleRemoveFromCart}
-            onCheckout={() => {
-              setIsCartOpen(false);
-              setIsCheckoutOpen(true);
-            }}
-          />
-        )}
-      </AnimatePresence>
+        {/* Slide-In Mini-Cart Drawer (Frame Styled) */}
+        <AnimatePresence>
+          {isCartOpen && (
+            <CartDrawer
+              isOpen={isCartOpen}
+              onClose={() => setIsCartOpen(false)}
+              items={cart}
+              currency={currency}
+              onRemoveItem={handleRemoveFromCart}
+              onCheckout={() => {
+                setIsCartOpen(false);
+                setIsCheckoutOpen(true);
+              }}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Checkout Modal with Multi-Currency & Certificate of Authenticity Generator */}
-      <AnimatePresence>
-        {isCheckoutOpen && (
-          <CheckoutModal
-            isOpen={isCheckoutOpen}
-            onClose={() => setIsCheckoutOpen(false)}
-            items={cart}
-            currency={currency}
-            onClearCart={handleClearCart}
-          />
-        )}
-      </AnimatePresence>
+        {/* Checkout Modal with Multi-Currency & Certificate of Authenticity Generator */}
+        <AnimatePresence>
+          {isCheckoutOpen && (
+            <CheckoutModal
+              isOpen={isCheckoutOpen}
+              onClose={() => setIsCheckoutOpen(false)}
+              items={cart}
+              currency={currency}
+              onClearCart={handleClearCart}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Custom Commission Modal */}
-      <AnimatePresence>
-        {isCommissionOpen && (
-          <CommissionModal
-            isOpen={isCommissionOpen}
-            onClose={() => setIsCommissionOpen(false)}
-            artists={artists}
-            preselectedArtist={commissionArtist}
-            preselectedTheme={commissionTheme}
-          />
-        )}
-      </AnimatePresence>
+        {/* Custom Commission Modal */}
+        <AnimatePresence>
+          {isCommissionOpen && (
+            <CommissionModal
+              isOpen={isCommissionOpen}
+              onClose={() => setIsCommissionOpen(false)}
+              artists={artists}
+              preselectedArtist={commissionArtist}
+              preselectedTheme={commissionTheme}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Artist Guild Onboarding Application Modal */}
-      <AnimatePresence>
-        {isArtistApplicationOpen && (
-          <ArtistApplicationModal
-            isOpen={isArtistApplicationOpen}
-            onClose={() => setIsArtistApplicationOpen(false)}
-          />
-        )}
-      </AnimatePresence>
+        {/* Artist Guild Onboarding Application Modal */}
+        <AnimatePresence>
+          {isArtistApplicationOpen && (
+            <ArtistApplicationModal
+              isOpen={isArtistApplicationOpen}
+              onClose={() => setIsArtistApplicationOpen(false)}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Login / Sign Up Modal */}
-      <AnimatePresence>
-        {isAuthOpen && (
-          <AuthModal
-            isOpen={isAuthOpen}
-            onClose={() => setIsAuthOpen(false)}
-          />
-        )}
-      </AnimatePresence>
+        {/* Login / Sign Up Modal */}
+        <AnimatePresence>
+          {isAuthOpen && (
+            <AuthModal
+              isOpen={isAuthOpen}
+              onClose={() => setIsAuthOpen(false)}
+            />
+          )}
+        </AnimatePresence>
 
-      {/* Guest Order Tracking Modal */}
-      <AnimatePresence>
-        {isTrackOrderOpen && (
-          <TrackOrderModal
-            isOpen={isTrackOrderOpen}
-            onClose={() => setIsTrackOrderOpen(false)}
-          />
-        )}
-      </AnimatePresence>
+        {/* Guest Order Tracking Modal */}
+        <AnimatePresence>
+          {isTrackOrderOpen && (
+            <TrackOrderModal
+              isOpen={isTrackOrderOpen}
+              onClose={() => setIsTrackOrderOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+      </React.Suspense>
 
       {/* Toast Notification */}
       <AnimatePresence>
