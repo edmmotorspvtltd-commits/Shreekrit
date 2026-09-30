@@ -23,11 +23,21 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
+    if (!email) return;
+    
+    try {
+      await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+    } catch (err) {
+      console.error('Newsletter subscription failed:', err);
     }
+    
+    setSubscribed(true);
   };
 
   return (
