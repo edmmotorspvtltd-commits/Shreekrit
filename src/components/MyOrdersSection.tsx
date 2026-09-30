@@ -45,19 +45,26 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
     (async () => {
       setIsLoading(true);
       setError(null);
-      const { data, error: fetchError } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (cancelled) return;
-      if (fetchError) {
-        setError(fetchError.message);
-      } else {
-        setOrders((data as OrderWithItems[]) ?? []);
+      try {
+        const res = await fetch(`/api/orders/list?email=${encodeURIComponent(user.email || '')}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch orders');
+        }
+        
+        const data = await res.json();
+        
+        if (cancelled) return;
+        if (data.error) {
+          setError(data.error);
+        } else {
+          setOrders(data.orders || []);
+        }
+      } catch (err: any) {
+        if (cancelled) return;
+        setError(err.message || 'Something went wrong');
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-      setIsLoading(false);
     })();
 
     return () => {
