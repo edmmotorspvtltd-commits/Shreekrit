@@ -84,7 +84,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-5 text-left space-y-6"
+          className="order-2 lg:order-1 lg:col-span-5 text-left space-y-6"
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAD8C0]/60 border border-[#8C2711]/20 text-[#8C2711] text-xs uppercase tracking-widest font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-[#C94A29]" />
@@ -194,7 +194,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="lg:col-span-7 flex flex-col items-center w-full"
+          className="order-1 lg:order-2 lg:col-span-7 flex flex-col items-center w-full"
           style={{ perspective: '1200px' }}
         >
           {/* Outer Art Mount Frame with Authentic Sheesham, 3D Scroll Physics & Double Border */}
