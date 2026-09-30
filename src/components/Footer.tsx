@@ -152,7 +152,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
         </div>
 
         {/* Language, currency and account */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-x-6 gap-y-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
+        <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-x-6 gap-y-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
           <div className="flex items-center justify-center gap-4">
             <label className="flex items-center gap-1.5">
               <Languages className="w-4 h-4 text-[#E5A93C]" />
