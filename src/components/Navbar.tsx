@@ -131,13 +131,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
             <button
               onClick={onOpenCommission}
-              className="whitespace-nowrap text-[#E5A93C] hover:text-[#8C2711] transition-colors cursor-pointer font-medium"
+              className="whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer"
             >
               {t.nav.customCommission}
             </button>
             <button
               onClick={onOpenArtistApplication}
-              className="whitespace-nowrap text-[#E5A93C] hover:text-[#8C2711] transition-colors cursor-pointer font-medium"
+              className="whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer"
             >
               {t.nav.forArtisans}
             </button>
@@ -219,13 +219,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
           <button
             onClick={() => { onOpenCommission(); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-sm font-medium text-[#E5A93C] border-b border-[#E8DEC8]"
+            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.customCommission}
           </button>
           <button
             onClick={() => { onOpenArtistApplication(); setMobileMenuOpen(false); }}
-            className="w-full text-left py-2 text-sm font-medium text-[#E5A93C]"
+            className="w-full text-left py-2 text-sm font-medium text-[#241A14]"
           >
             {t.nav.forArtisans}
           </button>
