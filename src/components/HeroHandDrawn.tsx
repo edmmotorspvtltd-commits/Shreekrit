@@ -100,7 +100,8 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
             {t.hero.desc}
           </p>
 
-          {/* Interactive stage indicator */}
+          {/* Interactive stage indicator (desktop: in text column; mobile: under the painting) */}
+          <div className="hidden lg:block">
           <div className="pt-2">
             <div className="flex items-center justify-between text-xs text-[#7A6452] mb-2 font-medium">
               <span className="flex items-center gap-1.5">
@@ -149,6 +150,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                 {t.hero.finalPhase}
               </button>
             </div>
+          </div>
           </div>
 
           {/* Call to Actions (Fully responsive for mobile touch) */}
@@ -492,29 +494,52 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                 </g>
               </svg>
 
-              {/* Stage-aware signature / status seal */}
+              {/* Stage-aware signature / status seal (overlay on sm+) */}
               {stage === 'drawing' && (
-                <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider flex items-center gap-1">
+                <div className="hidden sm:flex absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider items-center gap-1">
                   <span>अम्बिका देवी / Ambika Devi</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]/50" />
                   <span>Jitwarpur, Bihar</span>
                 </div>
               )}
               {stage === 'coloring' && (
-                <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/70 tracking-wider flex items-center gap-1">
+                <div className="hidden sm:flex absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/70 tracking-wider items-center gap-1">
                   <span>Ambika Devi Studio</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C] animate-pulse" />
                   <span>Phase 2: Mineral Washes Infusing</span>
                 </div>
               )}
               {stage === 'completed' && (
-                <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711] tracking-wider flex items-center gap-1.5">
+                <div className="hidden sm:flex absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711] tracking-wider items-center gap-1.5">
                   <span>अम्बिका देवी / Ambika Devi</span>
                   <span className="w-2 h-2 rounded-full bg-[#426B43] shadow-[0_0_6px_2px_rgba(66,107,67,0.6)]" />
                   <span>Consecrated Masterwork • Jitwarpur</span>
                 </div>
               )}
             </div>
+
+            {/* Same seal below the canvas on mobile, so long text never covers the artwork */}
+            {stage === 'drawing' && (
+              <div className="sm:hidden mt-2 px-1 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5">
+                <span>अम्बिका देवी / Ambika Devi</span>
+                <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#8C2711]/50" />
+                <span>Jitwarpur, Bihar</span>
+              </div>
+            )}
+            {stage === 'coloring' && (
+              <div className="sm:hidden mt-2 px-1 font-serif-display text-[12px] text-[#8C2711]/70 tracking-wider flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5">
+                <span>Ambika Devi Studio</span>
+                <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#E5A93C] animate-pulse" />
+                <span>Phase 2: Mineral Washes Infusing</span>
+              </div>
+            )}
+            {stage === 'completed' && (
+              <div className="sm:hidden mt-2 px-1 font-serif-display text-[12px] text-[#8C2711] tracking-wider flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5">
+                <span>अम्बिका देवी / Ambika Devi</span>
+                <span className="shrink-0 w-2 h-2 rounded-full bg-[#426B43] shadow-[0_0_6px_2px_rgba(66,107,67,0.6)]" />
+                <span>Consecrated Masterwork • Jitwarpur</span>
+              </div>
+            )}
 
             {/* Natural Pigment Palette Tray underneath artwork */}
             <div className="mt-3 pt-3 border-t border-[#E2D2BC] flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -554,6 +579,59 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               </div>
             </div>
           </motion.div>
+
+          {/* Stage selector directly under the painting on mobile */}
+          <div className="lg:hidden w-full max-w-2xl mt-5">
+          <div className="pt-2">
+            <div className="flex items-center justify-between text-xs text-[#7A6452] mb-2 font-medium">
+              <span className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${stage === 'drawing' ? 'bg-[#C94A29] animate-pulse' : 'bg-[#426B43]'}`} />
+                {stage === 'drawing' && t.hero.drawingPhase}
+                {stage === 'coloring' && t.hero.colorPhase}
+                {stage === 'completed' && t.hero.finalPhase}
+              </span>
+              <button
+                onClick={handleReplay}
+                className="inline-flex items-center gap-1 text-[#8C2711] hover:text-[#5C1A0B] underline text-xs cursor-pointer transition-colors py-3 -my-3 px-1 -mx-1"
+              >
+                <RotateCcw className="w-3 h-3" /> Replay
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+              <button
+                onClick={() => { setAutoProgress(false); setStage('drawing'); }}
+                className={`min-h-[44px] flex items-center justify-center py-1.5 px-1 sm:px-2 text-[12px] sm:text-xs rounded border transition-all text-center leading-tight ${
+                  stage === 'drawing'
+                    ? 'border-[#8C2711] bg-[#8C2711] text-white font-medium shadow-sm'
+                    : 'border-[#D9C8B0] bg-[#FAF5EA] text-[#5C4A3C] hover:border-[#8C2711]/40'
+                }`}
+              >
+                {t.hero.drawingPhase}
+              </button>
+              <button
+                onClick={() => { setAutoProgress(false); setStage('coloring'); }}
+                className={`min-h-[44px] flex items-center justify-center py-1.5 px-1 sm:px-2 text-[12px] sm:text-xs rounded border transition-all text-center leading-tight ${
+                  stage === 'coloring'
+                    ? 'border-[#C94A29] bg-[#C94A29] text-white font-medium shadow-sm'
+                    : 'border-[#D9C8B0] bg-[#FAF5EA] text-[#5C4A3C] hover:border-[#C94A29]/40'
+                }`}
+              >
+                {t.hero.colorPhase}
+              </button>
+              <button
+                onClick={() => { setAutoProgress(false); setStage('completed'); }}
+                className={`min-h-[44px] flex items-center justify-center py-1.5 px-1 sm:px-2 text-[12px] sm:text-xs rounded border transition-all text-center leading-tight ${
+                  stage === 'completed'
+                    ? 'border-[#2A4B7C] bg-[#2A4B7C] text-white font-medium shadow-sm'
+                    : 'border-[#D9C8B0] bg-[#FAF5EA] text-[#5C4A3C] hover:border-[#2A4B7C]/40'
+                }`}
+              >
+                {t.hero.finalPhase}
+              </button>
+            </div>
+          </div>
+          </div>
         </motion.div>
       </div>
 
