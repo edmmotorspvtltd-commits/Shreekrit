@@ -332,7 +332,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenCart}
               id="navbar-cart-btn"
-              className="relative p-3 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8C2711]/40 transition-colors cursor-pointer"
+              className="relative p-3 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
               aria-label="Open cart"
             >
               <ShoppingBag className="w-5 h-5 text-[#8C2711]" />
@@ -346,7 +346,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-3 rounded-full text-[#241A14] hover:bg-[#F0E4D2] outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8C2711]/40 transition-colors cursor-pointer"
+              className="md:hidden p-3 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

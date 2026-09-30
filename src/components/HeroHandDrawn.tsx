@@ -214,7 +214,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
             <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#8C2711] pointer-events-none" />
 
             {/* Canvas Header & Pigment Badge */}
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between px-8 py-1.5 mb-2 text-xs text-[#7A604D] border-b border-[#E2D2BC]">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between px-8 py-1.5 sm:px-2 sm:py-1 mb-2 text-xs text-[#7A604D] border-b border-[#E2D2BC]">
               <span className="font-serif italic font-semibold text-[#8C2711]">
                 Kalpavriksha (Sacred Cosmic Tree of Mithila)
               </span>
@@ -525,28 +525,28 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               <div className="flex flex-wrap items-center gap-2 min-w-0">
                 <span 
                   title="Lamp Black (Kajal from Mustard Oil Lamps)"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#261A12] text-white text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 sm:h-auto whitespace-nowrap rounded-full bg-[#261A12] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   Lamp Black
                 </span>
                 <span 
                   title="Turmeric (Haldi) simmered with gum arabic"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#E5A93C] text-[#241A14] text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 sm:h-auto whitespace-nowrap rounded-full bg-[#E5A93C] text-[#241A14] text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]" />
                   Raw Turmeric
                 </span>
                 <span 
                   title="Vermillion (Sindoor) with Peepal Resin"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#C94A29] text-white text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 sm:h-auto whitespace-nowrap rounded-full bg-[#C94A29] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-white" />
                   Vermillion
                 </span>
                 <span 
                   title="Natural Indigo (Neel) from Bettiah"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 whitespace-nowrap rounded-full bg-[#2A4B7C] text-white text-[12px] font-medium"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 h-6 sm:h-auto whitespace-nowrap rounded-full bg-[#2A4B7C] text-white text-[12px] font-medium"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C]" />
                   Natural Indigo
