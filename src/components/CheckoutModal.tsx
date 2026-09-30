@@ -79,120 +79,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setPaymentError(null);
 
     try {
-      // No real payment gateway is wired up yet (separate, already-flagged
-      // future work) — this simulates processing latency so the flow feels
-      // real, then writes a genuine order record to Supabase. Nothing is
-      // charged; status is only ever 'paid' after this simulated success,
-      // never before.
-      await new Promise((resolve) => setTimeout(resolve, 1400));
+      const payload = {
+        items: items.map(item => ({
+          paintingId: item.painting.id,
+          editionType: item.editionType,
+          frame: item.frame
+        })),
+        shipping: formData,
+        currency
+      };
 
-      const itemsPayload = items.map((item) => ({
-        painting_id: item.painting.id,
-        painting_title: item.painting.title,
-        edition_type: item.editionType,
-        unit_price_inr: item.unitPriceINR,
-        frame: item.frame,
-        frame_price_inr: item.framePriceINR
-      }));
-
-      const totalAmountDisplay = convertPrice(grandTotalINR, currency);
-      const estimatedDelivery = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
-      const estimatedDeliveryISO = estimatedDelivery.toISOString().slice(0, 10);
-
-      let orderRow: { order_number: string; created_at: string };
-      let orderItemRows: {
-        painting_id: string;
-        painting_title: string;
-        edition_type: string;
-        unit_price_inr: number | string;
-        frame: string;
-        frame_price_inr: number | string;
-      }[];
-
-      if (user) {
-        // Logged-in: a direct RLS-gated insert — auth.uid() is derived
-        // server-side from the session, so user_id can't be spoofed here.
-        const { data: insertedOrder, error: orderError } = await supabase
-          .from('orders')
-          .insert({
-            user_id: user.id,
-            status: 'paid',
-            currency,
-            total_amount_inr: grandTotalINR,
-            total_amount_display: totalAmountDisplay,
-            shipping_address: formData,
-            payment_method: 'razorpay',
-            estimated_delivery_date: estimatedDeliveryISO
-          })
-          .select()
-          .single();
-
-        if (orderError || !insertedOrder) {
-          throw new Error(orderError?.message || 'Could not create order');
-        }
-
-        const { data: insertedItems, error: itemsError } = await supabase
-          .from('order_items')
-          .insert(itemsPayload.map((item) => ({ ...item, order_id: insertedOrder.id })))
-          .select();
-
-        if (itemsError) {
-          throw new Error(itemsError.message);
-        }
-
-        orderRow = insertedOrder;
-        orderItemRows = insertedItems ?? [];
-      } else {
-        // Guest: routed through the create_guest_order() SECURITY DEFINER
-        // function (see supabase/schema.sql) rather than a client-writable
-        // insert — guest_email is set from a validated parameter, not a
-        // spoofable column, and the order + items are created atomically.
-        const { data, error } = await supabase.rpc('create_guest_order', {
-          p_guest_email: formData.email,
-          p_currency: currency,
-          p_total_amount_inr: grandTotalINR,
-          p_total_amount_display: totalAmountDisplay,
-          p_shipping_address: formData,
-          p_payment_method: 'razorpay',
-          p_status: 'paid',
-          p_estimated_delivery_date: estimatedDeliveryISO,
-          p_items: itemsPayload
-        });
-
-        if (error || !data) {
-          throw new Error(error?.message || 'Could not create order');
-        }
-
-        orderRow = data.order;
-        orderItemRows = data.items ?? [];
+      const res = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Checkout failed');
       }
 
-      const orderDate = new Date(orderRow.created_at);
-      const confirmation: OrderConfirmation = {
-        orderRef: orderRow.order_number,
-        items: orderItemRows.map((row, i) => ({
-          paintingId: row.painting_id,
-          paintingTitle: row.painting_title,
-          editionType: row.edition_type as CartItem['editionType'],
-          frame: row.frame,
-          framePriceINR: Number(row.frame_price_inr),
-          unitPriceINR: Number(row.unit_price_inr),
-          // Derived from the real order_number, not a random client-side
-          // string — deterministic and traceable back to the DB row.
-          certificateNumber: `${orderRow.order_number}-${String(i + 1).padStart(2, '0')}`
-        })),
-        shippingAddress: formData,
-        totalINR: grandTotalINR,
-        currency,
-        shippingCostINR,
-        paymentMethod: 'razorpay',
-        // Always true today since no real gateway is wired up — keeps the
-        // existing TEST MODE banner accurate until Razorpay integration
-        // lands.
-        testMode: true,
-        orderDate: orderDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-        estimatedDeliveryDate: estimatedDelivery.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-      };
+      const confirmation = data as OrderConfirmation;
 
       setIsProcessing(false);
       setCompletedOrder(confirmation);
