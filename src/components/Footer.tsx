@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
-import { Sparkles, ShieldCheck, Heart, Send, Check } from 'lucide-react';
+import { ShieldCheck, Heart, Send, Check, Languages, Globe, User, Package, LogOut } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { LANGUAGES } from '../i18n/translations';
+import { CURRENCY_RATES } from '../data/paintings';
+import { CurrencyCode } from '../types';
 
 interface FooterProps {
   onNavigate: (section: string) => void;
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
   onOpenTrackOrder: () => void;
+  currency: CurrencyCode;
+  onCurrencyChange: (curr: CurrencyCode) => void;
+  onOpenAuth: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, onOpenArtistApplication, onOpenTrackOrder }) => {
-  const { t, language } = useLanguage();
+export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, onOpenArtistApplication, onOpenTrackOrder, currency, onCurrencyChange, onOpenAuth }) => {
+  const { t, language, setLanguage } = useLanguage();
+  const { user, signOut } = useAuth();
+  const currencies: CurrencyCode[] = ['INR', 'USD', 'EUR', 'GBP', 'JPY'];
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -139,6 +148,62 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               Madhubani District, Bihar 847211, India<br />
               curator@shreekrit.com
             </p>
+          </div>
+        </div>
+
+        {/* Language, currency and account — desktop only (mobile uses the header drawer).
+            Sell Your Art and Custom Commission are in the Patronage column above. */}
+        <div className="hidden md:flex flex-wrap items-center justify-between gap-4 py-5 border-t border-[#3D2C22] text-xs text-[#C9B6A6]">
+          <div className="flex flex-wrap items-center gap-5">
+            <label className="flex items-center gap-2">
+              <Languages className="w-4 h-4 text-[#E5A93C]" />
+              <span className="sr-only">{t.nav.language}</span>
+              <select
+                id="footer-language-select"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as typeof language)}
+                className="bg-[#33251D] border border-[#543F33] rounded px-2.5 py-1.5 text-xs text-white cursor-pointer focus:outline-[#C94A29]"
+              >
+                {LANGUAGES.map((item) => (
+                  <option key={item.code} value={item.code}>{item.nativeName === item.label ? item.label : `${item.nativeName} (${item.label})`}</option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-[#E5A93C]" />
+              <span className="sr-only">{t.nav.currency}</span>
+              <select
+                id="footer-currency-select"
+                value={currency}
+                onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
+                className="bg-[#33251D] border border-[#543F33] rounded px-2.5 py-1.5 text-xs text-white cursor-pointer focus:outline-[#C94A29]"
+              >
+                {currencies.map((curr) => (
+                  <option key={curr} value={curr}>{CURRENCY_RATES[curr]?.symbol} {curr}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            {user ? (
+              <>
+                <span className="flex items-center gap-1.5 text-[#9E8A7A] max-w-[220px] truncate">
+                  <User className="w-3.5 h-3.5 text-[#E5A93C] flex-shrink-0" />
+                  <span className="truncate">{user.email}</span>
+                </span>
+                <button onClick={() => onNavigate('my-orders')} className="flex items-center gap-1.5 hover:text-white cursor-pointer">
+                  <Package className="w-3.5 h-3.5" /> My Orders
+                </button>
+                <button onClick={() => signOut()} className="flex items-center gap-1.5 hover:text-white cursor-pointer">
+                  <LogOut className="w-3.5 h-3.5" /> Log Out
+                </button>
+              </>
+            ) : (
+              <button onClick={onOpenAuth} className="flex items-center gap-1.5 hover:text-white cursor-pointer text-[#E5A93C] font-medium">
+                <User className="w-3.5 h-3.5" /> Log In / Sign Up
+              </button>
+            )}
           </div>
         </div>
 

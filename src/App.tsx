@@ -564,6 +564,9 @@ export default function App() {
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
         onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
+        currency={currency}
+        onCurrencyChange={handleCurrencyChange}
+        onOpenAuth={() => setIsAuthOpen(true)}
       />
     </div>
   );

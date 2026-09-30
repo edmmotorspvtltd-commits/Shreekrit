@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
-  ShoppingBag, Menu, X, Sparkles, Globe,
-  ChevronDown, Languages, Check, Feather, User, LogOut, Package
+  ShoppingBag, Menu, X, Sparkles,
+  Feather, User, LogOut, Package
 } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
@@ -34,16 +34,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuth
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
 
   const { language, setLanguage, t } = useLanguage();
   const { user, signOut } = useAuth();
 
   const currencies: CurrencyCode[] = ['INR', 'USD', 'EUR', 'GBP', 'JPY'];
-
-  const currentLang = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
 
   // Blog nav entry stays hidden until there's at least one real (non-
   // placeholder) post — no point sending visitors to a page that only
@@ -137,197 +132,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </nav>
 
-          {/* Right Controls: Language Selector, Currency, Custom Commission, Cart Button */}
+          {/* Right Controls: Cart and mobile menu. Language, currency, Sell Your Art,
+              Custom Commission and Account live in the footer on desktop; the mobile
+              drawer has its own copies. */}
           <div className="flex items-center gap-0.5 flex-shrink-0">
-            {/* Language Selector Switcher — hidden on mobile; the mobile
-                drawer menu has its own language switcher below, so this
-                would be a redundant, space-consuming duplicate in the
-                header row on small screens */}
-            <div className="relative hidden md:block">
-              <button
-                type="button"
-                id="language-switcher-btn"
-                onClick={() => {
-                  setLanguageDropdownOpen(!languageDropdownOpen);
-                  setCurrencyDropdownOpen(false);
-                }}
-                className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full hover:bg-[#F0E4D2] text-[12px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer"
-                aria-label="Select language"
-              >
-                <Languages className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8C2711] flex-shrink-0" />
-                <span className="hidden 2xl:inline font-medium">{currentLang.nativeName}</span>
-                <span className="text-[12px] px-1 py-0.2 rounded bg-[#EFE4D2] text-[#8C2711] font-mono font-bold">
-                  {currentLang.scriptBadge}
-                </span>
-                <ChevronDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#7A6452] flex-shrink-0" />
-              </button>
-
-              {languageDropdownOpen && (
-                <div 
-                  id="language-dropdown-menu"
-                  className="absolute right-0 mt-1 w-44 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100"
-                >
-                  <div className="px-3 py-1 text-[12px] font-semibold uppercase tracking-wider text-[#7A6452] border-b border-[#E8DEC8]">
-                    {t.nav.language} / Language
-                  </div>
-                  {LANGUAGES.map((item) => (
-                    <button
-                      key={item.code}
-                      onClick={() => {
-                        setLanguage(item.code);
-                        setLanguageDropdownOpen(false);
-                      }}
-                      className={`w-full px-3 py-2 text-left flex items-center justify-between hover:bg-[#F3EADA] transition-colors cursor-pointer ${
-                        language === item.code ? 'bg-[#F0E4D2] font-bold text-[#8C2711]' : 'text-[#4A3222]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="w-5 text-center text-[12px] font-bold py-0.5 px-1 bg-[#E8DEC8] rounded text-[#3D2819]">
-                          {item.scriptBadge}
-                        </span>
-                        <div>
-                          <div className="font-medium text-xs">{item.nativeName}</div>
-                          <div className="text-[12px] text-[#7A6452]">{item.label}</div>
-                        </div>
-                      </div>
-                      {language === item.code && <Check className="w-3.5 h-3.5 text-[#8C2711]" />}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Currency Selector (Sleek and compact INR box) — hidden on
-                mobile for the same reason as the language switcher above;
-                the mobile drawer has its own currency switcher. */}
-            <div className="relative hidden md:block">
-              <button
-                type="button"
-                id="currency-switcher-btn"
-                onClick={() => {
-                  setCurrencyDropdownOpen(!currencyDropdownOpen);
-                  setLanguageDropdownOpen(false);
-                }}
-                className="px-2 py-1 rounded-full hover:bg-[#F0E4D2] text-[12px] sm:text-xs font-semibold text-[#3D2819] flex items-center gap-1 transition-colors cursor-pointer"
-                aria-label="Select currency"
-              >
-                <Globe className="w-3 h-3 text-[#8C2711] flex-shrink-0" />
-                <span className="font-mono font-bold text-[#8C2711]">{CURRENCY_RATES[currency]?.symbol}</span>
-                <span className="font-sans font-medium text-[12px] sm:text-xs">{currency}</span>
-                <ChevronDown className="w-2.5 h-2.5 text-[#7A6452] flex-shrink-0" />
-              </button>
-
-              {currencyDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-32 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-2.5 py-1 text-[12px] font-semibold uppercase tracking-wider text-[#7A6452] border-b border-[#E8DEC8]">
-                    {t.nav.currency}
-                  </div>
-                  {currencies.map((curr) => (
-                    <button
-                      key={curr}
-                      onClick={() => {
-                        onCurrencyChange(curr);
-                        setCurrencyDropdownOpen(false);
-                      }}
-                      className={`w-full px-2.5 py-1.5 text-left flex items-center justify-between hover:bg-[#F3EADA] cursor-pointer ${
-                        currency === curr ? 'bg-[#F0E4D2] font-bold text-[#8C2711]' : 'text-[#4A3222]'
-                      }`}
-                    >
-                      <span className="font-medium">{curr}</span>
-                      <span className="font-mono font-bold text-[#8C2711]">{CURRENCY_RATES[curr]?.symbol}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="hidden md:block w-px h-5 bg-[#E2D4BF] mx-0.5" />
-
-            {/* Sell Your Art / Artist Onboarding Button — ghost style like the
-                language/currency switchers, not a boxed CTA: Custom
-                Commission is the one action in this row that should read as
-                a solid button, since buyers are the typical visitor. */}
-            <button
-              onClick={onOpenArtistApplication}
-              className="hidden lg:inline-flex items-center gap-1 xl:gap-1.5 px-2 xl:px-2.5 py-1.5 rounded-full hover:bg-[#F0E4D2] text-[#8C2711] text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap"
-            >
-              <Feather className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="hidden xl:inline">{t.nav.forArtisans}</span>
-            </button>
-
-            {/* Custom Commission Button */}
-            <button
-              onClick={onOpenCommission}
-              className="hidden lg:inline-flex items-center gap-1 lg:gap-1.5 px-2 lg:px-2.5 py-1.5 rounded-full bg-[#8C2711] text-white hover:bg-[#6E1C0A] text-xs font-semibold transition-all cursor-pointer shadow-sm whitespace-nowrap"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{t.nav.customCommission}</span>
-            </button>
-
-            {/* My Account — icon-only ghost button, dropdown for details.
-                Kept minimal on purpose: the row is already at its width
-                budget at 1280-1440px, so this stays the same footprint as
-                the cart button rather than showing an email inline. Hidden
-                on mobile — the drawer menu has its own account section, and
-                the mobile header row is limited to logo/cart/hamburger. */}
-            <div className="relative hidden md:block">
-              <button
-                type="button"
-                onClick={() => {
-                  setAccountDropdownOpen(!accountDropdownOpen);
-                  setLanguageDropdownOpen(false);
-                  setCurrencyDropdownOpen(false);
-                }}
-                className="p-1.5 sm:p-2 rounded-full hover:bg-[#F0E4D2] text-[#241A14] transition-colors cursor-pointer"
-                aria-label="Account"
-              >
-                <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#8C2711]" />
-              </button>
-
-              {accountDropdownOpen && (
-                <div className="absolute right-0 mt-1 w-52 bg-[#FAF5EA] border border-[#D5C3A5] rounded-md shadow-xl py-1.5 z-50 text-xs animate-in fade-in zoom-in-95 duration-100">
-                  {user ? (
-                    <>
-                      <div className="px-3 py-2 text-[12px] text-[#7A6452] border-b border-[#E8DEC8] truncate">
-                        {user.email}
-                      </div>
-                      <button
-                        onClick={() => {
-                          onNavigate('my-orders');
-                          setAccountDropdownOpen(false);
-                        }}
-                        className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-[#F3EADA] transition-colors cursor-pointer text-[#4A3222]"
-                      >
-                        <Package className="w-3.5 h-3.5 text-[#8C2711]" />
-                        <span>My Orders</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          signOut();
-                          setAccountDropdownOpen(false);
-                        }}
-                        className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-[#F3EADA] transition-colors cursor-pointer text-[#4A3222]"
-                      >
-                        <LogOut className="w-3.5 h-3.5 text-[#8C2711]" />
-                        <span>Log Out</span>
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        onOpenAuth();
-                        setAccountDropdownOpen(false);
-                      }}
-                      className="w-full px-3 py-2 text-left flex items-center gap-2 hover:bg-[#F3EADA] transition-colors cursor-pointer text-[#4A3222]"
-                    >
-                      <User className="w-3.5 h-3.5 text-[#8C2711]" />
-                      <span>Log In / Sign Up</span>
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-
             {/* Cart Drawer Trigger */}
             <button
               onClick={onOpenCart}
