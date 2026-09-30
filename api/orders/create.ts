@@ -32,10 +32,11 @@ export default async function handler(req: Request) {
 
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  // Razorpay isn't wired up yet by design (deferred until real keys are
-  // ready) — rather than block all checkout testing, fall through to a
-  // clearly-labeled test-mode path below instead of a real gateway call.
-  const testMode = !keyId || !keySecret;
+  
+  // Force testMode to true for now because the frontend Razorpay widget 
+  // is not implemented yet. If this is false, the API returns a Razorpay 
+  // order payload instead of an OrderConfirmation, which crashes the frontend.
+  const testMode = true;
 
   let body;
   try {
