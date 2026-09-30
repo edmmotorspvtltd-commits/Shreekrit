@@ -245,6 +245,9 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                     <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
                     <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
                   </filter>
+                  <pattern id="microHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <line x1="0" y1="0" x2="0" y2="5" stroke="#3A281C" strokeWidth="0.7" opacity="0.55" />
+                  </pattern>
                 </defs>
 
                 {/* 1. Double Border Line Art (Auspicious Ghera) */}
@@ -266,7 +269,7 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                 {/* 2. COLOR FILLS (Animated in during 'coloring' and 'completed' stages) */}
                 <g 
                   className="transition-opacity duration-1000"
-                  style={{ opacity: stage === 'drawing' ? 0.05 : 1 }}
+                  style={{ opacity: stage === 'drawing' ? 0.05 : stage === 'coloring' ? 0.72 : 0.95 }}
                 >
                   {/* Sun Disc */}
                   <circle cx="300" cy="90" r="38" fill="#E5A93C" opacity="0.85" />
@@ -317,6 +320,34 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                   {/* Lotus petals wash */}
                   <circle cx="300" cy="390" r="22" fill="#C94A29" opacity="0.7" />
                 </g>
+
+                {/* 2b. SACRED MASTERWORK ONLY: golden halo, micro-hatching, consecration dots */}
+                {stage === 'completed' && (
+                  <g>
+                    {/* Golden halo rings around the sun */}
+                    <circle cx="300" cy="90" r="46" fill="none" stroke="#E5A93C" strokeWidth="2.5" opacity="0.9" />
+                    <circle cx="300" cy="90" r="54" fill="none" stroke="#E5A93C" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.85" />
+                    <circle cx="300" cy="90" r="62" fill="none" stroke="#E5A93C" strokeWidth="1" opacity="0.6" />
+
+                    {/* Kachni micro-hatching in leaves, peacock bodies and water */}
+                    <path d="M 230 200 C 180 160, 140 220, 200 270 C 260 250, 280 220, 230 200 Z" fill="url(#microHatch)" />
+                    <path d="M 370 200 C 420 160, 460 220, 400 270 C 340 250, 320 220, 370 200 Z" fill="url(#microHatch)" />
+                    <path d="M 300 135 C 240 160, 260 210, 300 210 C 340 210, 360 160, 300 135 Z" fill="url(#microHatch)" />
+                    <path d="M 170 310 C 140 290, 120 240, 150 200 C 165 180, 190 200, 185 240 C 180 270, 200 300, 170 310 Z" fill="url(#microHatch)" />
+                    <path d="M 430 310 C 460 290, 480 240, 450 200 C 435 180, 410 200, 415 240 C 420 270, 400 300, 430 310 Z" fill="url(#microHatch)" />
+                    <path d="M 80 405 C 160 380, 240 420, 320 395 C 400 420, 480 380, 520 405 L 520 420 L 80 420 Z" fill="url(#microHatch)" />
+
+                    {/* Netra-pratishtha: vermilion and gold consecration dots */}
+                    <circle cx="300" cy="90" r="3" fill="#C94A29" />
+                    <circle cx="160" cy="180" r="4" fill="#C94A29" stroke="#E5A93C" strokeWidth="1.5" />
+                    <circle cx="440" cy="180" r="4" fill="#C94A29" stroke="#E5A93C" strokeWidth="1.5" />
+                    <circle cx="300" cy="390" r="4" fill="#E5A93C" stroke="#C94A29" strokeWidth="1.5" />
+                    <circle cx="95" cy="235" r="2.5" fill="#E5A93C" />
+                    <circle cx="85" cy="275" r="2.5" fill="#E5A93C" />
+                    <circle cx="505" cy="235" r="2.5" fill="#E5A93C" />
+                    <circle cx="515" cy="275" r="2.5" fill="#E5A93C" />
+                  </g>
+                )}
 
                 {/* 3. BAMBOO NIB LINE ART (Drawn with SVG stroke animation) */}
                 <g 
@@ -461,12 +492,28 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
                 </g>
               </svg>
 
-              {/* Master signature seal watermark */}
-              <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider flex items-center gap-1">
-                <span>अम्बिका देवी / Ambika Devi</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]/50" />
-                <span>Jitwarpur, Bihar</span>
-              </div>
+              {/* Stage-aware signature / status seal */}
+              {stage === 'drawing' && (
+                <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/60 tracking-wider flex items-center gap-1">
+                  <span>अम्बिका देवी / Ambika Devi</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#8C2711]/50" />
+                  <span>Jitwarpur, Bihar</span>
+                </div>
+              )}
+              {stage === 'coloring' && (
+                <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711]/70 tracking-wider flex items-center gap-1">
+                  <span>Ambika Devi Studio</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E5A93C] animate-pulse" />
+                  <span>Phase 2: Mineral Washes Infusing</span>
+                </div>
+              )}
+              {stage === 'completed' && (
+                <div className="absolute bottom-4 right-5 font-serif-display text-[12px] text-[#8C2711] tracking-wider flex items-center gap-1.5">
+                  <span>अम्बिका देवी / Ambika Devi</span>
+                  <span className="w-2 h-2 rounded-full bg-[#426B43] shadow-[0_0_6px_2px_rgba(66,107,67,0.6)]" />
+                  <span>Consecrated Masterwork • Jitwarpur</span>
+                </div>
+              )}
             </div>
 
             {/* Natural Pigment Palette Tray underneath artwork */}
