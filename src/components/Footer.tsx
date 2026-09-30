@@ -191,7 +191,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               </select>
             </label>
           </div>
-          </div>
         </div>
 
         {/* Bottom Copyright & Guarantee */}
