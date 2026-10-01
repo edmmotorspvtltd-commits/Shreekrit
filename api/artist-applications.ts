@@ -1,4 +1,5 @@
 export const config = { runtime: 'edge' };
+import { waitUntil } from '@vercel/functions';
 import { sql } from './_lib/db';
 import { sendArtistApplicationConfirmation, sendArtistApplicationAlertToStore } from './_lib/email';
 
@@ -17,7 +18,7 @@ interface RequestBody {
   sampleWork?: string;
 }
 
-export default async function handler(req: Request, context: any) {
+export default async function handler(req: Request) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
   }
@@ -57,20 +58,24 @@ export default async function handler(req: Request, context: any) {
       RETURNING id
     `;
 
-    // Send emails in background using waitUntil
-    context.waitUntil(
+    // The application is already saved (awaited above). Emails run after the
+    // response is sent; waitUntil keeps the function alive until they settle.
+    const emailPayload = {
+      artistName: fullName, artistEmail: email,
+      village, district, state, phone,
+      primaryStyle, yearsOfExperience: yearsNum, bio
+    };
+    waitUntil(
       Promise.allSettled([
-        sendArtistApplicationConfirmation({
-          artistName: fullName, artistEmail: email,
-          village, district, state, phone,
-          primaryStyle, yearsOfExperience: yearsNum, bio
-        }),
-        sendArtistApplicationAlertToStore({
-          artistName: fullName, artistEmail: email,
-          village, district, state, phone,
-          primaryStyle, yearsOfExperience: yearsNum, bio
-        }),
-      ]).catch(() => { /* swallow */ })
+        sendArtistApplicationConfirmation(emailPayload),
+        sendArtistApplicationAlertToStore(emailPayload),
+      ]).then((results) => {
+        results.forEach((result, i) => {
+          if (result.status === 'rejected') {
+            console.error(`Artist application email ${i === 0 ? 'confirmation' : 'store alert'} failed:`, result.reason);
+          }
+        });
+      })
     );
 
     return new Response(JSON.stringify({ id: inserted[0].id }), {
