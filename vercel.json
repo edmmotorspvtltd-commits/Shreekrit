@@ -4,7 +4,6 @@
       "source": "/(.*)",
       "headers": [
         {
-          "//": "REMOVE AT LAUNCH",
           "key": "X-Robots-Tag",
           "value": "noindex"
         }
