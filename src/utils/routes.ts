@@ -1,6 +1,8 @@
 import type { Artist, Painting } from '../types';
 
-export const SITE_ORIGIN = 'https://shreekrit.in';
+// Canonical host. Canonical tags, og:url and the sitemap must all use this,
+// and it must match the host the domain redirects to.
+export const SITE_ORIGIN = 'https://www.shreekrit.in';
 
 export const SECTIONS = ['home', 'gallery', 'story', 'heritage', 'artists', 'blog', 'my-orders'] as const;
 
