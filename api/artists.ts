@@ -8,7 +8,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const rows = await sql()`SELECT * FROM artists ORDER BY name ASC`;
+    const rows = await sql()`SELECT * FROM artists ORDER BY is_placeholder ASC, name ASC`;
 
     const artists = rows.map((r: any) => ({
       id: r.id,
