@@ -12,7 +12,6 @@ interface GallerySectionProps {
   paintings: Painting[];
   artists: Artist[];
   currency: CurrencyCode;
-  onSelectPainting: (painting: Painting) => void;
   onQuickAdd: (painting: Painting) => void;
 }
 
@@ -20,7 +19,6 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
   paintings,
   artists,
   currency,
-  onSelectPainting,
   onQuickAdd
 }) => {
   const { t, language } = useLanguage();
@@ -248,7 +246,6 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                 key={painting.id}
                 painting={painting}
                 currency={currency}
-                onSelect={onSelectPainting}
                 onQuickAdd={onQuickAdd}
               />
             ))}

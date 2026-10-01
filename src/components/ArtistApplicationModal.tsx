@@ -26,6 +26,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
 
   // Left blank by default — this is a real application form, not a
   // filled-in demo submission. Only the style select carries a starting
@@ -57,6 +58,11 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
 
       if (!response.ok) {
         throw new Error('Application submission failed');
+      }
+
+      const data = await response.json();
+      if (data.id) {
+        setReferenceNumber(data.id.toString());
       }
 
       setSubmitted(true);
@@ -261,7 +267,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
                   className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? t.artistApplication.submittingBtn : t.artistApplication.submitBtn}</span>
+                  <span>{isSubmitting ? "Sending..." : t.artistApplication.submitBtn}</span>
                 </button>
               </div>
             </form>
@@ -276,6 +282,12 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
               <p className="text-xs sm:text-sm text-[#665141] max-w-md mx-auto">
                 {t.artistApplication.submittedDesc}
               </p>
+              {referenceNumber && (
+                <div className="bg-[#FAF5EA] border border-[#D5C3A5] rounded-md p-3 max-w-sm mx-auto my-4">
+                  <p className="text-[10px] uppercase tracking-wider text-[#7A6452] font-semibold mb-1">Reference Number</p>
+                  <p className="font-mono text-sm font-bold text-[#8C2711]">{referenceNumber}</p>
+                </div>
+              )}
               <button
                 onClick={onClose}
                 className="px-6 py-2.5 bg-[#8C2711] text-white rounded text-xs font-semibold cursor-pointer"

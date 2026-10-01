@@ -10,6 +10,8 @@ import { formatPrice } from '../utils/currency';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO } from '../data/paintings';
 import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from './Link';
+import { artistPath, paintingPath } from '../utils/routes';
 
 interface ArtworkDetailModalProps {
   painting: Painting | null;
@@ -19,8 +21,6 @@ interface ArtworkDetailModalProps {
   onClose: () => void;
   onAddToCart: (painting: Painting, frame: FrameOption, framePriceINR: number, editionType: EditionType, unitPriceINR: number) => void;
   onDirectBuy: (painting: Painting, frame: FrameOption, framePriceINR: number, editionType: EditionType, unitPriceINR: number) => void;
-  onSelectArtist: (artistId: string) => void;
-  onSelectRelated: (painting: Painting) => void;
   onOpenCommission: (paintingTheme?: string) => void;
 }
 
@@ -32,8 +32,6 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
   onClose,
   onAddToCart,
   onDirectBuy,
-  onSelectArtist,
-  onSelectRelated,
   onOpenCommission
 }) => {
   if (!painting) return null;
@@ -49,7 +47,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
   const [editionType, setEditionType] = useState<EditionType>('original');
   
   // Framing selection
-  const [selectedFrame, setSelectedFrame] = useState<FrameOption>('Raw Sheesham Wood Frame');
+  const [selectedFrame, setSelectedFrame] = useState<FrameOption>('Unframed (Rolled in Archival Tube)');
 
   // Interactive Zoom Lens State
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -67,7 +65,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
     .filter(p => p.id !== painting.id && (p.artistId === painting.artistId || p.theme === painting.theme))
     .slice(0, 3);
 
-  const currentFrameObj = FRAME_OPTIONS.find(f => f.name === selectedFrame) || FRAME_OPTIONS[1];
+  const currentFrameObj = FRAME_OPTIONS.find(f => f.name === selectedFrame) || FRAME_OPTIONS[0];
   const basePrice = editionType === 'original' ? painting.priceINR : Math.round(painting.priceINR * PRINT_EDITION_PRICE_RATIO);
   const framePrice = currentFrameObj.priceINR;
   const totalPriceINR = basePrice + framePrice;
@@ -349,8 +347,9 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
               </div>
 
               {/* Artist Card Banner */}
-              <div 
-                onClick={() => onSelectArtist(artist.id)}
+              <Link
+                to={artistPath(artist)}
+                under={painting.id}
                 className="p-3 bg-[#F4EBDB] hover:bg-[#EDE1CE] rounded border border-[#DFCDB3] flex items-center justify-between gap-3 cursor-pointer transition-colors"
               >
                 <div className="flex items-center gap-3">
@@ -374,7 +373,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                 <span className="text-xs text-[#8C2711] font-semibold flex items-center gap-0.5">
                   {t.artists.viewProfile} <ArrowRight className="w-3 h-3" />
                 </span>
-              </div>
+              </Link>
 
               {/* Story behind the piece */}
               <div className="space-y-2">
@@ -617,9 +616,10 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {relatedPaintings.map((rel) => (
-                  <div
+                  <Link
                     key={rel.id}
-                    onClick={() => onSelectRelated(rel)}
+                    to={paintingPath(rel)}
+                    replace
                     className="group bg-[#FAF5EA] rounded border border-[#E0D0B8] hover:border-[#8C2711] overflow-hidden p-2.5 transition-all cursor-pointer flex gap-3 items-center"
                   >
                     <img
@@ -638,7 +638,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                         {formatPrice(rel.priceINR, currency)}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

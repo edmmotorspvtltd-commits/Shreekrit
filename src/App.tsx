@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, Eye, ArrowRight, ShieldCheck, 
@@ -15,6 +15,10 @@ import { ARTISTS } from './data/artists';
 import { formatPrice } from './utils/currency';
 import { refreshLiveRates } from './utils/liveRates';
 import { useLanguage } from './context/LanguageContext';
+import { Link } from './components/Link';
+import { usePathname, navigate, closeModalRoute, getNavState } from './utils/router';
+import { parseRoute, findById, paintingPath, artistPath, sectionPath } from './utils/routes';
+import { applyPageMeta, truncate } from './utils/seo';
 
 // Components
 import { Navbar } from './components/Navbar';
@@ -29,39 +33,74 @@ import { BlogSection } from './components/BlogSection';
 import { MyOrdersSection } from './components/MyOrdersSection';
 import { Footer } from './components/Footer';
 
+import { ModalErrorBoundary } from './components/ModalErrorBoundary';
+
+function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>,
+  chunkId: string
+) {
+  return React.lazy(async () => {
+    try {
+      const module = await factory();
+      window.sessionStorage.removeItem(`lazy-retry-${chunkId}`);
+      return module;
+    } catch (error) {
+      try {
+        const module = await factory();
+        window.sessionStorage.removeItem(`lazy-retry-${chunkId}`);
+        return module;
+      } catch (retryError) {
+        const hasRetried = window.sessionStorage.getItem(`lazy-retry-${chunkId}`);
+        if (!hasRetried) {
+          window.sessionStorage.setItem(`lazy-retry-${chunkId}`, 'true');
+          window.location.reload();
+          return new Promise<{ default: T }>(() => {});
+        }
+        throw retryError;
+      }
+    }
+  });
+}
+
 // Modals are lazy-loaded to keep the initial page bundle lean and fast
-const TrackOrderModal = React.lazy(() => import('./components/TrackOrderModal').then(m => ({ default: m.TrackOrderModal })));
-const ArtworkDetailModal = React.lazy(() => import('./components/ArtworkDetailModal').then(m => ({ default: m.ArtworkDetailModal })));
-const ArtistProfileModal = React.lazy(() => import('./components/ArtistProfileModal').then(m => ({ default: m.ArtistProfileModal })));
-const CartDrawer = React.lazy(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })));
-const CheckoutModal = React.lazy(() => import('./components/CheckoutModal').then(m => ({ default: m.CheckoutModal })));
-const CommissionModal = React.lazy(() => import('./components/CommissionModal').then(m => ({ default: m.CommissionModal })));
-const ArtistApplicationModal = React.lazy(() => import('./components/ArtistApplicationModal').then(m => ({ default: m.ArtistApplicationModal })));
-const AuthModal = React.lazy(() => import('./components/AuthModal').then(m => ({ default: m.AuthModal })));
+const TrackOrderModal = lazyWithRetry(() => import('./components/TrackOrderModal').then(m => ({ default: m.TrackOrderModal })), 'TrackOrderModal');
+const ArtworkDetailModal = lazyWithRetry(() => import('./components/ArtworkDetailModal').then(m => ({ default: m.ArtworkDetailModal })), 'ArtworkDetailModal');
+const ArtistProfileModal = lazyWithRetry(() => import('./components/ArtistProfileModal').then(m => ({ default: m.ArtistProfileModal })), 'ArtistProfileModal');
+const CartDrawer = lazyWithRetry(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })), 'CartDrawer');
+const CheckoutModal = lazyWithRetry(() => import('./components/CheckoutModal').then(m => ({ default: m.CheckoutModal })), 'CheckoutModal');
+const CommissionModal = lazyWithRetry(() => import('./components/CommissionModal').then(m => ({ default: m.CommissionModal })), 'CommissionModal');
+const ArtistApplicationModal = lazyWithRetry(() => import('./components/ArtistApplicationModal').then(m => ({ default: m.ArtistApplicationModal })), 'ArtistApplicationModal');
+const AuthModal = lazyWithRetry(() => import('./components/AuthModal').then(m => ({ default: m.AuthModal })), 'AuthModal');
+
+const HOME_DESCRIPTION = 'Fine-art gallery of authentic, hand-painted Mithila (Madhubani) folk art from India — original paintings, museum prints, artist profiles and direct checkout.';
+
+const SECTION_META: Record<string, { title: string; description: string }> = {
+  home: { title: 'Shreekrit — Hand-Painted Folk Art Gallery', description: HOME_DESCRIPTION },
+  gallery: { title: 'Gallery — Original Mithila Paintings | Shreekrit', description: 'Browse original hand-painted Mithila (Madhubani) paintings by master artists, filterable by style, theme and price.' },
+  story: { title: 'The Story of a Painting | Shreekrit', description: 'Follow a Mithila painting from natural pigments and hand-drawn motifs to the finished work and its certificate of authenticity.' },
+  heritage: { title: 'Mithila Heritage & Lore | Shreekrit', description: 'The history, symbols and living tradition of Mithila (Madhubani) folk painting from Bihar, India.' },
+  artists: { title: 'Master Artists of Mithila | Shreekrit', description: 'Meet the master Mithila artists behind Shreekrit, their villages, lineages and signature styles.' },
+  blog: { title: 'The Shreekrit Gazette | Journal', description: 'Stories, techniques and notes on Mithila art from the Shreekrit journal.' },
+  'my-orders': { title: 'My Orders | Shreekrit', description: 'Track your Shreekrit orders and certificates.' }
+};
 
 export default function App() {
   const { t, language } = useLanguage();
-  const validSections = ['home', 'gallery', 'story', 'heritage', 'artists', 'blog', 'my-orders'];
-  
-  const [activeSection, setActiveSection] = useState<string>(() => {
-    const path = window.location.pathname.replace(/^\/+/, '');
-    return validSections.includes(path) ? path : 'home';
+  const pathname = usePathname();
+  const route = useMemo(() => parseRoute(pathname), [pathname]);
+
+  // Section shown behind the page/modal. Painting and artist URLs render as
+  // modals over a section; on a direct visit there is no previous section,
+  // so fall back to the natural parent listing.
+  const [backgroundSection, setBackgroundSection] = useState<string>(() => {
+    const initial = parseRoute(window.location.pathname);
+    if (initial.kind === 'section') return initial.section;
+    return initial.kind === 'artist' ? 'artists' : 'gallery';
   });
-
   useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname.replace(/^\/+/, '');
-      setActiveSection(validSections.includes(path) ? path : 'home');
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+    if (route.kind === 'section') setBackgroundSection(route.section);
+  }, [route]);
 
-  const navigateTo = (section: string) => {
-    setActiveSection(section);
-    window.history.pushState(null, '', section === 'home' ? '/' : `/${section}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
   const [currency, setCurrency] = useState<CurrencyCode>(() => {
     const saved = localStorage.getItem('mithila_currency');
     return (saved as CurrencyCode) || 'INR';
@@ -94,6 +133,10 @@ export default function App() {
     }
     return ARTISTS;
   });
+
+  // Direct visits to /painting/:id or /artist/:id can't be called missing
+  // until the background database sync has had a chance to add them.
+  const [dataSynced, setDataSynced] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +174,8 @@ export default function App() {
       } catch (e) {
         // Silent background fallback: existing seed/cached data is preserved
         console.warn('Background gallery data sync encountered an issue, preserving cached data:', e);
+      } finally {
+        if (!cancelled) setDataSynced(true);
       }
     })();
     return () => {
@@ -142,8 +187,12 @@ export default function App() {
   // this forces one re-render afterward so already-mounted prices reflect
   // the refreshed rates instead of the static fallback snapshot.
   const [, forceRatesRerender] = useState(0);
+  const [ratesAsOf, setRatesAsOf] = useState<string | null>(null);
   useEffect(() => {
-    refreshLiveRates().then(() => forceRatesRerender((n) => n + 1));
+    refreshLiveRates().then((asOf) => {
+      if (asOf) setRatesAsOf(asOf);
+      forceRatesRerender((n) => n + 1);
+    });
   }, []);
 
   // Session-persisted cart
@@ -157,8 +206,22 @@ export default function App() {
   });
 
   // Active Modals and Selections
-  const [selectedPainting, setSelectedPainting] = useState<Painting | null>(null);
-  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
+  // Painting and artist modals are driven by the URL (/painting/:id,
+  // /artist/:id). An artist opened from a painting keeps that painting
+  // beneath it (history state `under`), so closing returns to it.
+  const underPaintingId = route.kind === 'artist' ? getNavState().under : undefined;
+  const routedPainting = route.kind === 'painting' ? findById<Painting>(paintings, route.id) : undefined;
+  const selectedPainting: Painting | null =
+    routedPainting ?? (underPaintingId ? findById<Painting>(paintings, underPaintingId) ?? null : null);
+  const selectedArtist: Artist | null = route.kind === 'artist' ? findById<Artist>(artists, route.id) ?? null : null;
+  const isMissingItem =
+    dataSynced &&
+    ((route.kind === 'painting' && !routedPainting) || (route.kind === 'artist' && !selectedArtist));
+  const activeSection =
+    route.kind === 'not-found' || isMissingItem ? '404' : route.kind === 'section' ? route.section : backgroundSection;
+
+  const openPainting = (painting: Painting) => navigate(paintingPath(painting));
+  const closeModalPage = () => closeModalRoute(route.kind === 'artist' ? sectionPath('artists') : sectionPath('gallery'));
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isCommissionOpen, setIsCommissionOpen] = useState(false);
@@ -170,6 +233,55 @@ export default function App() {
 
   // Toast Notification
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Global scroll lock for modals
+  useEffect(() => {
+    const isAnyModalOpen = isCartOpen || isCheckoutOpen || isCommissionOpen || isArtistApplicationOpen || isAuthOpen || isTrackOrderOpen || selectedPainting || selectedArtist;
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isCartOpen, isCheckoutOpen, isCommissionOpen, isArtistApplicationOpen, isAuthOpen, isTrackOrderOpen, selectedPainting, selectedArtist]);
+
+  // Per-page title, description and canonical tag.
+  useEffect(() => {
+    if (route.kind === 'painting' && routedPainting) {
+      const path = paintingPath(routedPainting);
+      applyPageMeta({
+        title: `${routedPainting.title} by ${routedPainting.artistName} | Shreekrit`,
+        description: truncate(`${routedPainting.title}, a hand-painted ${routedPainting.style} Mithila painting by ${routedPainting.artistName}. ${routedPainting.story}`),
+        path,
+        image: routedPainting.primaryImage
+      });
+      if (decodeURI(window.location.pathname) !== decodeURI(path)) {
+        window.history.replaceState(window.history.state, '', path);
+      }
+    } else if (route.kind === 'artist' && selectedArtist) {
+      const path = artistPath(selectedArtist);
+      applyPageMeta({
+        title: `${selectedArtist.name} — Mithila Artist from ${selectedArtist.village} | Shreekrit`,
+        description: truncate(`${selectedArtist.name} (${selectedArtist.maithiliName}), ${selectedArtist.specialtyStyle} specialist from ${selectedArtist.village}, ${selectedArtist.district}. ${selectedArtist.bio}`),
+        path,
+        image: selectedArtist.avatar
+      });
+      if (decodeURI(window.location.pathname) !== decodeURI(path)) {
+        window.history.replaceState(window.history.state, '', path);
+      }
+    } else if (route.kind === 'section') {
+      const meta = SECTION_META[route.section] ?? SECTION_META.home;
+      applyPageMeta({ ...meta, path: sectionPath(route.section) });
+    } else if (route.kind === 'not-found' || isMissingItem) {
+      applyPageMeta({
+        title: 'Page not found | Shreekrit',
+        description: SECTION_META.home.description,
+        path: '/'
+      });
+    }
+  }, [route, routedPainting, selectedArtist, isMissingItem]);
 
   // Save cart to session localStorage
   useEffect(() => {
@@ -194,8 +306,8 @@ export default function App() {
   // Add to Cart
   const handleAddToCart = (
     painting: Painting,
-    frame: FrameOption = 'Raw Sheesham Wood Frame',
-    framePriceINR: number = 6500,
+    frame: FrameOption = 'Unframed (Rolled in Archival Tube)',
+    framePriceINR: number = 0,
     editionType: EditionType = 'original',
     unitPriceINR: number = painting.priceINR
   ) => {
@@ -215,16 +327,16 @@ export default function App() {
     setIsCartOpen(true);
   };
 
-  // Quick Add (defaults to Sheesham frame, original edition at full price)
+  // Quick Add (defaults to Unframed, original edition at full price)
   const handleQuickAdd = (painting: Painting) => {
-    handleAddToCart(painting, 'Raw Sheesham Wood Frame', 6500, 'original', painting.priceINR);
+    handleAddToCart(painting, 'Unframed (Rolled in Archival Tube)', 0, 'original', painting.priceINR);
   };
 
   // Direct Buy ("Buy Now" - bypass cart)
   const handleDirectBuy = (
     painting: Painting,
-    frame: FrameOption = 'Raw Sheesham Wood Frame',
-    framePriceINR: number = 6500,
+    frame: FrameOption = 'Unframed (Rolled in Archival Tube)',
+    framePriceINR: number = 0,
     editionType: EditionType = 'original',
     unitPriceINR: number = painting.priceINR
   ) => {
@@ -238,7 +350,7 @@ export default function App() {
         unitPriceINR
       }
     ]);
-    setSelectedPainting(null);
+    if (route.kind === 'painting') closeModalPage();
     setIsCartOpen(false);
     setIsCheckoutOpen(true);
   };
@@ -261,13 +373,6 @@ export default function App() {
     setIsCommissionOpen(true);
   };
 
-  const handleArtistClickById = (artistId: string) => {
-    const artist = artists.find((a) => a.id === artistId);
-    if (artist) {
-      setSelectedArtist(artist);
-    }
-  };
-
   const featuredPaintings = paintings.filter((p) => p.isFeatured).slice(0, 3);
 
   return (
@@ -278,7 +383,6 @@ export default function App() {
       {/* Top Navigation */}
       <Navbar
         activeSection={activeSection}
-        onNavigate={navigateTo}
         currency={currency}
         onCurrencyChange={handleCurrencyChange}
         cartCount={cart.length}
@@ -299,7 +403,6 @@ export default function App() {
                 const el = document.getElementById('featured-curation');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              onStoryClick={() => navigateTo('heritage')}
             />
 
             {/* Curated "Featured Masterpieces" Strip */}
@@ -318,13 +421,13 @@ export default function App() {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => navigateTo('gallery')}
+                <Link
+                  to="/gallery"
                   className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer group py-3 -my-3 px-1 -mx-1"
                 >
                   <span>{t.featured.viewAll}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -333,7 +436,6 @@ export default function App() {
                     key={painting.id}
                     painting={painting}
                     currency={currency}
-                    onSelect={(p) => setSelectedPainting(p)}
                     onQuickAdd={handleQuickAdd}
                   />
                 ))}
@@ -346,13 +448,11 @@ export default function App() {
             {/* Meet the Artists Teaser Strip */}
             <ArtistsSection
               artists={artists}
-              onSelectArtist={(artist) => setSelectedArtist(artist)}
               onOpenCommission={handleOpenCommission}
             />
 
             {/* Heritage Lore & About */}
             <HeritageAboutSection
-              onExploreGallery={() => navigateTo('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
           </div>
@@ -363,7 +463,6 @@ export default function App() {
             paintings={paintings}
             artists={artists}
             currency={currency}
-            onSelectPainting={(p) => setSelectedPainting(p)}
             onQuickAdd={handleQuickAdd}
           />
         )}
@@ -384,7 +483,6 @@ export default function App() {
               </div>
             </div>
             <HeritageAboutSection
-              onExploreGallery={() => navigateTo('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
           </div>
@@ -394,7 +492,6 @@ export default function App() {
           <div className="pt-6">
             <HeritageAboutSection
               isPageHeading
-              onExploreGallery={() => navigateTo('gallery')}
               onOpenCommission={() => handleOpenCommission()}
             />
           </div>
@@ -405,7 +502,6 @@ export default function App() {
             <ArtistsSection
               isPageHeading
               artists={artists}
-              onSelectArtist={(artist) => setSelectedArtist(artist)}
               onOpenCommission={handleOpenCommission}
             />
           </div>
@@ -422,133 +518,168 @@ export default function App() {
             <MyOrdersSection onOpenAuth={() => setIsAuthOpen(true)} />
           </div>
         )}
+
+        {activeSection === '404' && (
+          <div className="pt-20 pb-32 text-center flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+            <h2 className="font-serif-display text-4xl sm:text-5xl font-bold text-[#8C2711]">404</h2>
+            <p className="text-[#665141] text-lg">Page not found.</p>
+            <Link
+              to="/"
+              className="px-6 py-3 bg-[#8C2711] text-[#FAF5EA] rounded shadow-md hover:bg-[#5C1A0B] transition-colors cursor-pointer"
+            >
+              Return Home
+            </Link>
+          </div>
+        )}
       </main>
 
       {/* Modals & Drawers wrapped in Suspense for dynamic code splitting */}
-      <React.Suspense fallback={null}>
+      <ModalErrorBoundary>
         {/* Flagship Artwork Detail Modal with High-Res Zoom Loupe & In-Room Scale */}
-        <AnimatePresence>
-          {selectedPainting && (
-            <ArtworkDetailModal
-              painting={selectedPainting}
-              allPaintings={paintings}
-              artists={artists}
-              currency={currency}
-              onClose={() => setSelectedPainting(null)}
-              onAddToCart={(painting, frame, framePrice, editionType, unitPriceINR) => {
-                handleAddToCart(painting, frame, framePrice, editionType, unitPriceINR);
-                setSelectedPainting(null);
-              }}
-              onDirectBuy={(painting, frame, framePrice, editionType, unitPriceINR) => {
-                handleDirectBuy(painting, frame, framePrice, editionType, unitPriceINR);
-              }}
-              onSelectArtist={(artistId) => {
-                handleArtistClickById(artistId);
-              }}
-              onSelectRelated={(related) => {
-                setSelectedPainting(related);
-              }}
-              onOpenCommission={(theme) => {
-                setSelectedPainting(null);
-                handleOpenCommissionTheme(theme);
-              }}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all duration-300">
+            <div className="w-10 h-10 border-4 border-[#C94A29] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }>
+          <AnimatePresence>
+            {selectedPainting && (
+              <ArtworkDetailModal
+                key="artwork-modal"
+                painting={selectedPainting}
+                allPaintings={paintings}
+                artists={artists}
+                currency={currency}
+                onClose={closeModalPage}
+                onAddToCart={(painting, frame, framePrice, editionType, unitPriceINR) => {
+                  handleAddToCart(painting, frame, framePrice, editionType, unitPriceINR);
+                  closeModalPage();
+                }}
+                onDirectBuy={(painting, frame, framePrice, editionType, unitPriceINR) => {
+                  handleDirectBuy(painting, frame, framePrice, editionType, unitPriceINR);
+                }}
+                onOpenCommission={(theme) => {
+                  closeModalPage();
+                  handleOpenCommissionTheme(theme);
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Artist Profile Deep-Dive Modal */}
-        <AnimatePresence>
-          {selectedArtist && (
-            <ArtistProfileModal
-              artist={selectedArtist}
-              paintings={paintings}
-              currency={currency}
-              onClose={() => setSelectedArtist(null)}
-              onSelectPainting={(p) => {
-                setSelectedArtist(null);
-                setSelectedPainting(p);
-              }}
-              onOpenCommission={(artistName) => {
-                setSelectedArtist(null);
-                handleOpenCommission(artistName);
-              }}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {selectedArtist && (
+              <ArtistProfileModal
+                key="artist-modal"
+                artist={selectedArtist}
+                paintings={paintings}
+                currency={currency}
+                onClose={closeModalPage}
+                onOpenCommission={(artistName) => {
+                  closeModalPage();
+                  handleOpenCommission(artistName);
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Slide-In Mini-Cart Drawer (Frame Styled) */}
-        <AnimatePresence>
-          {isCartOpen && (
-            <CartDrawer
-              isOpen={isCartOpen}
-              onClose={() => setIsCartOpen(false)}
-              items={cart}
-              currency={currency}
-              onRemoveItem={handleRemoveFromCart}
-              onCheckout={() => {
-                setIsCartOpen(false);
-                setIsCheckoutOpen(true);
-              }}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {isCartOpen && (
+              <CartDrawer
+                key="cart-drawer"
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+                items={cart}
+                currency={currency}
+                onRemoveItem={handleRemoveFromCart}
+                onCheckout={() => {
+                  setIsCartOpen(false);
+                  setIsCheckoutOpen(true);
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Checkout Modal with Multi-Currency & Certificate of Authenticity Generator */}
-        <AnimatePresence>
-          {isCheckoutOpen && (
-            <CheckoutModal
-              isOpen={isCheckoutOpen}
-              onClose={() => setIsCheckoutOpen(false)}
-              items={cart}
-              currency={currency}
-              onClearCart={handleClearCart}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm transition-all duration-300">
+            <div className="w-10 h-10 border-4 border-[#C94A29] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }>
+          <AnimatePresence>
+            {isCheckoutOpen && (
+              <CheckoutModal
+                key="checkout-modal"
+                isOpen={isCheckoutOpen}
+                onClose={() => setIsCheckoutOpen(false)}
+                items={cart}
+                currency={currency}
+                onClearCart={handleClearCart}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Custom Commission Modal */}
-        <AnimatePresence>
-          {isCommissionOpen && (
-            <CommissionModal
-              isOpen={isCommissionOpen}
-              onClose={() => setIsCommissionOpen(false)}
-              artists={artists}
-              preselectedArtist={commissionArtist}
-              preselectedTheme={commissionTheme}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {isCommissionOpen && (
+              <CommissionModal
+                key="commission-modal"
+                isOpen={isCommissionOpen}
+                onClose={() => setIsCommissionOpen(false)}
+                artists={artists}
+                preselectedArtist={commissionArtist}
+                preselectedTheme={commissionTheme}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Artist Guild Onboarding Application Modal */}
-        <AnimatePresence>
-          {isArtistApplicationOpen && (
-            <ArtistApplicationModal
-              isOpen={isArtistApplicationOpen}
-              onClose={() => setIsArtistApplicationOpen(false)}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {isArtistApplicationOpen && (
+              <ArtistApplicationModal
+                key="artist-app-modal"
+                isOpen={isArtistApplicationOpen}
+                onClose={() => setIsArtistApplicationOpen(false)}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Login / Sign Up Modal */}
-        <AnimatePresence>
-          {isAuthOpen && (
-            <AuthModal
-              isOpen={isAuthOpen}
-              onClose={() => setIsAuthOpen(false)}
-            />
-          )}
-        </AnimatePresence>
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {isAuthOpen && (
+              <AuthModal
+                key="auth-modal"
+                isOpen={isAuthOpen}
+                onClose={() => setIsAuthOpen(false)}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
 
         {/* Guest Order Tracking Modal */}
-        <AnimatePresence>
-          {isTrackOrderOpen && (
-            <TrackOrderModal
-              isOpen={isTrackOrderOpen}
-              onClose={() => setIsTrackOrderOpen(false)}
-            />
-          )}
-        </AnimatePresence>
-      </React.Suspense>
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {isTrackOrderOpen && (
+              <TrackOrderModal
+                key="track-order-modal"
+                isOpen={isTrackOrderOpen}
+                onClose={() => setIsTrackOrderOpen(false)}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
+      </ModalErrorBoundary>
 
       {/* Toast Notification */}
       <AnimatePresence>
@@ -567,15 +698,14 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Footer */}
       <Footer
-        onNavigate={navigateTo}
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
         onOpenTrackOrder={() => setIsTrackOrderOpen(true)}
         currency={currency}
         onCurrencyChange={handleCurrencyChange}
         onOpenAuth={() => setIsAuthOpen(true)}
+        ratesAsOf={ratesAsOf}
       />
     </div>
   );

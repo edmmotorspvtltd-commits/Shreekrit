@@ -17,7 +17,7 @@ interface RequestBody {
   sampleWork?: string;
 }
 
-export default async function handler(req: Request) {
+export default async function handler(req: Request, context: any) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
   }
@@ -57,19 +57,21 @@ export default async function handler(req: Request) {
       RETURNING id
     `;
 
-    // Send emails (awaiting so Edge function doesn't terminate early)
-    await Promise.allSettled([
-      sendArtistApplicationConfirmation({
-        artistName: fullName, artistEmail: email,
-        village, district, state, phone,
-        primaryStyle, yearsOfExperience: yearsNum, bio
-      }),
-      sendArtistApplicationAlertToStore({
-        artistName: fullName, artistEmail: email,
-        village, district, state, phone,
-        primaryStyle, yearsOfExperience: yearsNum, bio
-      }),
-    ]).catch(() => { /* swallow */ });
+    // Send emails in background using waitUntil
+    context.waitUntil(
+      Promise.allSettled([
+        sendArtistApplicationConfirmation({
+          artistName: fullName, artistEmail: email,
+          village, district, state, phone,
+          primaryStyle, yearsOfExperience: yearsNum, bio
+        }),
+        sendArtistApplicationAlertToStore({
+          artistName: fullName, artistEmail: email,
+          village, district, state, phone,
+          primaryStyle, yearsOfExperience: yearsNum, bio
+        }),
+      ]).catch(() => { /* swallow */ })
+    );
 
     return new Response(JSON.stringify({ id: inserted[0].id }), {
       status: 200,
@@ -80,3 +82,4 @@ export default async function handler(req: Request) {
     return new Response(JSON.stringify({ error: 'Failed to submit application' }), { status: 500 });
   }
 }
+

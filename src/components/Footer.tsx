@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from './Link';
 import { ShieldCheck, Heart, Send, Check, Languages, Globe, User, Package, LogOut } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -7,16 +8,16 @@ import { CURRENCY_RATES } from '../data/paintings';
 import { CurrencyCode } from '../types';
 
 interface FooterProps {
-  onNavigate: (section: string) => void;
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
   onOpenTrackOrder: () => void;
   currency: CurrencyCode;
   onCurrencyChange: (curr: CurrencyCode) => void;
   onOpenAuth: () => void;
+  ratesAsOf?: string | null;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, onOpenArtistApplication, onOpenTrackOrder, currency, onCurrencyChange, onOpenAuth }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenCommission, onOpenArtistApplication, onOpenTrackOrder, currency, onCurrencyChange, onOpenAuth, ratesAsOf }) => {
   const { t, language, setLanguage } = useLanguage();
   const { user, signOut } = useAuth();
   const currencies: CurrencyCode[] = ['INR', 'USD', 'EUR', 'GBP', 'JPY'];
@@ -114,11 +115,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               {t.footer.theCollection}
             </h5>
             <ul className="space-y-2">
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कल्पवृक्ष (जीवनक वृक्ष)' : 'Kalpavriksha (Tree of Life)'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'सूर्य ओ चन्द्र मण्डल' : 'Surya & Chandra Mandalas'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'राधा कृष्ण रासलीला' : 'Radha Krishna Rasleela'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कोहबर भित्तिचित्र' : 'Ceremonial Kohbar Murals'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'मत्स्य आ जल लोककथा' : 'Matsya & Aquatic Folklore'}</button></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कल्पवृक्ष (जीवनक वृक्ष)' : 'Kalpavriksha (Tree of Life)'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'सूर्य ओ चन्द्र मण्डल' : 'Surya & Chandra Mandalas'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'राधा कृष्ण रासलीला' : 'Radha Krishna Rasleela'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कोहबर भित्तिचित्र' : 'Ceremonial Kohbar Murals'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'मत्स्य आ जल लोककथा' : 'Matsya & Aquatic Folklore'}</Link></li>
             </ul>
           </div>
 
@@ -127,10 +128,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               {t.footer.canonicalStyles}
             </h5>
             <ul className="space-y-2">
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कचनी (महीन रेखांकन)' : 'Kachni (Line Hatching)'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'भरनी (प्राकृतिक रंग)' : 'Bharni (Jeweled Washes)'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'गोदना (टैटू ज्यामिति)' : 'Godna (Tattoo Geometry)'}</button></li>
-              <li><button onClick={() => onNavigate('gallery')} className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'तांत्रिक यंत्र' : 'Tantrik Yantras'}</button></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कचनी (महीन रेखांकन)' : 'Kachni (Line Hatching)'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'भरनी (प्राकृतिक रंग)' : 'Bharni (Jeweled Washes)'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'गोदना (टैटू ज्यामिति)' : 'Godna (Tattoo Geometry)'}</Link></li>
+              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'तांत्रिक यंत्र' : 'Tantrik Yantras'}</Link></li>
             </ul>
           </div>
 
@@ -139,9 +140,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
               {t.footer.patronageCustom}
             </h5>
             <ul className="space-y-2">
-              <li><button onClick={() => onNavigate('story')} className="hover:text-white cursor-pointer">{t.nav.story}</button></li>
-              <li><button onClick={() => onNavigate('heritage')} className="hover:text-white cursor-pointer">{t.nav.heritage}</button></li>
-              <li><button onClick={() => onNavigate('artists')} className="hover:text-white cursor-pointer">{t.nav.artists}</button></li>
+              <li><Link to="/story" className="hover:text-white cursor-pointer">{t.nav.story}</Link></li>
+              <li><Link to="/heritage" className="hover:text-white cursor-pointer">{t.nav.heritage}</Link></li>
+              <li><Link to="/artists" className="hover:text-white cursor-pointer">{t.nav.artists}</Link></li>
             </ul>
           </div>
 
@@ -189,6 +190,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenCommission, on
                 ))}
               </select>
             </label>
+            {ratesAsOf && (
+              <span className="text-[10px] text-[#8C7665] ml-2 opacity-80 hidden sm:inline-block">
+                Rates updated: {new Date(ratesAsOf).toLocaleDateString()}
+              </span>
+            )}
           </div>
         </div>
 

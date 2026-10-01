@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, Heart, ShieldCheck, Sun, Users, Award, BookOpen } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from './Link';
 
 interface HeritageAboutSectionProps {
-  onExploreGallery: () => void;
   onOpenCommission: () => void;
   // See ArtistsSection's isPageHeading — same reasoning, this component
   // is reused both as a home-page teaser and as the standalone Heritage
@@ -13,7 +13,6 @@ interface HeritageAboutSectionProps {
 }
 
 export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
-  onExploreGallery,
   onOpenCommission,
   isPageHeading = false
 }) => {
@@ -93,12 +92,12 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
             </p>
 
             <div className="flex items-center gap-4 pt-2">
-              <button
-                onClick={onExploreGallery}
+              <Link
+                to="/gallery"
                 className="px-5 py-2.5 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer"
               >
                 {t.heritage.exploreBtn}
-              </button>
+              </Link>
               <button
                 onClick={onOpenCommission}
                 className="px-5 py-2.5 border border-[#8C2711] text-[#8C2711] hover:bg-[#8C2711] hover:text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer"

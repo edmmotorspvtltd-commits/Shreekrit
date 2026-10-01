@@ -5,13 +5,14 @@ import { Artist, Painting, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/currency';
 import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from './Link';
+import { paintingPath } from '../utils/routes';
 
 interface ArtistProfileModalProps {
   artist: Artist | null;
   paintings: Painting[];
   currency: CurrencyCode;
   onClose: () => void;
-  onSelectPainting: (painting: Painting) => void;
   onOpenCommission: (artistName?: string) => void;
 }
 
@@ -20,7 +21,6 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
   paintings,
   currency,
   onClose,
-  onSelectPainting,
   onOpenCommission
 }) => {
   const { t, language } = useLanguage();
@@ -143,10 +143,11 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {artistWorks.map((painting) => (
-                <div
+                <Link
                   key={painting.id}
-                  onClick={() => onSelectPainting(painting)}
-                  className="bg-[#FAF5EA] rounded border border-[#DFCDB3] hover:border-[#8C2711] overflow-hidden p-3 transition-all cursor-pointer group space-y-2 shadow-xs"
+                  to={paintingPath(painting)}
+                  replace
+                  className="block bg-[#FAF5EA] rounded border border-[#DFCDB3] hover:border-[#8C2711] overflow-hidden p-3 transition-all cursor-pointer group space-y-2 shadow-xs"
                 >
                   <div className="aspect-[4/3] rounded overflow-hidden bg-[#E2D4BF]">
                     <img
@@ -168,7 +169,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                       {formatPrice(painting.priceINR, currency)}
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

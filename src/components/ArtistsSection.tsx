@@ -3,10 +3,11 @@ import { motion } from 'motion/react';
 import { MapPin, Award, ArrowRight, Sparkles, Feather } from 'lucide-react';
 import { Artist } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from './Link';
+import { artistPath } from '../utils/routes';
 
 interface ArtistsSectionProps {
   artists: Artist[];
-  onSelectArtist: (artist: Artist) => void;
   onOpenCommission: (artistName?: string) => void;
   // true when this section is the page's own top-level heading (the
   // standalone Master Artists view) rather than a teaser embedded within
@@ -17,7 +18,6 @@ interface ArtistsSectionProps {
 
 export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
   artists,
-  onSelectArtist,
   onOpenCommission,
   isPageHeading = false
 }) => {
@@ -43,9 +43,9 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
         {/* Artist Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {artists.map((artist) => (
-            <div
+            <Link
               key={artist.id}
-              onClick={() => onSelectArtist(artist)}
+              to={artistPath(artist)}
               className="group bg-[#FAF5EA] rounded-lg border border-[#DFCDB3] hover:border-[#8C2711] p-5 shadow-xs transition-all hover:shadow-lg cursor-pointer flex flex-col justify-between"
             >
               <div className="space-y-4">
@@ -90,7 +90,7 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
                   {t.artists.viewBodyOfWork} <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

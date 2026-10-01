@@ -6,13 +6,13 @@ import {
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
 import { BLOG_POSTS } from '../data/blogPosts';
+import { Link } from './Link';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { LANGUAGES } from '../i18n/translations';
 
 interface NavbarProps {
   activeSection: string;
-  onNavigate: (section: string) => void;
   currency: CurrencyCode;
   onCurrencyChange: (curr: CurrencyCode) => void;
   cartCount: number;
@@ -25,7 +25,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeSection,
-  onNavigate,
   currency,
   onCurrencyChange,
   cartCount,
@@ -47,19 +46,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   // says "Replace Before Launch". (Temporarily forced to true for preview)
   const hasRealBlogContent = true;
 
-  const handleNavClick = (section: string) => {
-    onNavigate(section);
-    setMobileMenuOpen(false);
-  };
-
   return (
     <header className="sticky top-0 z-40 bg-[#FAF5EA]/95 backdrop-blur-md border-b border-[#E2D4BF] shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-w-0">
         <div className="flex items-center justify-between h-16 sm:h-24 md:h-28 min-w-0">
 
           {/* Brand Logo and Tagline */}
-          <div
-            onClick={() => handleNavClick('home')}
+          <Link
+            to="/"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Shreekrit home"
             className="flex flex-col items-center justify-center cursor-pointer group select-none flex-shrink min-w-0"
           >
             {/* Shreekrit Logo */}
@@ -77,59 +73,65 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="hidden sm:block font-serif text-[12px] sm:text-[12px] text-[#8C2711] tracking-widest uppercase font-semibold whitespace-nowrap">
               Authentic Folk Art Archive
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-2 lg:gap-3 text-[13px] 2xl:text-sm font-medium text-[#4A3525]">
-            <button
-              onClick={() => handleNavClick('home')}
+            <Link
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'home' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
               {t.nav.home}
-            </button>
-            <button
-              onClick={() => handleNavClick('gallery')}
+            </Link>
+            <Link
+              to="/gallery"
+              onClick={() => setMobileMenuOpen(false)}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'gallery' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
               {t.nav.gallery}
-            </button>
-            <button
-              onClick={() => handleNavClick('story')}
+            </Link>
+            <Link
+              to="/story"
+              onClick={() => setMobileMenuOpen(false)}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'story' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
               {t.nav.story}
-            </button>
-            <button
-              onClick={() => handleNavClick('heritage')}
+            </Link>
+            <Link
+              to="/heritage"
+              onClick={() => setMobileMenuOpen(false)}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'heritage' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
               {t.nav.heritage}
-            </button>
-            <button
-              onClick={() => handleNavClick('artists')}
+            </Link>
+            <Link
+              to="/artists"
+              onClick={() => setMobileMenuOpen(false)}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                 activeSection === 'artists' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
               }`}
             >
               {t.nav.artists}
-            </button>
+            </Link>
             {hasRealBlogContent && (
-              <button
-                onClick={() => handleNavClick('blog')}
+              <Link
+                to="/blog"
+                onClick={() => setMobileMenuOpen(false)}
                 className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
                   activeSection === 'blog' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
                 }`}
               >
                 {t.nav.blog}
-              </button>
+              </Link>
             )}
             <button
               onClick={onOpenCommission}
@@ -161,9 +163,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="px-4 py-3 border-b border-[#E2D4BF]">
                     <p className="text-xs text-[#8C7665] truncate">{user.email}</p>
                   </div>
-                  <button onClick={() => onNavigate('my-orders')} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2">
+                  <Link to="/my-orders" className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2">
                     <Package className="w-4 h-4" /> My Orders
-                  </button>
+                  </Link>
                   <button onClick={onOpenTrackOrder} className="w-full text-left px-4 py-2 text-sm text-[#241A14] hover:bg-[#F0E4D2] flex items-center gap-2">
                     <Package className="w-4 h-4" /> Track Guest Order
                   </button>
@@ -216,43 +218,49 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#FAF5EA] border-b border-[#E0D0B8] px-4 pt-2 pb-6 space-y-3 shadow-lg">
 
-          <button
-            onClick={() => handleNavClick('home')}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          <Link
+            to="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.home}
-          </button>
-          <button
-            onClick={() => handleNavClick('gallery')}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          </Link>
+          <Link
+            to="/gallery"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.gallery}
-          </button>
-          <button
-            onClick={() => handleNavClick('story')}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          </Link>
+          <Link
+            to="/story"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.story}
-          </button>
-          <button
-            onClick={() => handleNavClick('heritage')}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          </Link>
+          <Link
+            to="/heritage"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.heritage}
-          </button>
-          <button
-            onClick={() => handleNavClick('artists')}
-            className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          </Link>
+          <Link
+            to="/artists"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
             {t.nav.artists}
-          </button>
+          </Link>
           {hasRealBlogContent && (
-            <button
-              onClick={() => handleNavClick('blog')}
-              className="w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+            <Link
+              to="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
             >
               {t.nav.blog}
-            </button>
+            </Link>
           )}
           <div className="flex flex-col gap-2 pt-2 pb-4 border-b border-[#E8DEC8]">
             <button
@@ -276,9 +284,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <User className="w-4 h-4 text-[#8C2711]" />
                   <span className="truncate">{user.email}</span>
                 </div>
-                <button onClick={() => { onNavigate('my-orders'); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
+                <Link to="/my-orders" onClick={() => setMobileMenuOpen(false)} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
                   <Package className="w-4 h-4" /> My Orders
-                </button>
+                </Link>
                 <button onClick={() => { onOpenTrackOrder(); setMobileMenuOpen(false); }} className="w-full text-left py-2 text-sm font-medium text-[#241A14] flex items-center gap-2">
                   <Package className="w-4 h-4" /> Track Guest Order
                 </button>

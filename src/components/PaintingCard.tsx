@@ -5,18 +5,18 @@ import { Painting, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/currency';
 import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from './Link';
+import { paintingPath } from '../utils/routes';
 
 interface PaintingCardProps {
   painting: Painting;
   currency: CurrencyCode;
-  onSelect: (painting: Painting) => void;
   onQuickAdd: (painting: Painting) => void;
 }
 
 export const PaintingCard: React.FC<PaintingCardProps> = ({
   painting,
   currency,
-  onSelect,
   onQuickAdd
 }) => {
   const { t, language } = useLanguage();
@@ -76,10 +76,9 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
       />
 
       {/* Visual Canvas Framing */}
-      <div 
-        onClick={() => onSelect(painting)}
-        className="relative aspect-[4/3] w-full overflow-hidden bg-[#EFE6D5] cursor-pointer"
-      >
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EFE6D5] cursor-pointer">
+        {/* Real link covering the whole image; the quick-add button sits above it */}
+        <Link to={paintingPath(painting)} aria-label={painting.title} className="absolute inset-0 z-[5]" />
         <img
           src={painting.primaryImage}
           alt={painting.title}
@@ -125,18 +124,13 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
         </div>
 
         {/* Hover Quick Action Overlay */}
-        <div className={`absolute inset-0 bg-[#241A14]/30 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center gap-3 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect(painting);
-            }}
+        <div className={`absolute inset-0 z-[6] pointer-events-none bg-[#241A14]/30 backdrop-blur-[2px] transition-opacity duration-300 flex items-center justify-center gap-3 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          <span
             className="px-3.5 py-2 bg-[#FAF5EA] text-[#241A14] hover:bg-white rounded text-xs font-semibold shadow-lg flex items-center gap-1.5 transition-transform transform hover:scale-105 cursor-pointer"
           >
             <Eye className="w-3.5 h-3.5 text-[#8C2711]" />
             <span>{t.gallery.detailsBtn}</span>
-          </button>
+          </span>
           {painting.isAvailable && (
             <button
               type="button"
@@ -144,7 +138,7 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
                 e.stopPropagation();
                 onQuickAdd(painting);
               }}
-              className="px-3 py-2 bg-[#8C2711] text-white hover:bg-[#6B1C0A] rounded text-xs font-semibold shadow-lg flex items-center gap-1.5 transition-transform transform hover:scale-105 cursor-pointer"
+              className="pointer-events-auto px-3 py-2 bg-[#8C2711] text-white hover:bg-[#6B1C0A] rounded text-xs font-semibold shadow-lg flex items-center gap-1.5 transition-transform transform hover:scale-105 cursor-pointer"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>{t.gallery.quickAddBtn}</span>
@@ -164,11 +158,10 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
       <div className="p-4 flex flex-col flex-grow justify-between">
         <div>
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 
-              onClick={() => onSelect(painting)}
-              className="font-serif-display text-lg font-semibold text-[#241A14] group-hover:text-[#8C2711] transition-colors line-clamp-1 cursor-pointer"
-            >
-              {displayTitle}
+            <h3 className="font-serif-display text-lg font-semibold text-[#241A14] group-hover:text-[#8C2711] transition-colors line-clamp-1">
+              <Link to={paintingPath(painting)} className="cursor-pointer">
+                {displayTitle}
+              </Link>
             </h3>
           </div>
 
@@ -202,13 +195,12 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <button
-              type="button"
-              onClick={() => onSelect(painting)}
+            <Link
+              to={paintingPath(painting)}
               className="min-h-[44px] sm:min-h-0 inline-flex items-center px-2.5 sm:px-3 py-1.5 rounded border border-[#8C2711]/40 text-[#8C2711] hover:bg-[#8C2711] hover:text-[#FAF5EA] text-xs font-medium transition-colors cursor-pointer"
             >
               {t.gallery.detailsBtn}
-            </button>
+            </Link>
             {painting.isAvailable ? (
               <button
                 type="button"

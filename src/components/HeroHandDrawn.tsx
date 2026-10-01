@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'motion/react';
 import { Play, RotateCcw, Sparkles, Eye, Palette, ArrowDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from './Link';
 
 interface HeroHandDrawnProps {
   onExploreClick: () => void;
-  onStoryClick: () => void;
 }
 
-export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, onStoryClick }) => {
+export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick }) => {
   const { t } = useLanguage();
   // stages: 'drawing' -> 'coloring' -> 'completed'
   const [stage, setStage] = useState<'drawing' | 'coloring' | 'completed'>('drawing');
@@ -163,14 +163,14 @@ export const HeroHandDrawn: React.FC<HeroHandDrawnProps> = ({ onExploreClick, on
               <Eye className="w-4 h-4" />
               <span>{t.hero.exploreBtn}</span>
             </button>
-            <button
-              onClick={onStoryClick}
+            <Link
+              to="/heritage"
               id="hero-heritage-story-btn"
               className="w-full sm:w-auto px-6 py-3 border border-[#8C2711]/40 hover:border-[#8C2711] text-[#4A3222] hover:text-[#8C2711] rounded text-sm font-medium tracking-wide bg-[#FAF5EA]/80 transition-all cursor-pointer inline-flex items-center justify-center gap-2"
             >
               <Palette className="w-4 h-4 text-[#C94A29]" />
               <span>{t.hero.storyBtn}</span>
-            </button>
+            </Link>
           </div>
 
 
