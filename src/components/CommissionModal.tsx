@@ -23,6 +23,8 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
   if (!isOpen) return null;
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   // Identity, budget and notes are left blank — this is a real inquiry form,
   // not a filled-in demo submission. Only the selects carry a sensible
   // default (a starting option to pick from, not a stand-in for user data).
@@ -39,9 +41,42 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
     notes: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/commissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: formData.name,
+          customerEmail: formData.email,
+          subject: `${formData.theme} — ${formData.style} (artist: ${formData.artist})`,
+          description: [
+            `Artist: ${formData.artist}`,
+            `Theme: ${formData.theme}`,
+            `Style: ${formData.style}`,
+            `Size: ${formData.size}`,
+            `Pigments: ${formData.pigmentPreference}`,
+            formData.phone ? `Phone: ${formData.phone}` : '',
+            formData.notes ? `Notes: ${formData.notes}` : ''
+          ].filter(Boolean).join('\n'),
+          budget: formData.budgetRange || undefined
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Commission request failed');
+      }
+
+      setSubmitted(true);
+    } catch {
+      setSubmitError('Something went wrong sending your request. Please try again, or email shreekrit06@gmail.com directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -190,10 +225,16 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                 />
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 space-y-3">
+                {submitError && (
+                  <div className="p-3 bg-[#FBEAE6] rounded border border-[#E0A192] text-xs text-[#8C2711]">
+                    {submitError}
+                  </div>
+                )}
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-3 bg-[#8C2711] hover:bg-[#6E1C0A] disabled:opacity-60 disabled:cursor-not-allowed text-white rounded text-sm font-semibold tracking-wide shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Send className="w-4 h-4" />
                   <span>{t.commission.submitBtn}</span>
