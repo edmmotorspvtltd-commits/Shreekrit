@@ -19,6 +19,7 @@ import { Link } from './components/Link';
 import { usePathname, navigate, closeModalRoute, getNavState } from './utils/router';
 import { parseRoute, findById, paintingPath, artistPath, sectionPath } from './utils/routes';
 import { applyPageMeta, truncate } from './utils/seo';
+import { readCache, writeCache } from './utils/dataCache';
 
 // Components
 import { Navbar } from './components/Navbar';
@@ -72,6 +73,9 @@ const CommissionModal = lazyWithRetry(() => import('./components/CommissionModal
 const ArtistApplicationModal = lazyWithRetry(() => import('./components/ArtistApplicationModal').then(m => ({ default: m.ArtistApplicationModal })), 'ArtistApplicationModal');
 const AuthModal = lazyWithRetry(() => import('./components/AuthModal').then(m => ({ default: m.AuthModal })), 'AuthModal');
 
+const PAINTINGS_CACHE_KEY = 'mithila_cached_paintings';
+const ARTISTS_CACHE_KEY = 'mithila_cached_artists';
+
 const HOME_DESCRIPTION = 'Fine-art gallery of authentic, hand-painted Mithila (Madhubani) folk art from India — original paintings, museum prints, artist profiles and direct checkout.';
 
 const SECTION_META: Record<string, { title: string; description: string }> = {
@@ -108,31 +112,13 @@ export default function App() {
 
   // Gallery data is seeded with authentic collection for instant 0ms first render,
   // then seamlessly revalidated with the database (Neon) in the background (stale-while-revalidate).
-  const [paintings, setPaintings] = useState<Painting[]>(() => {
-    try {
-      const cached = localStorage.getItem('mithila_cached_paintings');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {
-      // fallback
-    }
-    return PAINTINGS;
-  });
+  const [paintings, setPaintings] = useState<Painting[]>(
+    () => readCache<Painting>(PAINTINGS_CACHE_KEY) ?? PAINTINGS
+  );
 
-  const [artists, setArtists] = useState<Artist[]>(() => {
-    try {
-      const cached = localStorage.getItem('mithila_cached_artists');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {
-      // fallback
-    }
-    return ARTISTS;
-  });
+  const [artists, setArtists] = useState<Artist[]>(
+    () => readCache<Artist>(ARTISTS_CACHE_KEY) ?? ARTISTS
+  );
 
   // Direct visits to /painting/:id or /artist/:id can't be called missing
   // until the background database sync has had a chance to add them.
@@ -156,19 +142,11 @@ export default function App() {
         if (!cancelled) {
           if (Array.isArray(paintingsData) && paintingsData.length > 0) {
             setPaintings(paintingsData);
-            try {
-              localStorage.setItem('mithila_cached_paintings', JSON.stringify(paintingsData));
-            } catch {
-              // ignore quota
-            }
+            writeCache(PAINTINGS_CACHE_KEY, paintingsData);
           }
           if (Array.isArray(artistsData) && artistsData.length > 0) {
             setArtists(artistsData);
-            try {
-              localStorage.setItem('mithila_cached_artists', JSON.stringify(artistsData));
-            } catch {
-              // ignore quota
-            }
+            writeCache(ARTISTS_CACHE_KEY, artistsData);
           }
         }
       } catch (e) {
