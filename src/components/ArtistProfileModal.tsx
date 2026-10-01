@@ -40,8 +40,12 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
         <div className="p-4 sm:p-5 border-b border-[#E0D0B8] bg-[#F4EADB] flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs text-[#7A6452]">
             <span className="font-serif italic font-semibold text-[#8C2711]">Master Artist Archives</span>
-            <span>•</span>
-            <span>{artist.generation}</span>
+            {artist.generation && (
+              <>
+                <span>•</span>
+                <span>{artist.generation}</span>
+              </>
+            )}
           </div>
 
           <button
@@ -85,10 +89,12 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                 <span className="px-2.5 py-1 rounded bg-[#EAE0CD] text-[#241A14] font-medium">
                   Style: {artist.specialtyStyle}
                 </span>
-                <span className="px-2.5 py-1 rounded bg-[#EAE0CD] text-[#241A14] font-medium flex items-center gap-1">
-                  <Calendar className="w-3 h-3 text-[#8C2711]" />
-                  {artist.yearsOfExperience} {t.artists.yearsExp}
-                </span>
+                {artist.yearsOfExperience > 0 && (
+                  <span className="px-2.5 py-1 rounded bg-[#EAE0CD] text-[#241A14] font-medium flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-[#8C2711]" />
+                    {artist.yearsOfExperience} {t.artists.yearsExp}
+                  </span>
+                )}
               </div>
 
               <p className="text-sm text-[#523F31] leading-relaxed">
@@ -96,13 +102,15 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
               </p>
 
               {/* Quote */}
-              <div className="p-3.5 bg-[#F4EBDB] rounded border-l-4 border-[#8C2711] italic text-xs text-[#4A3222] flex gap-2">
-                <Quote className="w-4 h-4 text-[#8C2711] flex-shrink-0" />
-                <span>"{artist.quote}"</span>
-              </div>
+              {artist.quote && (
+                <div className="p-3.5 bg-[#F4EBDB] rounded border-l-4 border-[#8C2711] italic text-xs text-[#4A3222] flex gap-2">
+                  <Quote className="w-4 h-4 text-[#8C2711] flex-shrink-0" />
+                  <span>"{artist.quote}"</span>
+                </div>
+              )}
 
               {/* Accolades & Awards */}
-              <div className="space-y-1 pt-1">
+              {artist.awards.length > 0 && <div className="space-y-1 pt-1">
                 <span className="text-[12px] font-semibold uppercase tracking-wider text-[#735D4B] block">
                   Honors & National Recognition:
                 </span>
@@ -114,7 +122,7 @@ export const ArtistProfileModal: React.FC<ArtistProfileModalProps> = ({
                     </span>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               <div className="pt-2">
                 <button

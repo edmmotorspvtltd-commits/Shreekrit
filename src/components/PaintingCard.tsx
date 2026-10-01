@@ -147,11 +147,13 @@ export const PaintingCard: React.FC<PaintingCardProps> = ({
         </div>
 
         {/* Completion Hours ribbon */}
-        <div className="absolute bottom-2 left-2 pointer-events-none">
-          <span className="text-[12px] text-[#FAF5EA] bg-[#241A14]/70 backdrop-blur-sm px-1.5 py-0.5 rounded">
-            {painting.completionHours} {t.gallery.hoursWorked}
-          </span>
-        </div>
+        {painting.completionHours > 0 && (
+          <div className="absolute bottom-2 left-2 pointer-events-none">
+            <span className="text-[12px] text-[#FAF5EA] bg-[#241A14]/70 backdrop-blur-sm px-1.5 py-0.5 rounded">
+              {painting.completionHours} {t.gallery.hoursWorked}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Card Body Information */}

@@ -12,7 +12,7 @@ export interface CurrencyRate {
 
 export type PaintingStyle = 'Kachni' | 'Bharni' | 'Godna' | 'Tantrik' | 'Kohbar';
 export type PaintingTheme = 'Tree of Life' | 'Krishna & Deities' | 'Nature & Wildlife' | 'Cosmos & Sun' | 'Wedding & Kohbar';
-export type PaintingMedium = 'Natural Pigments on Handmade Lokta Paper' | 'Vegetable Dyes on Khadi Silk' | 'Organic Pigments on Raw Canvas';
+export type PaintingMedium = 'Hand-Painted on Handmade Paper' | 'Natural Pigments on Handmade Lokta Paper' | 'Vegetable Dyes on Khadi Silk' | 'Organic Pigments on Raw Canvas';
 export type FrameOption = 'Unframed (Rolled in Archival Tube)' | 'Raw Sheesham Wood Frame' | 'Matte Ebony Frame' | 'Minimalist Warm Brass';
 
 export interface MotifSymbol {

@@ -77,14 +77,16 @@ export const ArtistsSection: React.FC<ArtistsSectionProps> = ({
                   </span>
                 </div>
 
-                <p className="text-xs text-[#5C4A3C] line-clamp-3 leading-relaxed text-center">
-                  "{artist.quote}"
-                </p>
+                {artist.quote && (
+                  <p className="text-xs text-[#5C4A3C] line-clamp-3 leading-relaxed text-center">
+                    "{artist.quote}"
+                  </p>
+                )}
               </div>
 
               <div className="pt-4 mt-4 border-t border-[#E8DEC8] flex items-center justify-between text-xs">
                 <span className="text-[#877260] font-medium text-[12px]">
-                  {artist.yearsOfExperience} {t.artists.yearsExp}
+                  {artist.yearsOfExperience > 0 ? `${artist.yearsOfExperience} ${t.artists.yearsExp}` : ''}
                 </span>
                 <span className="text-[#8C2711] font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform py-3 -my-3 pl-1 -ml-1">
                   {t.artists.viewBodyOfWork} <ArrowRight className="w-3 h-3" />

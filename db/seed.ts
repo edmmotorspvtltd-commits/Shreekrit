@@ -26,7 +26,7 @@ for (const artist of ARTISTS) {
       ${artist.id}, ${artist.name}, ${artist.maithiliName}, ${artist.village},
       ${artist.district}, ${artist.state}, ${artist.yearsOfExperience},
       ${artist.generation}, ${artist.specialtyStyle}, ${artist.bio}, ${artist.avatar},
-      ${JSON.stringify(artist.awards)}, ${artist.quote}, TRUE
+      ${JSON.stringify(artist.awards)}, ${artist.quote}, ${artist.isPlaceholder ?? false}
     )
     ON CONFLICT (id) DO UPDATE SET
       name = EXCLUDED.name,
@@ -40,7 +40,8 @@ for (const artist of ARTISTS) {
       bio = EXCLUDED.bio,
       avatar = EXCLUDED.avatar,
       awards = EXCLUDED.awards,
-      quote = EXCLUDED.quote
+      quote = EXCLUDED.quote,
+      is_placeholder = EXCLUDED.is_placeholder
   `;
   console.log('Seeded artist:', artist.name);
 }
@@ -60,7 +61,7 @@ for (const painting of PAINTINGS) {
       ${painting.weightGrams}, ${painting.isOriginal}, ${painting.isAvailable}, ${painting.isFeatured},
       ${painting.completionHours}, ${painting.story}, ${JSON.stringify(painting.pigmentsUsed)},
       ${JSON.stringify(painting.motifs)}, ${painting.primaryImage}, ${JSON.stringify(painting.detailImages)},
-      ${painting.inRoomImage}, ${painting.artistSignatureImage ?? null}, ${painting.certificateId}, TRUE
+      ${painting.inRoomImage}, ${painting.artistSignatureImage ?? null}, ${painting.certificateId}, ${painting.isPlaceholder ?? false}
     )
     ON CONFLICT (id) DO UPDATE SET
       title = EXCLUDED.title,
@@ -86,7 +87,8 @@ for (const painting of PAINTINGS) {
       detail_images = EXCLUDED.detail_images,
       in_room_image = EXCLUDED.in_room_image,
       artist_signature_image = EXCLUDED.artist_signature_image,
-      certificate_id = EXCLUDED.certificate_id
+      certificate_id = EXCLUDED.certificate_id,
+      is_placeholder = EXCLUDED.is_placeholder
   `;
   console.log('Seeded painting:', painting.title);
 }

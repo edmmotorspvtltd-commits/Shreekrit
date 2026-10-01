@@ -2,6 +2,74 @@ import { Painting } from '../types';
 
 export const PAINTINGS: Painting[] = [
   {
+    // TODO: year, medium and weight are best-guess values — confirm with the artist.
+    id: 'mithila-ganesha-shri-ganeshaya-namah-09',
+    title: 'Shri Ganeshaya Namah',
+    maithiliTitle: 'श्री गणेशाय नमः',
+    artistId: 'artist-lovely-jha',
+    artistName: 'Lovely Jha',
+    priceINR: 16200,
+    year: 2026,
+    style: 'Bharni',
+    theme: 'Krishna & Deities',
+    medium: 'Hand-Painted on Handmade Paper',
+    dimensions: {
+      cm: '68.6 × 50.8 cm',
+      inches: '27 × 20 in'
+    },
+    weightGrams: 400,
+    isOriginal: true,
+    isAvailable: true,
+    isFeatured: true,
+    completionHours: 0,
+    story: 'Ganesha, the remover of obstacles, is invoked at the start of every auspicious beginning. Here he dances beneath an arched mandap hung with temple bells, a red halo glowing behind his crowned head and the blessing "Shri Ganeshaya Namah" written in Devanagari above. Every inch is filled in the Bharni manner, with flat bright colour held by fine black line, and the whole scene is framed by layered borders of lotus and scrolling motifs.',
+    pigmentsUsed: [],
+    motifs: [
+      { name: 'Arched Mandap', meaning: 'A sacred canopy marking the deity\'s seat and an auspicious threshold' },
+      { name: 'Temple Bells', meaning: 'Sound that welcomes the divine and clears the space for worship' },
+      { name: 'Lotus Border', meaning: 'Purity and spiritual unfolding, rising unstained above the water' },
+      { name: 'Devanagari Invocation', meaning: 'The written blessing that opens every new undertaking' }
+    ],
+    primaryImage: '/paintings/ganesha-shri-ganeshaya-namah.jpg',
+    detailImages: [],
+    inRoomImage: '/paintings/ganesha-shri-ganeshaya-namah.jpg',
+    certificateId: 'MITH-2026-LJ-0001'
+  },
+  {
+    // TODO: year, medium and weight are best-guess values — confirm with the artist.
+    id: 'mithila-river-gathering-10',
+    title: 'Divine Gathering by the River',
+    maithiliTitle: 'नदी किनारे दिव्य समागम',
+    artistId: 'artist-lovely-jha',
+    artistName: 'Lovely Jha',
+    priceINR: 28350,
+    year: 2026,
+    style: 'Bharni',
+    theme: 'Krishna & Deities',
+    medium: 'Hand-Painted on Handmade Paper',
+    dimensions: {
+      cm: '88.9 × 68.6 cm',
+      inches: '35 × 27 in'
+    },
+    weightGrams: 650,
+    isOriginal: true,
+    isAvailable: true,
+    isFeatured: true,
+    completionHours: 0,
+    story: 'Three figures stand on a riverbank beneath fruit-laden trees, a golden deer at their side and a radiant sun overhead. Fish, lotuses and rippling waves fill the water below, while a deep border of sunflower-like blossoms and a ring of leaves encloses the scene. Rich Bharni colour is set against finely cross-hatched black, giving the whole painting its jewel-like glow.',
+    pigmentsUsed: [],
+    motifs: [
+      { name: 'Surya (Sun)', meaning: 'The life-giving source of light and energy, watching over the scene' },
+      { name: 'Fish and Lotus', meaning: 'Abundance, fertility and purity within the flowing water' },
+      { name: 'Deer', meaning: 'Grace and gentleness of the forest' },
+      { name: 'Floral Border', meaning: 'A protective frame that seals auspicious energy inside the painting' }
+    ],
+    primaryImage: '/paintings/river-gathering.jpg',
+    detailImages: [],
+    inRoomImage: '/paintings/river-gathering-in-room.jpg',
+    certificateId: 'MITH-2026-LJ-0002'
+  },
+  {
     id: 'mithila-tree-of-life-01',
     title: 'The Eternal Kalpavriksha (Tree of Life)',
     maithiliTitle: 'कल्पवृक्ष ओ मयूर सम्वाद',
@@ -42,7 +110,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2024-AD-0012'
+    certificateId: 'MITH-2024-AD-0012',
+    isPlaceholder: true
   },
   {
     id: 'mithila-surya-mandala-02',
@@ -83,7 +152,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2023-RJ-0089'
+    certificateId: 'MITH-2023-RJ-0089',
+    isPlaceholder: true
   },
   {
     id: 'mithila-radha-krishna-kadamba-03',
@@ -124,7 +194,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2024-CK-0034'
+    certificateId: 'MITH-2024-CK-0034',
+    isPlaceholder: true
   },
   {
     id: 'mithila-kohbar-sacred-nuptial-04',
@@ -164,7 +235,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2023-AD-0077'
+    certificateId: 'MITH-2023-AD-0077',
+    isPlaceholder: true
   },
   {
     id: 'mithila-matsya-avatara-05',
@@ -204,7 +276,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2024-SP-0041'
+    certificateId: 'MITH-2024-SP-0041',
+    isPlaceholder: true
   },
   {
     id: 'mithila-goddess-durga-06',
@@ -244,7 +317,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2024-RJ-0112'
+    certificateId: 'MITH-2024-RJ-0112',
+    isPlaceholder: true
   },
   {
     id: 'mithila-chandra-and-surya-07',
@@ -282,7 +356,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2024-AD-0098'
+    certificateId: 'MITH-2024-AD-0098',
+    isPlaceholder: true
   },
   {
     id: 'mithila-monsoon-peacocks-08',
@@ -321,7 +396,8 @@ export const PAINTINGS: Painting[] = [
     ],
     inRoomImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1600&q=85',
     artistSignatureImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80',
-    certificateId: 'MITH-2023-CK-0062'
+    certificateId: 'MITH-2023-CK-0062',
+    isPlaceholder: true
   }
 ];
 

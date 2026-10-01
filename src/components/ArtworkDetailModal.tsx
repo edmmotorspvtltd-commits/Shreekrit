@@ -366,7 +366,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                     </div>
                     <div className="text-[12px] text-[#695343] flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-[#8C2711]" />
-                      <span>{artist.village}, {artist.district}, Bihar</span>
+                      <span>{Array.from(new Set([artist.village, artist.district, 'Bihar'].filter(Boolean))).join(', ')}</span>
                     </div>
                   </div>
                 </div>
@@ -383,10 +383,12 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
                 <p className="text-xs sm:text-sm text-[#523F31] leading-relaxed">
                   {painting.story}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-[#7A6452] pt-1">
-                  <Clock className="w-3.5 h-3.5 text-[#C94A29]" />
-                  <span>Meticulously hand-drawn over <strong>{painting.completionHours} {t.gallery.hoursWorked}</strong>.</span>
-                </div>
+                {painting.completionHours > 0 && (
+                  <div className="flex items-center gap-2 text-xs text-[#7A6452] pt-1">
+                    <Clock className="w-3.5 h-3.5 text-[#C94A29]" />
+                    <span>Meticulously hand-drawn over <strong>{painting.completionHours} {t.gallery.hoursWorked}</strong>.</span>
+                  </div>
+                )}
               </div>
 
               {/* Edition Choice: Original Masterwork vs Museum Archival Giclée */}
