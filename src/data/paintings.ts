@@ -8,14 +8,14 @@ export const PAINTINGS: Painting[] = [
     maithiliTitle: 'श्री गणेशाय नमः',
     artistId: 'artist-lovely-jha',
     artistName: 'Lovely Jha',
-    priceINR: 16200,
+    priceINR: 18144,
     year: 2026,
     style: 'Bharni',
     theme: 'Krishna & Deities',
     medium: 'Hand-Painted on Handmade Paper',
     dimensions: {
-      cm: '68.6 × 50.8 cm',
-      inches: '27 × 20 in'
+      cm: '68.6 × 56.9 cm',
+      inches: '27 × 22.4 in'
     },
     weightGrams: 400,
     isOriginal: true,
