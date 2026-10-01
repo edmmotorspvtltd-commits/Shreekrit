@@ -15,7 +15,7 @@ export const ARTISTS: Artist[] = [
     generation: '',
     specialtyStyle: 'Bharni',
     bio: 'Lovely Jha paints in the Mithila (Madhubani) tradition, filling bold hand-drawn outlines with rich colour and finishing each work with intricate borders. Her full artist profile will be added soon.',
-    avatar: '/shreekrit-emblem.png',
+    avatar: '/artists/lovely-jha.jpg',
     awards: [],
     quote: '',
     isPlaceholder: true
