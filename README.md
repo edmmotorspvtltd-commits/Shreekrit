@@ -99,6 +99,29 @@ The project deploys to Vercel as a Vite app.
 
 `vercel.json` does three things: sends every path that isn't an asset or `/api` to `index.html` (so deep links like `/painting/...` work), rewrites `/sitemap.xml` to the `api/sitemap` function, and sets the `X-Robots-Tag: noindex` header (see below).
 
+## Maintenance mode
+
+`middleware.ts` can put the whole site, including `/api/*`, behind a "back soon" page. While it is on, every request gets an HTTP 503 with `Retry-After: 86400` and `Cache-Control: no-store`, so search engines treat it as temporary.
+
+**Turn it on**
+
+1. In Vercel, open the project, then Settings, then Environment Variables.
+2. Add `MAINTENANCE_MODE` with the value `true` (exactly that) for the environment you want to close: Production, Preview, or both.
+3. Optional: add `MAINTENANCE_BYPASS_KEY` with a long random string so you can still see the real site.
+4. Redeploy. Environment variable changes only apply to new deployments (Deployments, the three dots on the latest one, Redeploy).
+
+**Turn it off**
+
+Delete `MAINTENANCE_MODE` (or set it to anything other than `true`) and redeploy. Requests then pass through unchanged.
+
+**View the real site while it is on**
+
+Open `https://<your-domain>/?bypass=<MAINTENANCE_BYPASS_KEY>` once. That sets a 30-day `preview_access` cookie and redirects to the same page without the key in the URL. Use that browser as normal; everyone else still sees the maintenance page. Clearing cookies ends your access.
+
+**Test it on a preview first**
+
+Scope the variables to the Preview environment (or to the branch you are testing) so production is untouched, redeploy that branch, then check three things: the preview URL shows the maintenance page, `/api/paintings` returns 503, and the `?bypass=` link lets you in. Remove the variables when you are done.
+
 ## Before launch
 
 Search engines are currently blocked in three places, and all three must be removed to allow indexing:
