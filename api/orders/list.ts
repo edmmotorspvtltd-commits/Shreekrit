@@ -1,17 +1,63 @@
 export const config = { runtime: 'edge' };
 import { sql } from '../_lib/db';
 
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'private, no-store' }
+  });
+
+// Resolves the signed-in customer's email from their Supabase access token.
+// The email is never taken from the request itself: whoever calls this
+// endpoint can only ever read orders for the account they are signed in as.
+async function getVerifiedEmail(req: Request): Promise<{ email?: string; status?: number; error?: string }> {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !anonKey) {
+    // Fail closed: without a way to verify the caller, return nothing.
+    console.error('GET /api/orders/list: Supabase URL / anon key are not configured');
+    return { status: 503, error: 'Order lookup is temporarily unavailable' };
+  }
+
+  const match = /^Bearer\s+(.+)$/i.exec(req.headers.get('authorization') || '');
+  if (!match) {
+    return { status: 401, error: 'Sign in to view your orders' };
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { apikey: anonKey, Authorization: `Bearer ${match[1]}` }
+    });
+  } catch (err) {
+    console.error('GET /api/orders/list: token verification request failed:', err);
+    return { status: 503, error: 'Order lookup is temporarily unavailable' };
+  }
+  if (!res.ok) {
+    return { status: 401, error: 'Your session has expired. Please sign in again.' };
+  }
+
+  const user = await res.json() as { email?: string; email_confirmed_at?: string | null; confirmed_at?: string | null };
+  if (!user.email) {
+    return { status: 401, error: 'Sign in to view your orders' };
+  }
+  // An unconfirmed address could belong to someone else, so don't trust it.
+  if (!user.email_confirmed_at && !user.confirmed_at) {
+    return { status: 403, error: 'Confirm your email address to view your orders' };
+  }
+  return { email: user.email.trim().toLowerCase() };
+}
+
 export default async function handler(req: Request) {
   if (req.method !== 'GET') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
+    return json({ error: 'Method not allowed' }, 405);
   }
 
-  const url = new URL(req.url);
-  const email = url.searchParams.get('email');
-
-  if (!email) {
-    return new Response(JSON.stringify({ error: 'Email is required' }), { status: 400 });
+  const verified = await getVerifiedEmail(req);
+  if (!verified.email) {
+    return json({ error: verified.error }, verified.status);
   }
+  const email = verified.email;
 
   try {
     const db = sql();
@@ -19,14 +65,12 @@ export default async function handler(req: Request) {
     // Fetch orders for this email
     const orders = await db`
       SELECT * FROM orders 
-      WHERE email = ${email} 
+      WHERE lower(email) = ${email} 
       ORDER BY created_at DESC
     `;
 
     if (orders.length === 0) {
-      return new Response(JSON.stringify({ orders: [] }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ orders: [] });
     }
 
     // Fetch order items for all these orders
@@ -75,12 +119,10 @@ export default async function handler(req: Request) {
       };
     });
 
-    return new Response(JSON.stringify({ orders: ordersWithItems }), {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ orders: ordersWithItems });
 
   } catch (error: any) {
     console.error('Error fetching orders:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch orders' }), { status: 500 });
+    return json({ error: 'Failed to fetch orders' }, 500);
   }
 }

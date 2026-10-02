@@ -29,7 +29,7 @@ const STATUS_STYLES: Record<string, string> = {
 const thumbnailFor = (paintingId: string) => PAINTINGS.find((p) => p.id === paintingId)?.primaryImage;
 
 export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) => {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, session, isLoading: authLoading } = useAuth();
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,12 +46,13 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
       setIsLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/orders/list?email=${encodeURIComponent(user.email || '')}`);
+        const res = await fetch('/api/orders/list', {
+          headers: { Authorization: `Bearer ${session?.access_token ?? ''}` }
+        });
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          throw new Error('Failed to fetch orders');
+          throw new Error(data.error || 'Failed to fetch orders');
         }
-        
-        const data = await res.json();
         
         if (cancelled) return;
         if (data.error) {
@@ -70,7 +71,7 @@ export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) 
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, session?.access_token]);
 
   if (authLoading) {
     return <div className="py-24 text-center text-sm text-[#8C7665]">Loading…</div>;
