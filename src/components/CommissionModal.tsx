@@ -25,9 +25,8 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  // Identity, budget and notes are left blank — this is a real inquiry form,
-  // not a filled-in demo submission. Only the selects carry a sensible
-  // default (a starting option to pick from, not a stand-in for user data).
+  // Identity, budget and notes are left blank; only the selects carry a
+  // starting option to pick from.
   const [formData, setFormData] = useState({
     name: '',
     email: '',

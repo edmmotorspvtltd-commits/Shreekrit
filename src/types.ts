@@ -49,8 +49,8 @@ export interface Painting {
   inRoomImage: string;
   artistSignatureImage?: string;
   certificateId: string;
-  // True for the demo paintings seeded from the original scaffold's
-  // placeholder stock photography — false once real inventory replaces them.
+  // True for placeholder paintings that use stock photography — false for
+  // real inventory.
   isPlaceholder?: boolean;
 }
 
@@ -68,8 +68,8 @@ export interface Artist {
   avatar: string;
   awards: string[];
   quote: string;
-  // True for the four invented demo artists — false once real artist
-  // bios/photos replace them.
+  // True for placeholder artist profiles — false once a real bio and photo
+  // are in place.
   isPlaceholder?: boolean;
 }
 
@@ -81,9 +81,8 @@ export interface BlogPost {
   date: string;
   coverImage: string;
   author: string;
-  // True for the placeholder posts shipped with this scaffold — false once
-  // real editorial content replaces them. Mirrors Painting/Artist's
-  // isPlaceholder convention.
+  // True for placeholder posts — false once real editorial content replaces
+  // them. Mirrors Painting/Artist's isPlaceholder convention.
   isPlaceholder?: boolean;
 }
 

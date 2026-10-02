@@ -28,9 +28,7 @@ export const ArtistApplicationModal: React.FC<ArtistApplicationModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [referenceNumber, setReferenceNumber] = useState<string | null>(null);
 
-  // Left blank by default — this is a real application form, not a
-  // filled-in demo submission. Only the style select carries a starting
-  // option to pick from.
+  // Left blank by default; only the style select carries a starting option.
   const [formData, setFormData] = useState({
     fullName: '',
     village: '',
