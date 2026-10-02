@@ -99,7 +99,7 @@ export const ArtworkDetailModal: React.FC<ArtworkDetailModalProps> = ({
         {/* Top Header Bar */}
         <div className="px-5 py-3 border-b border-[#E2D2BC] flex items-center justify-between bg-[#F4EADB]">
           <div className="flex items-center gap-2 text-xs text-[#735A47]">
-            <span className="font-serif italic font-semibold text-[#8C2711]">Mithilā Heritage Archives</span>
+            <span className="font-serif italic font-semibold text-[#8C2711]">Shreekrit</span>
             <span>•</span>
             <span className="font-mono text-[12px]">COA #{painting.certificateId}</span>
           </div>
