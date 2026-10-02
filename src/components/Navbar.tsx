@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
-import { BLOG_POSTS } from '../data/blogPosts';
 import { Link } from './Link';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
