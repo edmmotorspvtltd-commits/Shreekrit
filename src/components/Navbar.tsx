@@ -42,8 +42,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   // Blog nav entry stays hidden until there's at least one real (non-
   // placeholder) post — no point sending visitors to a page that only
-  // says "Replace Before Launch". (Temporarily forced to true for preview)
-  const hasRealBlogContent = true;
+  // says "Replace Before Launch". Set to true once real posts are published.
+  const hasRealBlogContent = false;
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF5EA]/95 backdrop-blur-md border-b border-[#E2D4BF] shadow-xs">
