@@ -9,3 +9,5 @@ coverage/
 .neon
 .vercel
 .gstack/
+.claude/skills/
+skills-lock.json
