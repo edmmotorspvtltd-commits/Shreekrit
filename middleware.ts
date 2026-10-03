@@ -34,15 +34,9 @@ const MAINTENANCE_HTML = `<!doctype html>
     text-align: center;
   }
   main { max-width: 32rem; }
-  .logo { display: block; width: min(220px, 60vw); height: auto; margin: 0 auto 24px; }
+  .logo { display: block; width: min(260px, 70vw); height: auto; margin: 0 auto 24px; }
   .rule { width: 56px; height: 3px; margin: 0 auto 28px; background: #8C2711; border-radius: 2px; }
-  h1 {
-    margin: 0 0 16px;
-    font-size: clamp(2rem, 7vw, 2.75rem);
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #8C2711;
-  }
+  h1 { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   p { margin: 0 0 12px; font-size: 1.125rem; line-height: 1.6; color: #4A3525; }
   .contact { margin-top: 28px; font-size: 0.95rem; color: #665141; }
   a { color: #8C2711; text-decoration: underline; text-underline-offset: 3px; }
@@ -51,9 +45,9 @@ const MAINTENANCE_HTML = `<!doctype html>
 </head>
 <body>
 <main>
-  <img class="logo" src="${LOGO_DATA_URI}" alt="Shreekrit" width="220" height="129">
+  <img class="logo" src="${LOGO_DATA_URI}" alt="Shreekrit" width="260" height="152">
   <div class="rule"></div>
-  <h1>Shreekrit</h1>
+  <h1>Shreekrit</h1><!-- visible name is the logo; kept for screen readers -->
   <p>We're currently in development and will be back soon.</p>
   <p class="contact">Questions? Write to <a href="mailto:shreekrit06@gmail.com">shreekrit06@gmail.com</a></p>
 </main>
