@@ -14,6 +14,28 @@ const json = (body: unknown, status = 200) =>
 // reference with the wrong email, gets the same generic 404, so the endpoint
 // cannot be used to discover which order references exist.
 const ORDER_REF_RE = /^[A-Z0-9][A-Z0-9-]{2,39}$/;
+
+// Anyone holding an order number and email can reach this endpoint, so it
+// returns only a masked view: the phone as its last 4 digits, and the address
+// as city, state and postal code. Street lines and country are left empty.
+function maskForGuest<T extends { shipping_address: any }>(record: T): T {
+  const a = record.shipping_address;
+  const digits = String(a.phone ?? '').replace(/\D/g, '');
+  return {
+    ...record,
+    shipping_address: {
+      fullName: a.fullName,
+      email: a.email,
+      phone: digits.length >= 4 ? `\u2022\u2022\u2022\u2022 ${digits.slice(-4)}` : '',
+      addressLine1: '',
+      city: a.city,
+      state: a.state,
+      postalCode: a.postalCode,
+      country: ''
+    }
+  };
+}
+
 const NOT_FOUND = 'No order found with that order number and email. Double-check both and try again.';
 
 export default async function handler(req: Request) {
@@ -40,7 +62,7 @@ export default async function handler(req: Request) {
     }
 
     const items = await db`SELECT * FROM order_items WHERE order_id = ${orders[0].id}`;
-    return json({ order: toOrderRecord(orders[0], items) });
+    return json({ order: maskForGuest(toOrderRecord(orders[0], items)) });
   } catch (err) {
     console.error('GET /api/orders/track failed:', err);
     return json({ error: 'Failed to look up your order' }, 500);
