@@ -1,5 +1,6 @@
 export const config = { runtime: 'edge' };
 import { sql } from '../_lib/db';
+import { text, optionalText, email as validEmail, phone as validPhone, postalCode as validPostal, oneOf, badRequest, ALLOWED_CURRENCIES, EDITION_TYPES, MAX } from '../_lib/validate';
 import { sendOrderConfirmation, sendOrderAlertToStore } from '../_lib/email';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO, SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../../src/data/paintings';
 
@@ -8,6 +9,8 @@ interface RequestItem {
   editionType: 'original' | 'print';
   frame: string;
 }
+
+const MAX_CART_ITEMS = 20;
 
 interface RequestBody {
   items: RequestItem[];
@@ -45,11 +48,56 @@ export default async function handler(req: Request) {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
   }
   
-  const { items, shipping, currency } = body || {};
+  // Validate and normalise everything before it touches the database or an
+  // email. From here on only the cleaned values below are used.
+  const raw = (body && typeof body === 'object' ? body : {}) as { items?: unknown; shipping?: unknown; currency?: unknown };
+  const currency = oneOf(raw.currency, ALLOWED_CURRENCIES);
+  if (!currency) return badRequest('Unsupported currency');
 
-  if (!items?.length || !shipping?.fullName || !shipping?.email || !shipping?.phone || !shipping?.addressLine1) {
-    return new Response(JSON.stringify({ error: 'Missing cart items or shipping details' }), { status: 400 });
+  if (!Array.isArray(raw.items) || raw.items.length < 1 || raw.items.length > MAX_CART_ITEMS) {
+    return badRequest(`Your cart must contain between 1 and ${MAX_CART_ITEMS} items`);
   }
+  const items: RequestItem[] = [];
+  for (const entry of raw.items as Record<string, unknown>[]) {
+    const paintingId = text(entry?.paintingId, { max: MAX.id });
+    const editionType = oneOf(entry?.editionType, EDITION_TYPES);
+    const frame = text(entry?.frame, { max: MAX.id });
+    if (!paintingId || !editionType || !frame) return badRequest('Invalid cart item');
+    items.push({ paintingId, editionType, frame });
+  }
+
+  const rawShipping = (raw.shipping && typeof raw.shipping === 'object' ? raw.shipping : {}) as Record<string, unknown>;
+  const fullName = text(rawShipping.fullName, { max: MAX.name, min: 2 });
+  const shippingEmail = validEmail(rawShipping.email);
+  const shippingPhone = validPhone(rawShipping.phone);
+  const addressLine1 = text(rawShipping.addressLine1, { max: MAX.line });
+  const addressLine2 = optionalText(rawShipping.addressLine2, { max: MAX.line });
+  const city = text(rawShipping.city, { max: MAX.place });
+  const state = text(rawShipping.state, { max: MAX.place });
+  const postalCode = validPostal(rawShipping.postalCode);
+  const country = text(rawShipping.country, { max: MAX.place });
+
+  if (!fullName || !shippingEmail || !shippingPhone || !addressLine1 || !city || !state || !postalCode || !country || addressLine2 === null) {
+    return badRequest('Please check your shipping details (name, valid email and phone, address, city, state, postal code and country).');
+  }
+  const shipping = {
+    fullName, email: shippingEmail, phone: shippingPhone, addressLine1,
+    ...(addressLine2 ? { addressLine2 } : {}),
+    city, state, postalCode, country
+  };
+
+  // Originals reserved for this order. They are released again if anything
+  // below fails, so a failed checkout never leaves a painting marked sold.
+  const reservedIds: string[] = [];
+  const releaseReserved = async () => {
+    for (const id of reservedIds.splice(0)) {
+      try {
+        await sql()`UPDATE paintings SET is_available = true WHERE id = ${id}`;
+      } catch (releaseErr) {
+        console.error(`Failed to release reserved painting ${id}:`, releaseErr);
+      }
+    }
+  };
 
   try {
     // Recompute every price server-side from the database — never trust
@@ -101,6 +149,23 @@ export default async function handler(req: Request) {
     // account settles in INR, and formatPrice()'s INTERNATIONAL_MARKUP is
     // a display-only conversion for non-INR shoppers, not a second charge.
     const amountPaise = Math.round(totalINR * 100);
+
+    // Reserve each original atomically. The UPDATE only succeeds while the
+    // painting is still available, so two buyers racing for the same one
+    // cannot both get it: exactly one UPDATE returns a row.
+    for (const item of resolvedItems) {
+      if (item.editionType !== 'original') continue;
+      const reserved = await db`
+        UPDATE paintings SET is_available = false
+        WHERE id = ${item.paintingId} AND is_available = true
+        RETURNING id
+      `;
+      if (reserved.length === 0) {
+        await releaseReserved();
+        return new Response(JSON.stringify({ error: `"${item.paintingTitle}" is no longer available as an original` }), { status: 409 });
+      }
+      reservedIds.push(item.paintingId);
+    }
 
     // Test mode: no real gateway call, no real charge — the order is
     // inserted already marked 'test_paid' (never 'paid', so it can never
@@ -195,6 +260,7 @@ export default async function handler(req: Request) {
     if (!razorpayRes.ok) {
       const errText = await razorpayRes.text();
       console.error('Razorpay order creation failed:', errText);
+      await releaseReserved();
       return new Response(JSON.stringify({ error: 'Payment gateway rejected the order' }), { status: 502 });
     }
 
@@ -238,6 +304,7 @@ export default async function handler(req: Request) {
     }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (err) {
     console.error('POST /api/orders/create failed:', err);
+    await releaseReserved();
     return new Response(JSON.stringify({ error: 'Failed to create order' }), { status: 500 });
   }
 }

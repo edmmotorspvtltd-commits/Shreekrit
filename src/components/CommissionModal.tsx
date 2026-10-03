@@ -25,9 +25,8 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  // Identity, budget and notes are left blank — this is a real inquiry form,
-  // not a filled-in demo submission. Only the selects carry a sensible
-  // default (a starting option to pick from, not a stand-in for user data).
+  // Identity, budget and notes are left blank; only the selects carry a
+  // starting option to pick from.
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -218,6 +217,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                 </label>
                 <textarea
                   rows={3}
+                  maxLength={2000}
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"

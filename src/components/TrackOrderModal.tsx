@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { X, Search, AlertCircle, ArrowLeft } from 'lucide-react';
 import { OrderRecord, OrderItemRecord } from '../types';
-import { supabase } from '../lib/supabaseClient';
 import { OrderDetailCard } from './OrderDetailCard';
 
 interface TrackOrderModalProps {
@@ -25,24 +24,25 @@ export const TrackOrderModal: React.FC<TrackOrderModalProps> = ({ isOpen, onClos
     setError(null);
     setResult(null);
 
-    const { data, error: rpcError } = await supabase.rpc('get_guest_order', {
-      p_order_number: orderNumber.trim(),
-      p_email: email.trim()
-    });
+    try {
+      const params = new URLSearchParams({ order_ref: orderNumber.trim(), email: email.trim() });
+      const res = await fetch(`/api/orders/track?${params}`);
+      const data = await res.json().catch(() => ({}));
 
-    setIsSearching(false);
-
-    if (rpcError) {
+      if (res.status === 404) {
+        setError('No order found with that order number and email. Double-check both and try again.');
+      } else if (res.status === 400) {
+        setError(data.error || 'Please check your order number and email and try again.');
+      } else if (!res.ok || !data.order) {
+        setError('Something went wrong looking up your order. Please try again.');
+      } else {
+        setResult({ order: data.order, items: data.order.order_items ?? [] });
+      }
+    } catch {
       setError('Something went wrong looking up your order. Please try again.');
-      return;
+    } finally {
+      setIsSearching(false);
     }
-
-    if (!data) {
-      setError('No order found with that order number and email. Double-check both and try again.');
-      return;
-    }
-
-    setResult({ order: data.order, items: data.items ?? [] });
   };
 
   const handleClose = () => {

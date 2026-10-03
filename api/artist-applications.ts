@@ -1,6 +1,7 @@
 export const config = { runtime: 'edge' };
 import { waitUntil } from '@vercel/functions';
 import { sql } from './_lib/db';
+import { text, optionalText, email as validEmail, phone as validPhone, oneOf, badRequest, MAX } from './_lib/validate';
 import { sendArtistApplicationConfirmation, sendArtistApplicationAlertToStore } from './_lib/email';
 
 const VALID_STYLES = ['Kachni', 'Bharni', 'Godna', 'Tantrik', 'Kohbar'];
@@ -30,19 +31,30 @@ export default async function handler(req: Request) {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
   }
 
-  const { fullName, village, district, state, phone, email, yearsOfExperience, primaryStyle, bio, sampleWork } = body || {};
+  const raw = (body && typeof body === 'object' ? body : {}) as Partial<Record<keyof RequestBody, unknown>>;
+  const fullName = text(raw.fullName, { max: MAX.name });
+  const village = text(raw.village, { max: MAX.place });
+  const district = text(raw.district, { max: MAX.place });
+  const state = text(raw.state, { max: MAX.place });
+  const phone = validPhone(raw.phone);
+  const email = validEmail(raw.email);
+  const bio = text(raw.bio, { max: MAX.bio, multiline: true });
+  const sampleWork = optionalText(raw.sampleWork, { max: MAX.sampleWork, multiline: true });
+  const primaryStyle = oneOf(raw.primaryStyle, VALID_STYLES);
 
   if (!fullName || !village || !district || !state || !phone || !email || !bio) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
+    return badRequest('Please check the required fields; each must be filled in with a valid value (valid email and phone, bio up to 2000 characters).');
+  }
+  if (sampleWork === null) {
+    return badRequest('Sample work must be 500 characters or fewer.');
+  }
+  if (!primaryStyle) {
+    return badRequest('Invalid primary style');
   }
 
-  if (!VALID_STYLES.includes(primaryStyle)) {
-    return new Response(JSON.stringify({ error: 'Invalid primary style' }), { status: 400 });
-  }
-
-  const yearsNum = Number(yearsOfExperience);
-  if (!Number.isFinite(yearsNum) || yearsNum < 0) {
-    return new Response(JSON.stringify({ error: 'Invalid years of experience' }), { status: 400 });
+  const yearsNum = Number(raw.yearsOfExperience);
+  if (!Number.isFinite(yearsNum) || yearsNum < 0 || yearsNum > 100) {
+    return badRequest('Invalid years of experience');
   }
 
   try {

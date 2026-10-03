@@ -37,7 +37,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [completedOrder, setCompletedOrder] = useState<OrderConfirmation | null>(null);
 
-  // Form State — left blank; this is a real order form, not a filled-in demo.
+  // Form state — left blank for the customer to fill in.
   const [formData, setFormData] = useState<ShippingAddress>({
     fullName: '',
     email: '',

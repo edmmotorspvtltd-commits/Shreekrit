@@ -87,12 +87,12 @@ export const OrderDetailCard: React.FC<OrderDetailCardProps> = ({ order, items }
         </h5>
         <div className="text-xs text-[#5A4535] bg-[#FAF5EA] rounded border border-[#E8DEC8] p-2.5 leading-relaxed">
           <div className="font-medium text-[#241A14]">{order.shipping_address.fullName}</div>
-          <div>{order.shipping_address.addressLine1}</div>
+          {order.shipping_address.addressLine1 && <div>{order.shipping_address.addressLine1}</div>}
           {order.shipping_address.addressLine2 && <div>{order.shipping_address.addressLine2}</div>}
           <div>
             {order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.postalCode}
           </div>
-          <div>{order.shipping_address.country}</div>
+          {order.shipping_address.country && <div>{order.shipping_address.country}</div>}
         </div>
       </div>
     </div>

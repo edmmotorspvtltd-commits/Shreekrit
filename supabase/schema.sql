@@ -7,8 +7,8 @@
 
 -- Human-readable order numbers (SHK-000001, SHK-000002, ...), independent of
 -- the uuid primary key. A column DEFAULT using this sequence means BOTH the
--- direct authenticated-user insert path and the create_guest_order() function
--- get a number for free without either one needing to invent it.
+-- direct authenticated-user insert path gets a number for free without needing
+-- to invent one.
 CREATE SEQUENCE IF NOT EXISTS orders_order_number_seq START WITH 1;
 
 CREATE TABLE IF NOT EXISTS orders (
@@ -30,9 +30,8 @@ CREATE TABLE IF NOT EXISTS orders (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   -- Every order must be attributable to either a real account or a guest
-  -- email, never neither — this is what create_guest_order()'s NOT NULL
-  -- guest_email check and the authenticated INSERT policy's auth.uid()
-  -- check jointly guarantee, but the constraint makes it impossible to
+  -- email, never neither — the authenticated INSERT policy's auth.uid()
+  -- check enforces this for signed-in users, but the constraint makes it impossible to
   -- violate even via a direct table edit in the Studio.
   CONSTRAINT orders_owner_present CHECK (user_id IS NOT NULL OR guest_email IS NOT NULL)
 );
@@ -82,9 +81,9 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
 -- Logged-in users can see their own orders and their own orders' items.
--- No anon SELECT policy at all on either table — guests reach their order
--- exclusively through get_guest_order() below, never a direct table read,
--- so there is no way to enumerate other people's orders by guessing ids.
+-- No anon SELECT policy at all on either table, so there is no way to
+-- enumerate other people's orders by guessing ids (guest lookups go through
+-- /api/orders/track against Neon, not this database).
 DROP POLICY IF EXISTS select_own_orders ON orders;
 CREATE POLICY select_own_orders ON orders
   FOR SELECT TO authenticated
@@ -128,116 +127,13 @@ CREATE POLICY insert_own_order_items ON order_items
 -- / TrackOrderModal.tsx for the future-work admin-UI callout.
 
 -- ============================================================
--- get_guest_order — safe email-based lookup
+-- Guest orders are NOT in Supabase
 -- ============================================================
--- Returns the order + its items only when BOTH order_number and
--- guest_email match exactly (case-insensitive on email). Returns NULL on
--- no match — never raises, so a wrong guess just looks like "not found"
--- rather than leaking whether the order number alone was valid.
-CREATE OR REPLACE FUNCTION get_guest_order(p_order_number TEXT, p_email TEXT)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-  v_order orders%ROWTYPE;
-  v_items JSONB;
-BEGIN
-  SELECT * INTO v_order
-  FROM orders
-  WHERE order_number = p_order_number
-    AND guest_email IS NOT NULL
-    AND lower(guest_email) = lower(p_email);
-
-  IF NOT FOUND THEN
-    RETURN NULL;
-  END IF;
-
-  SELECT COALESCE(jsonb_agg(to_jsonb(oi)), '[]'::jsonb) INTO v_items
-  FROM order_items oi
-  WHERE oi.order_id = v_order.id;
-
-  RETURN jsonb_build_object('order', to_jsonb(v_order), 'items', v_items);
-END;
-$$;
-
-GRANT EXECUTE ON FUNCTION get_guest_order(TEXT, TEXT) TO anon, authenticated;
-
--- ============================================================
--- create_guest_order — safe guest checkout write
--- ============================================================
--- SECURITY DEFINER so it runs as the table owner (bypasses RLS on the
--- insert), while setting guest_email from a server-validated parameter
--- rather than trusting a client-writable column. Inserts the order and
--- all its items in one transaction, so a guest checkout can never leave
--- an order row with zero items on a partial failure.
-CREATE OR REPLACE FUNCTION create_guest_order(
-  p_guest_email TEXT,
-  p_currency TEXT,
-  p_total_amount_inr NUMERIC,
-  p_total_amount_display NUMERIC,
-  p_shipping_address JSONB,
-  p_payment_method TEXT,
-  p_status TEXT,
-  p_estimated_delivery_date DATE,
-  p_items JSONB
-)
-RETURNS JSONB
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-  v_order_id UUID;
-  v_order orders%ROWTYPE;
-  v_items JSONB;
-  v_item JSONB;
-BEGIN
-  IF p_guest_email IS NULL OR length(trim(p_guest_email)) = 0 THEN
-    RAISE EXCEPTION 'guest_email is required';
-  END IF;
-
-  IF p_items IS NULL OR jsonb_array_length(p_items) = 0 THEN
-    RAISE EXCEPTION 'at least one item is required';
-  END IF;
-
-  INSERT INTO orders (
-    user_id, guest_email, status, currency, total_amount_inr,
-    total_amount_display, shipping_address, payment_method,
-    estimated_delivery_date
-  ) VALUES (
-    NULL, p_guest_email, COALESCE(p_status, 'pending_payment'), p_currency,
-    p_total_amount_inr, p_total_amount_display, p_shipping_address,
-    p_payment_method, p_estimated_delivery_date
-  )
-  RETURNING id INTO v_order_id;
-
-  FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
-  LOOP
-    INSERT INTO order_items (
-      order_id, painting_id, painting_title, edition_type,
-      unit_price_inr, frame, frame_price_inr
-    ) VALUES (
-      v_order_id,
-      v_item->>'painting_id',
-      v_item->>'painting_title',
-      v_item->>'edition_type',
-      (v_item->>'unit_price_inr')::numeric,
-      v_item->>'frame',
-      (v_item->>'frame_price_inr')::numeric
-    );
-  END LOOP;
-
-  SELECT * INTO v_order FROM orders WHERE id = v_order_id;
-  SELECT jsonb_agg(to_jsonb(oi)) INTO v_items FROM order_items oi WHERE oi.order_id = v_order_id;
-
-  RETURN jsonb_build_object('order', to_jsonb(v_order), 'items', COALESCE(v_items, '[]'::jsonb));
-END;
-$$;
-
--- Only anon needs this — a logged-in checkout uses the direct RLS-gated
--- insert path above instead, so it isn't granted to authenticated, to keep
--- there being exactly one write path per case instead of two that could
--- silently drift apart.
-GRANT EXECUTE ON FUNCTION create_guest_order(TEXT, TEXT, NUMERIC, NUMERIC, JSONB, TEXT, TEXT, DATE, JSONB) TO anon;
+-- Orders and order items live in Neon (see db/schema.sql). Guest order
+-- tracking is served by /api/orders/track and signed-in customers' orders by
+-- /api/orders/list, both of which read Neon. The get_guest_order() and
+-- create_guest_order() functions that used to be defined here (SECURITY
+-- DEFINER, granted to anon) were removed. Re-running this file drops any
+-- copies still present in the database.
+DROP FUNCTION IF EXISTS get_guest_order(TEXT, TEXT);
+DROP FUNCTION IF EXISTS create_guest_order(TEXT, TEXT, NUMERIC, NUMERIC, JSONB, TEXT, TEXT, DATE, JSONB);
