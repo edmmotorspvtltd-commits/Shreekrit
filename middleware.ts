@@ -6,6 +6,7 @@
 // the real site with MAINTENANCE_BYPASS_KEY, either as a cookie or via
 // ?bypass=<key> (which sets the cookie and redirects to the clean URL).
 import { next } from '@vercel/functions';
+import { LOGO_DATA_URI } from './maintenance-logo';
 
 const BYPASS_COOKIE = 'preview_access';
 const BYPASS_PARAM = 'bypass';
@@ -33,10 +34,11 @@ const MAINTENANCE_HTML = `<!doctype html>
     text-align: center;
   }
   main { max-width: 32rem; }
+  .logo { display: block; width: min(220px, 60vw); height: auto; margin: 0 auto 24px; }
   .rule { width: 56px; height: 3px; margin: 0 auto 28px; background: #8C2711; border-radius: 2px; }
   h1 {
     margin: 0 0 16px;
-    font-size: clamp(2.25rem, 8vw, 3.25rem);
+    font-size: clamp(2rem, 7vw, 2.75rem);
     font-weight: 700;
     letter-spacing: 0.02em;
     color: #8C2711;
@@ -49,6 +51,7 @@ const MAINTENANCE_HTML = `<!doctype html>
 </head>
 <body>
 <main>
+  <img class="logo" src="${LOGO_DATA_URI}" alt="Shreekrit" width="220" height="129">
   <div class="rule"></div>
   <h1>Shreekrit</h1>
   <p>We're currently in development and will be back soon.</p>
