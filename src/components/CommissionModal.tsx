@@ -217,6 +217,7 @@ export const CommissionModal: React.FC<CommissionModalProps> = ({
                 </label>
                 <textarea
                   rows={3}
+                  maxLength={2000}
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   className="w-full px-3 py-2 text-base rounded border border-[#D5C3A5] bg-[#FAF5EA] focus:outline-[#8C2711]"

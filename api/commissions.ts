@@ -1,5 +1,6 @@
 export const config = { runtime: 'edge' };
 import { sendCommissionConfirmationToCustomer, sendCommissionAlertToStore } from './_lib/email';
+import { text, optionalText, email as validEmail, badRequest, MAX } from './_lib/validate';
 
 interface RequestBody {
   customerName: string;
@@ -22,10 +23,19 @@ export default async function handler(req: Request) {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
   }
 
-  const { customerName, customerEmail, subject, description, budget, timeline } = body || {};
+  const raw = (body && typeof body === 'object' ? body : {}) as Partial<Record<keyof RequestBody, unknown>>;
+  const customerName = text(raw.customerName, { max: MAX.name });
+  const customerEmail = validEmail(raw.customerEmail);
+  const subject = text(raw.subject, { max: MAX.subject });
+  const description = text(raw.description, { max: MAX.longText, multiline: true });
+  const budget = optionalText(raw.budget, { max: MAX.shortNote });
+  const timeline = optionalText(raw.timeline, { max: MAX.shortNote });
 
   if (!customerName || !customerEmail || !subject || !description) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
+    return badRequest('Please check the required fields: name, a valid email, subject and description.');
+  }
+  if (budget === null || timeline === null) {
+    return badRequest('Budget and timeline must be 100 characters or fewer.');
   }
 
   try {

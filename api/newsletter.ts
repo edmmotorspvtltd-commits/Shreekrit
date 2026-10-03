@@ -1,5 +1,6 @@
 export const config = { runtime: 'edge' };
 import { sendNewsletterWelcome } from './_lib/email';
+import { email as validEmail } from './_lib/validate';
 
 export default async function handler(req: Request) {
   if (req.method !== 'POST') {
@@ -13,8 +14,8 @@ export default async function handler(req: Request) {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), { status: 400 });
   }
 
-  const { email } = body || {};
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const email = validEmail(body?.email);
+  if (!email) {
     return new Response(JSON.stringify({ error: 'Valid email is required' }), { status: 400 });
   }
 
