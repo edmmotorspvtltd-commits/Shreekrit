@@ -3,11 +3,15 @@ export const config = { runtime: 'edge' };
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
-// Creates the Supabase auth user server-side, already marked as confirmed, so
-// signup needs no verification email/link. Uses the service_role key, which must
-// only ever exist as a server environment variable (never VITE_-prefixed).
+// Creates the Supabase auth user server-side (unconfirmed) and emails our own
+// branded confirmation link through Resend. The account can only be used once
+// that link is opened. Uses the service_role key, which must only ever exist as
+// a server environment variable (never VITE_-prefixed).
 import { createClient } from '@supabase/supabase-js';
 import { sendVerificationEmail } from './_lib/email';
+
+const MIN_PASSWORD_LENGTH = 10;
+const MAX_PASSWORD_LENGTH = 128;
 
 export default async function handler(req: Request) {
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -22,7 +26,9 @@ export default async function handler(req: Request) {
   const email = (body.email || '').trim().toLowerCase();
   const password = body.password || '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Please enter a valid email address.' }, 400);
-  if (password.length < 6) return json({ error: 'Password must be at least 6 characters.' }, 400);
+  if (email.length > 254) return json({ error: 'Please enter a valid email address.' }, 400);
+  if (password.length < MIN_PASSWORD_LENGTH) return json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` }, 400);
+  if (password.length > MAX_PASSWORD_LENGTH) return json({ error: 'Password is too long.' }, 400);
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -48,8 +54,10 @@ export default async function handler(req: Request) {
     });
 
     if (error) {
-      if (error.message.includes('already registered')) {
-         return json({ error: 'An account with this email already exists. Please log in.' }, 409);
+      if (/already (been )?registered|already exists/i.test(error.message)) {
+        // Same response as a successful signup, so this endpoint cannot be used
+        // to find out which email addresses already have an account.
+        return json({ ok: true });
       }
       console.error('Supabase generateLink error:', error);
       return json({ error: 'Could not create your account. Please try again.' }, 500);

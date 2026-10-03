@@ -33,7 +33,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     if (mode === 'signup') {
-      setSuccessMessage('Account created! Please check your email for the verification link.');
+      setSuccessMessage('Almost done! Check your email for a link to confirm your account.');
       return;
     }
 
@@ -115,7 +115,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     required
-                    minLength={6}
+                    minLength={mode === 'signup' ? 10 : undefined}
                     placeholder="At least 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
