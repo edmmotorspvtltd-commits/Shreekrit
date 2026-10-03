@@ -145,9 +145,9 @@ export interface OrderConfirmation {
 
 export type OrderStatus = 'pending_payment' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
-// A row as it actually comes back from Supabase (orders/order_items via
-// supabase-js or the get_guest_order/create_guest_order RPCs) — snake_case
-// on purpose, matching supabase/schema.sql's columns directly rather than
+// The order shape the UI reads, as returned by /api/orders/list and
+// /api/orders/track (mapped from the Neon orders/order_items tables) —
+// snake_case on purpose, mirroring the original schema's columns rather than
 // remapping to camelCase, since these are read straight off query results
 // in MyOrdersSection.tsx / TrackOrderModal.tsx / CheckoutModal.tsx.
 export interface OrderRecord {
