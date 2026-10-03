@@ -398,6 +398,12 @@ export default function App() {
     setIsCommissionOpen(true);
   };
 
+  // Placeholder artist profiles stay available for the demo paintings that
+  // reference them, but are not shown in the Artists sections once real artists
+  // exist.
+  const realArtists = artists.filter((a) => !a.isPlaceholder);
+  const displayedArtists = realArtists.length > 0 ? realArtists : artists;
+
   const featuredPaintings = paintings.filter((p) => p.isFeatured).slice(0, 3);
 
   return (
@@ -473,7 +479,9 @@ export default function App() {
 
             {/* Meet the Artists Teaser Strip */}
             <ArtistsSection
-              artists={artists}
+              artists={displayedArtists}
+              paintings={paintings}
+              currency={currency}
               onOpenCommission={handleOpenCommission}
             />
 
@@ -536,7 +544,9 @@ export default function App() {
           <div className="pt-6">
             <ArtistsSection
               isPageHeading
-              artists={artists}
+              artists={displayedArtists}
+              paintings={paintings}
+              currency={currency}
               onOpenCommission={handleOpenCommission}
             />
           </div>
