@@ -250,7 +250,10 @@ export const TRANSLATIONS = {
       viewBodyOfWork: 'View Body of Work',
       portfolioTitle: 'Portfolio of Original Canvases',
       requestCommission: 'Request Custom Commission from',
-      styleSpecialist: 'Specialist'
+      styleSpecialist: 'Specialist',
+      meetTheArtist: 'Meet the Artist',
+      meetTheArtistSubtitle: 'A painter from the village of Chanpura, Madhubani, keeping the line and colour of Mithila alive.',
+      selectedWorks: 'Selected Works'
     },
     blog: {
       badge: 'From the Guild Journal',
@@ -514,7 +517,10 @@ export const TRANSLATIONS = {
       viewBodyOfWork: 'इनकी कलाकृतियां देखें',
       portfolioTitle: 'कलाकार की मूल कृतियों का संग्रह',
       requestCommission: 'विशेष चित्र का अनुरोध करें:',
-      styleSpecialist: 'विशेषज्ञ'
+      styleSpecialist: 'विशेषज्ञ',
+      meetTheArtist: 'कलाकार से मिलें',
+      meetTheArtistSubtitle: 'मधुबनी के चंपुरा गाँव की चित्रकार, जो मिथिला की रेखा और रंग को जीवित रख रही हैं।',
+      selectedWorks: 'चुनिंदा कृतियाँ'
     },
     blog: {
       badge: 'गिल्ड पत्रिका से',
@@ -778,7 +784,10 @@ export const TRANSLATIONS = {
       viewBodyOfWork: 'कलाकृतिक संग्रह देखू',
       portfolioTitle: 'कलाकारक मूल कृतिक संग्रह',
       requestCommission: 'विशेष चित्रक आदेश दिअ:',
-      styleSpecialist: 'विशेषज्ञ'
+      styleSpecialist: 'विशेषज्ञ',
+      meetTheArtist: 'कलाकार सँ भेटू',
+      meetTheArtistSubtitle: 'मधुबनीक चनपुरा गामक चित्रकार, जे मिथिलाक रेखा आ रंग केँ जीवंत राखि रहल छथि।',
+      selectedWorks: 'चुनल कृति'
     },
     blog: {
       badge: 'गिल्ड पत्रिका सँ',

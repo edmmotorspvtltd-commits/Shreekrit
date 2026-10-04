@@ -76,6 +76,16 @@ const CommissionModal = lazyWithRetry(() => import('./components/CommissionModal
 const ArtistApplicationModal = lazyWithRetry(() => import('./components/ArtistApplicationModal').then(m => ({ default: m.ArtistApplicationModal })), 'ArtistApplicationModal');
 const AuthModal = lazyWithRetry(() => import('./components/AuthModal').then(m => ({ default: m.AuthModal })), 'AuthModal');
 
+// Placeholder demo paintings are hidden now that real inventory exists. The
+// seed data is the source of truth for real paintings, so it overrides stale
+// database or cached copies until the database is re-seeded.
+const withRealPaintings = (list: Painting[]): Painting[] => {
+  const local = PAINTINGS.filter((p) => !p.isPlaceholder);
+  const localIds = new Set(local.map((p) => p.id));
+  const others = list.filter((p) => !p.isPlaceholder && !localIds.has(p.id));
+  return [...local, ...others];
+};
+
 const PAINTINGS_CACHE_KEY = 'mithila_cached_paintings';
 const ARTISTS_CACHE_KEY = 'mithila_cached_artists';
 
@@ -117,7 +127,7 @@ export default function App() {
   // Gallery data is seeded with authentic collection for instant 0ms first render,
   // then seamlessly revalidated with the database (Neon) in the background (stale-while-revalidate).
   const [paintings, setPaintings] = useState<Painting[]>(
-    () => readCache<Painting>(PAINTINGS_CACHE_KEY) ?? PAINTINGS
+    () => withRealPaintings(readCache<Painting>(PAINTINGS_CACHE_KEY) ?? PAINTINGS)
   );
 
   const [artists, setArtists] = useState<Artist[]>(
@@ -160,7 +170,7 @@ export default function App() {
         ]);
         if (!cancelled) {
           if (Array.isArray(paintingsData) && paintingsData.length > 0) {
-            setPaintings(paintingsData);
+            setPaintings(withRealPaintings(paintingsData));
             writeCache(PAINTINGS_CACHE_KEY, paintingsData);
           }
           if (Array.isArray(artistsData) && artistsData.length > 0) {
@@ -398,6 +408,12 @@ export default function App() {
     setIsCommissionOpen(true);
   };
 
+  // Placeholder artist profiles stay available for the demo paintings that
+  // reference them, but are not shown in the Artists sections once real artists
+  // exist.
+  const realArtists = artists.filter((a) => !a.isPlaceholder);
+  const displayedArtists = realArtists.length > 0 ? realArtists : artists;
+
   const featuredPaintings = paintings.filter((p) => p.isFeatured).slice(0, 3);
 
   return (
@@ -473,7 +489,9 @@ export default function App() {
 
             {/* Meet the Artists Teaser Strip */}
             <ArtistsSection
-              artists={artists}
+              artists={displayedArtists}
+              paintings={paintings}
+              currency={currency}
               onOpenCommission={handleOpenCommission}
             />
 
@@ -536,7 +554,9 @@ export default function App() {
           <div className="pt-6">
             <ArtistsSection
               isPageHeading
-              artists={artists}
+              artists={displayedArtists}
+              paintings={paintings}
+              currency={currency}
               onOpenCommission={handleOpenCommission}
             />
           </div>

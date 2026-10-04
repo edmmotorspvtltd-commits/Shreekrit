@@ -2,24 +2,24 @@ import { Artist } from '../types';
 
 export const ARTISTS: Artist[] = [
   {
-    // TODO: profile details below are neutral placeholders — replace with
-    // Lovely Jha's real village, district, bio, years of experience and
-    // photo once provided. Empty/zero values are hidden in the UI.
+    // Village and district confirmed by the owner. Years of experience, awards
+    // and a quote are intentionally left empty (hidden in the UI) until the
+    // artist supplies them — nothing biographical is invented here.
     id: 'artist-lovely-jha',
     name: 'Lovely Jha',
     maithiliName: 'लवली झा',
-    village: 'Mithila Region',
-    district: 'Bihar',
-    state: 'India',
+    village: 'Chanpura',
+    district: 'Madhubani',
+    state: 'Bihar, India',
     yearsOfExperience: 0,
     generation: '',
     specialtyStyle: 'Bharni',
-    bio: 'Lovely Jha paints in the Mithila (Madhubani) tradition, filling bold hand-drawn outlines with rich colour and finishing each work with intricate borders. Her full artist profile will be added soon.',
+    bio: 'Lovely Jha is a Mithila (Madhubani) painter from the village of Chanpura in Madhubani district, Bihar. She works in the Bharni style, where bold hand-drawn outlines are filled with saturated colour and every work is finished with richly patterned borders. Her paintings here include a dancing Ganesha beneath a temple arch and a riverside gathering framed by blossoms and leaves.',
     avatar: '/artists/lovely-jha.jpg',
     awards: [],
-    quote: '',
-    isPlaceholder: true
+    quote: ''
   },
+
   {
     id: 'artist-ambika-devi',
     name: 'Ambika Devi',
