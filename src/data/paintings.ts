@@ -21,7 +21,7 @@ export const PAINTINGS: Painting[] = [
     isOriginal: true,
     isAvailable: true,
     isFeatured: true,
-    completionHours: 0,
+    completionHours: 190,
     story: 'Ganesha, the remover of obstacles, is invoked at the start of every auspicious beginning. Here he dances beneath an arched mandap hung with temple bells, a red halo glowing behind his crowned head and the blessing "Shri Ganeshaya Namah" written in Devanagari above. Every inch is filled in the Bharni manner, with flat bright colour held by fine black line, and the whole scene is framed by layered borders of lotus and scrolling motifs.',
     pigmentsUsed: [],
     motifs: [
@@ -55,7 +55,7 @@ export const PAINTINGS: Painting[] = [
     isOriginal: true,
     isAvailable: true,
     isFeatured: true,
-    completionHours: 0,
+    completionHours: 230,
     story: 'Three figures stand on a riverbank beneath fruit-laden trees, a golden deer at their side and a radiant sun overhead. Fish, lotuses and rippling waves fill the water below, while a deep border of sunflower-like blossoms and a ring of leaves encloses the scene. Rich Bharni colour is set against finely cross-hatched black, giving the whole painting its jewel-like glow.',
     pigmentsUsed: [],
     motifs: [
@@ -68,6 +68,74 @@ export const PAINTINGS: Painting[] = [
     detailImages: [],
     inRoomImage: '/paintings/river-gathering-in-room.jpg',
     certificateId: 'MITH-2026-LJ-0002'
+  },
+  {
+    // TODO: price, dimensions, year, medium and weight are best-guess values — confirm with the artist.
+    id: 'mithila-lakshmi-on-lotus-11',
+    title: 'Goddess Lakshmi on the Lotus',
+    maithiliTitle: 'कमल पर विराजित लक्ष्मी',
+    artistId: 'artist-lovely-jha',
+    artistName: 'Lovely Jha',
+    priceINR: 6720,
+    year: 2026,
+    style: 'Bharni',
+    theme: 'Krishna & Deities',
+    medium: 'Organic Pigments on Raw Canvas',
+    dimensions: {
+      cm: '35.6 × 40.6 cm',
+      inches: '14 × 16 in'
+    },
+    weightGrams: 350,
+    isOriginal: true,
+    isAvailable: true,
+    isFeatured: true,
+    completionHours: 210,
+    story: 'Goddess Lakshmi sits cross-legged on a full-blown pink lotus, a lotus bud held in each of her upper hands, her crown and jewellery picked out in fine white dots. Elephants flank the arch in the Madhubani manner, with auspicious swastikas on the saffron canopy above and ripples of blue water below. A teal field of tiny vines is held inside a cross-hatched black border, and the artist has signed the lower corner.',
+    pigmentsUsed: [],
+    motifs: [
+      { name: 'Lotus Seat', meaning: 'Purity and prosperity, rising unstained above the water' },
+      { name: 'Elephants', meaning: 'Royal blessing and abundance, the traditional attendants of Lakshmi' },
+      { name: 'Swastika', meaning: 'An ancient symbol of auspiciousness and good fortune' },
+      { name: 'Cross-hatched Border', meaning: 'A protective frame that seals auspicious energy inside the painting' }
+    ],
+    primaryImage: '/paintings/lakshmi-on-lotus.jpg',
+    detailImages: [],
+    inRoomImage: '/paintings/lakshmi-on-lotus.jpg',
+    certificateId: 'MITH-2026-LJ-0003'
+  },
+  {
+    // TODO: price, dimensions, year, medium and weight are best-guess values — confirm with the artist.
+    id: 'mithila-tree-of-life-parrots-12',
+    title: 'Tree of Life with Twin Parrots',
+    maithiliTitle: 'जीवन वृक्ष ओ सुग्गा जोड़ी',
+    artistId: 'artist-lovely-jha',
+    artistName: 'Lovely Jha',
+    priceINR: 9450,
+    year: 2026,
+    style: 'Bharni',
+    theme: 'Tree of Life',
+    medium: 'Hand-Painted on Handmade Paper',
+    dimensions: {
+      cm: '38.1 × 53.3 cm',
+      inches: '15 × 21 in'
+    },
+    weightGrams: 300,
+    isOriginal: true,
+    isAvailable: true,
+    isFeatured: true,
+    completionHours: 160,
+    story: 'A single black trunk branches into a canopy of green leaves, with leaf-shaped fruits and marigold-like blossoms hanging from its boughs. Two golden parrots curve down from the top, facing each other across the sky-blue field. A deep red border of white feather motifs and a yellow inner line frame the scene, with flat bright Bharni colour held by fine black line.',
+    pigmentsUsed: [],
+    motifs: [
+      { name: 'Tree of Life', meaning: 'The unbroken link between earth, water and sky, and the continuity of family' },
+      { name: 'Twin Parrots', meaning: 'Love, companionship and the harmony of a couple' },
+      { name: 'Blossoms and Fruit', meaning: 'Fertility, abundance and the promise of a fruitful life' },
+      { name: 'Feather Border', meaning: 'A decorative frame that carries blessings around the painting' }
+    ],
+    primaryImage: '/paintings/tree-of-life-parrots.jpg',
+    detailImages: [],
+    inRoomImage: '/paintings/tree-of-life-parrots.jpg',
+    certificateId: 'MITH-2026-LJ-0004'
   },
   {
     id: 'mithila-tree-of-life-01',
