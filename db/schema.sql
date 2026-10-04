@@ -111,3 +111,53 @@ CREATE TABLE IF NOT EXISTS artist_applications (
 CREATE INDEX IF NOT EXISTS idx_paintings_artist_id ON paintings(artist_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_artist_applications_status ON artist_applications(status);
+
+-- ── Pouches category (mirrors db/migrations/002_pouches.sql, idempotent) ──
+
+CREATE TABLE IF NOT EXISTS pouches (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  artist_id TEXT NOT NULL REFERENCES artists(id),
+  artist_name TEXT NOT NULL,
+  price_inr NUMERIC NOT NULL CHECK (price_inr > 0),
+  size_cm TEXT NOT NULL,
+  material TEXT NOT NULL,
+  paint_type TEXT NOT NULL,
+  care_instructions TEXT NOT NULL,
+  -- Pieces in stock. Decremented atomically at order creation
+  -- (api/orders/create.ts); the CHECK makes overselling impossible even if
+  -- application code is wrong.
+  quantity INT NOT NULL DEFAULT 1 CHECK (quantity >= 0),
+  description TEXT NOT NULL,
+  -- Image paths/URLs, same convention as paintings (files under public/).
+  -- 3-4 images for real stock; placeholders may have fewer.
+  images JSONB NOT NULL DEFAULT '[]' CHECK (jsonb_typeof(images) = 'array' AND jsonb_array_length(images) <= 4),
+  is_featured BOOLEAN NOT NULL DEFAULT FALSE,
+  -- Demo rows: never shown or purchasable when VERCEL_ENV = 'production'.
+  is_placeholder BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_pouches_artist_id ON pouches(artist_id);
+
+-- order_items: a line is either a painting or a pouch. For pouches,
+-- painting_title holds the pouch name (column kept to avoid a rename that
+-- would touch every order query).
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS product_type TEXT NOT NULL DEFAULT 'painting';
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS pouch_id TEXT REFERENCES pouches(id);
+ALTER TABLE order_items ADD COLUMN IF NOT EXISTS quantity INT NOT NULL DEFAULT 1;
+ALTER TABLE order_items ALTER COLUMN painting_id DROP NOT NULL;
+
+ALTER TABLE order_items DROP CONSTRAINT IF EXISTS order_items_product_type_chk;
+ALTER TABLE order_items ADD CONSTRAINT order_items_product_type_chk CHECK (product_type IN ('painting', 'pouch'));
+
+ALTER TABLE order_items DROP CONSTRAINT IF EXISTS order_items_quantity_chk;
+ALTER TABLE order_items ADD CONSTRAINT order_items_quantity_chk CHECK (quantity >= 1 AND quantity <= 10);
+
+ALTER TABLE order_items DROP CONSTRAINT IF EXISTS order_items_product_ref_chk;
+ALTER TABLE order_items ADD CONSTRAINT order_items_product_ref_chk CHECK (
+  (product_type = 'painting' AND painting_id IS NOT NULL AND pouch_id IS NULL)
+  OR (product_type = 'pouch' AND pouch_id IS NOT NULL AND painting_id IS NULL)
+);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_pouch_id ON order_items(pouch_id);

@@ -104,22 +104,31 @@ export interface OrderEmailData {
   orderRef: string;
   orderDate: string;
   estimatedDelivery: string;
-  items: { paintingTitle: string; editionType: string; frame: string; unitPriceINR: number; framePriceINR: number }[];
+  items: { paintingTitle: string; editionType: string; frame: string; unitPriceINR: number; framePriceINR: number; quantity?: number }[];
   subtotalINR: number;
   shippingINR: number;
   totalINR: number;
   shippingAddress: { addressLine1: string; addressLine2?: string; city: string; state: string; postalCode: string; country: string };
 }
 
+// Pouch lines have no edition or frame; they show "Hand-painted pouch × N".
+// Every interpolated value is escaped by the callers via esc().
+const lineQty = (i: { quantity?: number }) => i.quantity ?? 1;
+const lineTotal = (i: { unitPriceINR: number; framePriceINR: number; quantity?: number }) => (i.unitPriceINR + i.framePriceINR) * lineQty(i);
+const lineDescription = (i: { editionType: string; frame: string; quantity?: number }) =>
+  i.editionType === 'pouch'
+    ? `Hand-painted pouch &times; ${esc(lineQty(i))}`
+    : `${i.editionType === 'original' ? 'Original Artwork' : 'Print Edition'} · Frame: ${esc(i.frame)}`;
+
 export async function sendOrderConfirmation(data: OrderEmailData) {
   const itemRows = data.items.map(i => `
     <tr>
       <td style="padding:10px 0;border-bottom:1px solid #F0E4D2;">
         <p style="margin:0;font-size:14px;color:#241A14;font-weight:600;">${esc(i.paintingTitle)}</p>
-        <p style="margin:2px 0 0;font-size:12px;color:#8C7060;">${i.editionType === 'original' ? 'Original Artwork' : 'Print Edition'} · Frame: ${esc(i.frame)}</p>
+        <p style="margin:2px 0 0;font-size:12px;color:#8C7060;">${lineDescription(i)}</p>
       </td>
       <td style="padding:10px 0;border-bottom:1px solid #F0E4D2;text-align:right;vertical-align:top;">
-        <p style="margin:0;font-size:14px;color:#241A14;">&#8377;${(i.unitPriceINR + i.framePriceINR).toLocaleString('en-IN')}</p>
+        <p style="margin:0;font-size:14px;color:#241A14;">&#8377;${lineTotal(i).toLocaleString('en-IN')}</p>
       </td>
     </tr>`).join('');
 
@@ -160,7 +169,7 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
 // ─────────────────────────────────────────────────────────────────────────────
 export async function sendOrderAlertToStore(data: OrderEmailData) {
   const itemList = data.items.map(i =>
-    `<li style="padding:4px 0;">${esc(i.paintingTitle)} (${esc(i.editionType)}, ${esc(i.frame)}) — &#8377;${(i.unitPriceINR + i.framePriceINR).toLocaleString('en-IN')}</li>`
+    `<li style="padding:4px 0;">${esc(i.paintingTitle)} (${i.editionType === 'pouch' ? `pouch &times; ${esc(lineQty(i))}` : `${esc(i.editionType)}, ${esc(i.frame)}`}) — &#8377;${lineTotal(i).toLocaleString('en-IN')}</li>`
   ).join('');
 
   const addr = data.shippingAddress;
@@ -171,7 +180,7 @@ export async function sendOrderAlertToStore(data: OrderEmailData) {
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF5EA;border-radius:8px;padding:16px 20px;margin:16px 0;">
       <tr><td style="font-size:12px;color:#8C7060;text-transform:uppercase;">Order Ref</td><td style="font-size:15px;color:#8C2711;font-weight:700;text-align:right;">${esc(data.orderRef)}</td></tr>
       <tr><td style="font-size:12px;color:#8C7060;padding-top:8px;">Total</td><td style="font-size:15px;color:#241A14;font-weight:700;text-align:right;padding-top:8px;">&#8377;${data.totalINR.toLocaleString('en-IN')}</td></tr>
-      <tr><td style="font-size:12px;color:#8C7060;padding-top:8px;">Customer</td><td style="font-size:13px;color:#241A14;text-align:right;padding-top:8px;">${esc(data.customerName)} — ${data.customerEmail}</td></tr>
+      <tr><td style="font-size:12px;color:#8C7060;padding-top:8px;">Customer</td><td style="font-size:13px;color:#241A14;text-align:right;padding-top:8px;">${esc(data.customerName)} — ${esc(data.customerEmail)}</td></tr>
       <tr><td style="font-size:12px;color:#8C7060;padding-top:8px;">Ship to</td><td style="font-size:13px;color:#241A14;text-align:right;padding-top:8px;">${esc(addrLine)}</td></tr>
     </table>
     <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#8C7060;margin:0 0 8px;">Items</h3>

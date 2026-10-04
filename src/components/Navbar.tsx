@@ -15,6 +15,8 @@ interface NavbarProps {
   currency: CurrencyCode;
   onCurrencyChange: (curr: CurrencyCode) => void;
   cartCount: number;
+  // The Pouches entry only appears once pouches have loaded.
+  showPouches: boolean;
   onOpenCart: () => void;
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
@@ -27,6 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currency,
   onCurrencyChange,
   cartCount,
+  showPouches,
   onOpenCart,
   onOpenCommission,
   onOpenArtistApplication,
@@ -94,6 +97,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               {t.nav.gallery}
             </Link>
+            {showPouches && (
+              <Link
+                to="/pouches"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
+                  activeSection === 'pouches' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
+                }`}
+              >
+                {t.nav.pouches}
+              </Link>
+            )}
             <Link
               to="/story"
               onClick={() => setMobileMenuOpen(false)}
@@ -231,6 +245,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             {t.nav.gallery}
           </Link>
+          {showPouches && (
+            <Link
+              to="/pouches"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+            >
+              {t.nav.pouches}
+            </Link>
+          )}
           <Link
             to="/story"
             onClick={() => setMobileMenuOpen(false)}

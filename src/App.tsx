@@ -9,7 +9,7 @@ import {
   Sparkles, Eye, ArrowRight, ShieldCheck, 
   ShoppingBag, Check, Award, Heart, ChevronRight 
 } from 'lucide-react';
-import { Painting, Artist, CartItem, CurrencyCode, FrameOption, EditionType } from './types';
+import { Painting, Pouch, Artist, CartItem, CurrencyCode, FrameOption, EditionType } from './types';
 import { PAINTINGS } from './data/paintings';
 import { ARTISTS } from './data/artists';
 import { formatPrice } from './utils/currency';
@@ -17,7 +17,8 @@ import { refreshLiveRates } from './utils/liveRates';
 import { useLanguage } from './context/LanguageContext';
 import { Link } from './components/Link';
 import { usePathname, navigate, closeModalRoute, getNavState } from './utils/router';
-import { parseRoute, findById, paintingPath, artistPath, sectionPath } from './utils/routes';
+import { parseRoute, findById, paintingPath, pouchPath, artistPath, sectionPath } from './utils/routes';
+import { addPouchToCart, sanitizeSavedCart } from './utils/cart';
 import { applyPageMeta, truncate } from './utils/seo';
 import { readCache, writeCache } from './utils/dataCache';
 
@@ -27,6 +28,7 @@ import { HeroHandDrawn } from './components/HeroHandDrawn';
 import { ParallaxMotifs } from './components/ParallaxMotifs';
 import { GallerySection } from './components/GallerySection';
 import { PaintingCard } from './components/PaintingCard';
+import { PouchesSection } from './components/PouchesSection';
 import { VisualStoryTimeline } from './components/VisualStoryTimeline';
 import { HeritageAboutSection } from './components/HeritageAboutSection';
 import { ArtistsSection } from './components/ArtistsSection';
@@ -67,6 +69,7 @@ function lazyWithRetry<T extends React.ComponentType<any>>(
 const TrackOrderModal = lazyWithRetry(() => import('./components/TrackOrderModal').then(m => ({ default: m.TrackOrderModal })), 'TrackOrderModal');
 const ArtworkDetailModal = lazyWithRetry(() => import('./components/ArtworkDetailModal').then(m => ({ default: m.ArtworkDetailModal })), 'ArtworkDetailModal');
 const ArtistProfileModal = lazyWithRetry(() => import('./components/ArtistProfileModal').then(m => ({ default: m.ArtistProfileModal })), 'ArtistProfileModal');
+const PouchDetailModal = lazyWithRetry(() => import('./components/PouchDetailModal').then(m => ({ default: m.PouchDetailModal })), 'PouchDetailModal');
 const CartDrawer = lazyWithRetry(() => import('./components/CartDrawer').then(m => ({ default: m.CartDrawer })), 'CartDrawer');
 const CheckoutModal = lazyWithRetry(() => import('./components/CheckoutModal').then(m => ({ default: m.CheckoutModal })), 'CheckoutModal');
 const CommissionModal = lazyWithRetry(() => import('./components/CommissionModal').then(m => ({ default: m.CommissionModal })), 'CommissionModal');
@@ -80,6 +83,7 @@ const HOME_DESCRIPTION = 'Fine-art gallery of authentic, hand-painted Mithila (M
 
 const SECTION_META: Record<string, { title: string; description: string }> = {
   home: { title: 'Shreekrit — Hand-Painted Folk Art Gallery', description: HOME_DESCRIPTION },
+  pouches: { title: 'Hand-Painted Pouches | Shreekrit', description: 'Hand-painted fabric pouches in the Mithila (Madhubani) tradition by Lovely Jha, made in small numbers.' },
   gallery: { title: 'Gallery — Original Mithila Paintings | Shreekrit', description: 'Browse original hand-painted Mithila (Madhubani) paintings by master artists, filterable by style, theme and price.' },
   story: { title: 'The Story of a Painting | Shreekrit', description: 'Follow a Mithila painting from natural pigments and hand-drawn motifs to the finished work and its certificate of authenticity.' },
   heritage: { title: 'Mithila Heritage & Lore | Shreekrit', description: 'The history, symbols and living tradition of Mithila (Madhubani) folk painting from Bihar, India.' },
@@ -99,7 +103,7 @@ export default function App() {
   const [backgroundSection, setBackgroundSection] = useState<string>(() => {
     const initial = parseRoute(window.location.pathname);
     if (initial.kind === 'section') return initial.section;
-    return initial.kind === 'artist' ? 'artists' : 'gallery';
+    return initial.kind === 'artist' ? 'artists' : initial.kind === 'pouch' ? 'pouches' : 'gallery';
   });
   useEffect(() => {
     if (route.kind === 'section') setBackgroundSection(route.section);
@@ -119,6 +123,21 @@ export default function App() {
   const [artists, setArtists] = useState<Artist[]>(
     () => readCache<Artist>(ARTISTS_CACHE_KEY) ?? ARTISTS
   );
+
+  // Pouches load separately and are never cached locally: stock changes as
+  // pieces sell, and demo pouches must not outlive the API hiding them. If
+  // the request fails (e.g. migration not applied) the Pouches nav stays hidden.
+  const [pouches, setPouches] = useState<Pouch[]>([]);
+  const [pouchesLoaded, setPouchesLoaded] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/pouches')
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`pouches ${res.status}`))))
+      .then((data) => { if (!cancelled && Array.isArray(data)) setPouches(data); })
+      .catch((e) => console.warn('Pouches could not be loaded:', e))
+      .finally(() => { if (!cancelled) setPouchesLoaded(true); });
+    return () => { cancelled = true; };
+  }, []);
 
   // Direct visits to /painting/:id or /artist/:id can't be called missing
   // until the background database sync has had a chance to add them.
@@ -177,7 +196,7 @@ export default function App() {
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('mithila_cart');
-      return saved ? JSON.parse(saved) : [];
+      return saved ? sanitizeSavedCart(JSON.parse(saved)) : [];
     } catch {
       return [];
     }
@@ -191,15 +210,18 @@ export default function App() {
   const routedPainting = route.kind === 'painting' ? findById<Painting>(paintings, route.id) : undefined;
   const selectedPainting: Painting | null =
     routedPainting ?? (underPaintingId ? findById<Painting>(paintings, underPaintingId) ?? null : null);
+  const selectedPouch: Pouch | null = route.kind === 'pouch' ? findById<Pouch>(pouches, route.id) ?? null : null;
   const selectedArtist: Artist | null = route.kind === 'artist' ? findById<Artist>(artists, route.id) ?? null : null;
   const isMissingItem =
     dataSynced &&
     ((route.kind === 'painting' && !routedPainting) || (route.kind === 'artist' && !selectedArtist));
+  // Pouches have their own loaded flag (separate request).
+  const isMissingPouch = route.kind === 'pouch' && pouchesLoaded && !selectedPouch;
   const activeSection =
-    route.kind === 'not-found' || isMissingItem ? '404' : route.kind === 'section' ? route.section : backgroundSection;
+    route.kind === 'not-found' || isMissingItem || isMissingPouch ? '404' : route.kind === 'section' ? route.section : backgroundSection;
 
   const openPainting = (painting: Painting) => navigate(paintingPath(painting));
-  const closeModalPage = () => closeModalRoute(route.kind === 'artist' ? sectionPath('artists') : sectionPath('gallery'));
+  const closeModalPage = () => closeModalRoute(route.kind === 'artist' ? sectionPath('artists') : route.kind === 'pouch' ? sectionPath('pouches') : sectionPath('gallery'));
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isCommissionOpen, setIsCommissionOpen] = useState(false);
@@ -214,7 +236,7 @@ export default function App() {
 
   // Global scroll lock for modals
   useEffect(() => {
-    const isAnyModalOpen = isCartOpen || isCheckoutOpen || isCommissionOpen || isArtistApplicationOpen || isAuthOpen || isTrackOrderOpen || selectedPainting || selectedArtist;
+    const isAnyModalOpen = isCartOpen || isCheckoutOpen || isCommissionOpen || isArtistApplicationOpen || isAuthOpen || isTrackOrderOpen || selectedPainting || selectedArtist || selectedPouch;
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -223,7 +245,7 @@ export default function App() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isCartOpen, isCheckoutOpen, isCommissionOpen, isArtistApplicationOpen, isAuthOpen, isTrackOrderOpen, selectedPainting, selectedArtist]);
+  }, [isCartOpen, isCheckoutOpen, isCommissionOpen, isArtistApplicationOpen, isAuthOpen, isTrackOrderOpen, selectedPainting, selectedArtist, selectedPouch]);
 
   // Per-page title, description and canonical tag.
   useEffect(() => {
@@ -234,6 +256,17 @@ export default function App() {
         description: truncate(`${routedPainting.title}, a hand-painted ${routedPainting.style} Mithila painting by ${routedPainting.artistName}. ${routedPainting.story}`),
         path,
         image: routedPainting.primaryImage
+      });
+      if (decodeURI(window.location.pathname) !== decodeURI(path)) {
+        window.history.replaceState(window.history.state, '', path);
+      }
+    } else if (route.kind === 'pouch' && selectedPouch) {
+      const path = pouchPath(selectedPouch);
+      applyPageMeta({
+        title: `${selectedPouch.name} — Hand-Painted Pouch by ${selectedPouch.artistName} | Shreekrit`,
+        description: truncate(`${selectedPouch.name}, a hand-painted pouch (${selectedPouch.sizeCm} cm, ${selectedPouch.material}). ${selectedPouch.description}`),
+        path,
+        image: selectedPouch.images[0]
       });
       if (decodeURI(window.location.pathname) !== decodeURI(path)) {
         window.history.replaceState(window.history.state, '', path);
@@ -252,14 +285,14 @@ export default function App() {
     } else if (route.kind === 'section') {
       const meta = SECTION_META[route.section] ?? SECTION_META.home;
       applyPageMeta({ ...meta, path: sectionPath(route.section) });
-    } else if (route.kind === 'not-found' || isMissingItem) {
+    } else if (route.kind === 'not-found' || isMissingItem || isMissingPouch) {
       applyPageMeta({
         title: 'Page not found | Shreekrit',
         description: SECTION_META.home.description,
         path: '/'
       });
     }
-  }, [route, routedPainting, selectedArtist, isMissingItem]);
+  }, [route, routedPainting, selectedPouch, selectedArtist, isMissingItem, isMissingPouch]);
 
   // Save cart to session localStorage
   useEffect(() => {
@@ -333,6 +366,20 @@ export default function App() {
     setIsCheckoutOpen(true);
   };
 
+  // Pouches: stock limits are re-enforced by the server at checkout.
+  const handleAddPouch = (pouch: Pouch, quantity = 1) => {
+    setCart((prev) => addPouchToCart(prev, pouch, quantity));
+    showToast(`Added "${pouch.name}" to your cart.`);
+    setIsCartOpen(true);
+  };
+
+  const handleBuyPouchNow = (pouch: Pouch, quantity = 1) => {
+    setCart(addPouchToCart([], pouch, quantity));
+    if (route.kind === 'pouch') closeModalPage();
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  };
+
   const handleRemoveFromCart = (index: number) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
@@ -364,6 +411,7 @@ export default function App() {
         currency={currency}
         onCurrencyChange={handleCurrencyChange}
         cartCount={cart.length}
+        showPouches={pouches.length > 0}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
@@ -442,6 +490,15 @@ export default function App() {
             artists={artists}
             currency={currency}
             onQuickAdd={handleQuickAdd}
+          />
+        )}
+
+        {activeSection === 'pouches' && (
+          <PouchesSection
+            pouches={pouches}
+            loaded={pouchesLoaded}
+            currency={currency}
+            onAdd={(pouch) => handleAddPouch(pouch, 1)}
           />
         )}
 
@@ -539,6 +596,25 @@ export default function App() {
                   closeModalPage();
                   handleOpenCommissionTheme(theme);
                 }}
+              />
+            )}
+          </AnimatePresence>
+        </React.Suspense>
+
+        {/* Pouch product page */}
+        <React.Suspense fallback={null}>
+          <AnimatePresence>
+            {selectedPouch && (
+              <PouchDetailModal
+                key="pouch-modal"
+                pouch={selectedPouch}
+                currency={currency}
+                onClose={closeModalPage}
+                onAddToCart={(pouch, quantity) => {
+                  handleAddPouch(pouch, quantity);
+                  closeModalPage();
+                }}
+                onBuyNow={handleBuyPouchNow}
               />
             )}
           </AnimatePresence>

@@ -1,7 +1,7 @@
 // Bump this whenever the shape of Painting or Artist changes (a field added,
 // renamed or removed). Every visitor's cached gallery data is then discarded
 // on their next load and refetched, instead of being read with the old shape.
-export const CACHE_SCHEMA_VERSION = 1;
+export const CACHE_SCHEMA_VERSION = 2;
 
 interface CacheEnvelope<T> {
   version: number;

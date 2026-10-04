@@ -431,3 +431,7 @@ export const PRINT_EDITION_PRICE_RATIO = 0.22;
 // Shared the same way as PRINT_EDITION_PRICE_RATIO above.
 export const SHIPPING_COST_INR = 4500;
 export const FREE_SHIPPING_THRESHOLD_INR = 40000;
+
+// Flat shipping for orders containing only pouches (mixed carts keep the
+// painting rule above). TODO: placeholder — confirm after a courier quote.
+export const POUCH_SHIPPING_COST_INR = 150;

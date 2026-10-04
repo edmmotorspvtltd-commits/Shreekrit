@@ -1,14 +1,15 @@
-import type { Artist, Painting } from '../types';
+import type { Artist, Painting, Pouch } from '../types';
 
 // Canonical host. Canonical tags, og:url and the sitemap must all use this,
 // and it must match the host the domain redirects to.
 export const SITE_ORIGIN = 'https://www.shreekrit.in';
 
-export const SECTIONS = ['home', 'gallery', 'story', 'heritage', 'artists', 'blog', 'my-orders'] as const;
+export const SECTIONS = ['home', 'gallery', 'story', 'heritage', 'pouches', 'artists', 'blog', 'my-orders'] as const;
 
 export type Route =
   | { kind: 'section'; section: string }
   | { kind: 'painting'; id: string }
+  | { kind: 'pouch'; id: string }
   | { kind: 'artist'; id: string }
   | { kind: 'not-found' };
 
@@ -29,6 +30,12 @@ export const paintingPath = (painting: Pick<Painting, 'id' | 'title'>) => {
   return `/painting/${encodeURIComponent(painting.id)}${slug ? `/${slug}` : ''}`;
 };
 
+// /pouch/<id>/<readable-slug>, same scheme as paintings.
+export const pouchPath = (pouch: Pick<Pouch, 'id' | 'name'>) => {
+  const slug = slugify(pouch.name);
+  return `/pouch/${encodeURIComponent(pouch.id)}${slug ? `/${slug}` : ''}`;
+};
+
 export const artistPath = (artist: Pick<Artist, 'id' | 'name'>) => {
   const slug = slugify(artist.name);
   return `/artist/${encodeURIComponent(artist.id)}${slug ? `/${slug}` : ''}`;
@@ -46,7 +53,7 @@ export const parseRoute = (pathname: string): Route => {
   const segments = pathname.split('/').filter(Boolean);
   if (segments.length === 0) return { kind: 'section', section: 'home' };
 
-  if ((segments[0] === 'painting' || segments[0] === 'artist') && segments.length >= 2 && segments.length <= 3) {
+  if ((segments[0] === 'painting' || segments[0] === 'artist' || segments[0] === 'pouch') && segments.length >= 2 && segments.length <= 3) {
     return { kind: segments[0], id: safeDecode(segments[1]) };
   }
 

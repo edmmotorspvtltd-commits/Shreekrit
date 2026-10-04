@@ -69,11 +69,13 @@ export const OrderDetailCard: React.FC<OrderDetailCardProps> = ({ order, items }
               <div>
                 <div className="font-medium text-[#241A14]">{item.painting_title}</div>
                 <div className="text-[12px] text-[#7A6452]">
-                  {item.frame} · {item.edition_type === 'original' ? 'Original' : 'Museum Print'}
+                  {item.product_type === 'pouch'
+                    ? `Hand-painted pouch × ${item.quantity ?? 1}`
+                    : `${item.frame} · ${item.edition_type === 'original' ? 'Original' : 'Museum Print'}`}
                 </div>
               </div>
               <span className="font-mono font-semibold text-[#5A4535]">
-                {formatStoredAmount(Number(item.unit_price_inr) + Number(item.frame_price_inr), 'INR')}
+                {formatStoredAmount((Number(item.unit_price_inr) + Number(item.frame_price_inr)) * (item.quantity ?? 1), 'INR')}
               </span>
             </div>
           ))}

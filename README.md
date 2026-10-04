@@ -89,6 +89,17 @@ The gallery reads paintings and artists from Neon through `/api/paintings` and `
 
 The sitemap and the page titles pick the new painting up automatically.
 
+## Pouches
+
+Hand-painted fabric pouches are a second category, sold by quantity (a design may have several pieces). They live in their own `pouches` table, served by `/api/pouches`, with pages at `/pouches` and `/pouch/:id`.
+
+1. Apply `db/migrations/002_pouches.sql` to a Neon branch first and check it, then to production. It is idempotent, and its header has a rollback note.
+2. `NEON_BRANCH_CONFIRMED=yes npm run db:seed:pouches` (branch only) loads the demo pouches from `src/data/pouches.ts`. Demo rows have `is_placeholder = true`: the API hides them and `/api/orders/create` refuses to sell them when `VERCEL_ENV` is `production`. The Pouches nav link only shows once the API returns at least one pouch.
+3. Add real pouches with photos in `public/pouches/` (3 to 4 images each, referenced as `/pouches/<file>.jpg`).
+4. `NEON_BRANCH_CONFIRMED=yes DATABASE_URL=<branch url> npm run test:stock` runs the stock-safety tests (last-piece race, restore on failed checkout, duplicate cart lines, quantity limits). It writes to the database, so never point it at production.
+
+Pouch-only orders pay a flat shipping rate, `POUCH_SHIPPING_COST_INR` in `src/data/paintings.ts` (placeholder, to be confirmed with a courier quote). Orders containing a painting use the painting rule.
+
 ## Deploying
 
 The project deploys to Vercel as a Vite app.
@@ -132,6 +143,7 @@ Search engines are currently blocked in three places, and all three must be remo
 
 Also review:
 
+- **Abandoned-order stock (blocker).** Stock reserved by `/api/orders/create` (originals and pouches) is only released when that request itself fails. Once real Razorpay payments are on, a buyer who starts checkout and never pays keeps the item reserved indefinitely. Add expiry for `pending` orders (release stock after N minutes, and on payment failure) before launch. There is a TODO in `api/orders/create.ts`. The same gap covers crashes between taking stock and saving the order: the Neon HTTP driver has no transaction here, so expiry/reconciliation must also release stock for orders that never got saved.
 - **Payments status.** `api/orders/create.ts` forces test mode: orders are saved and confirmation emails are sent, but no payment is taken. The Razorpay checkout in `src/utils/razorpay.ts` and the `/api/orders/verify` endpoint exist but are not connected to the checkout form yet. Orders placed today are not paid orders.
 - **Placeholder content.** Items flagged `isPlaceholder` in `src/data/` (demo paintings, artists and blog posts) still need replacing or removing, and the Blog link in the navbar is hidden until `hasRealBlogContent` in `src/components/Navbar.tsx` is set to `true`.
 - **Canonical host.** Canonical tags and the sitemap use `https://www.shreekrit.in` (`SITE_ORIGIN` in `src/utils/routes.ts`). The domain should redirect to the same host.

@@ -1,5 +1,6 @@
 import { sql } from './_lib/db';
-import { SITE_ORIGIN, paintingPath, artistPath, sectionPath } from '../src/utils/routes';
+import { SITE_ORIGIN, paintingPath, pouchPath, artistPath, sectionPath } from '../src/utils/routes';
+import { isProduction } from './_lib/env';
 
 export const config = { runtime: 'edge' };
 
@@ -27,13 +28,24 @@ export default async function handler(req: Request) {
       sql()`SELECT id, name FROM artists ORDER BY id ASC`
     ]);
 
-    const staticSections = ['home', 'gallery', 'story', 'heritage', 'artists', 'blog'];
+    // Pouches are optional: a missing table (migration not yet applied)
+    // must not take the whole sitemap down. Demo pouches stay out of
+    // production's sitemap.
+    const pouches = await sql()`SELECT id, name FROM pouches WHERE is_placeholder = false OR ${!isProduction()} ORDER BY id ASC`
+      .catch((err: unknown) => {
+        console.warn('Sitemap: pouches unavailable:', err);
+        return [] as any[];
+      });
+
+    const staticSections = ['home', 'gallery', ...(pouches.length > 0 ? ['pouches'] : []), 'story', 'heritage', 'artists', 'blog'];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${
       staticSections.map((section) => urlEntry(sectionPath(section), 'daily', section === 'home' ? '1.0' : '0.8')).join('')
     }${
       paintings.map((p: any) => urlEntry(paintingPath({ id: p.id, title: p.title }), 'weekly', '0.6')).join('')
+    }${
+      pouches.map((p: any) => urlEntry(pouchPath({ id: p.id, name: p.name }), 'weekly', '0.6')).join('')
     }${
       artists.map((a: any) => urlEntry(artistPath({ id: a.id, name: a.name }), 'weekly', '0.6')).join('')
     }
