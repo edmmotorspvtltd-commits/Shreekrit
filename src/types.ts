@@ -54,6 +54,29 @@ export interface Painting {
   isPlaceholder?: boolean;
 }
 
+export type ProductCategory = 'painting' | 'pouch';
+
+// A hand-painted fabric pouch. Unlike a one-of-a-kind painting, a design may
+// have several pieces: `quantity` is the stock left, decremented atomically
+// at order creation (see api/orders/create.ts).
+export interface Pouch {
+  id: string;
+  name: string;
+  artistId: string;
+  artistName: string;
+  priceINR: number;
+  sizeCm: string; // e.g. "20 x 15"
+  material: string;
+  paintType: string;
+  careInstructions: string;
+  quantity: number;
+  description: string;
+  images: string[]; // 3-4 for real stock
+  isFeatured: boolean;
+  // True for demo pouches: hidden and not purchasable in production.
+  isPlaceholder?: boolean;
+}
+
 export interface Artist {
   id: string;
   name: string;
@@ -86,7 +109,9 @@ export interface BlogPost {
   isPlaceholder?: boolean;
 }
 
-export interface CartItem {
+export interface PaintingCartItem {
+  // Absent on carts saved before pouches existed; treated as 'painting'.
+  kind?: 'painting';
   painting: Painting;
   frame: FrameOption;
   framePriceINR: number;
@@ -100,6 +125,18 @@ export interface CartItem {
   editionType: EditionType;
   unitPriceINR: number;
 }
+
+export interface PouchCartItem {
+  kind: 'pouch';
+  pouch: Pouch;
+  quantity: number;
+  // Per-piece price. A pouch has no frame or edition.
+  unitPriceINR: number;
+  framePriceINR: 0;
+  addedAt: number;
+}
+
+export type CartItem = PaintingCartItem | PouchCartItem;
 
 export interface ShippingAddress {
   fullName: string;
@@ -119,9 +156,13 @@ export interface ShippingAddress {
 // The certificate number is derived from the real DB order_number, not a
 // random client-side string.
 export interface ConfirmedOrderItem {
+  // Absent on orders from before pouches existed (= 'painting').
+  productType?: ProductCategory;
+  quantity?: number;
+  // The painting id, or the pouch id / name for pouches.
   paintingId: string;
   paintingTitle: string;
-  editionType: EditionType;
+  editionType: EditionType | 'pouch';
   frame: string;
   framePriceINR: number;
   unitPriceINR: number;
@@ -171,9 +212,12 @@ export interface OrderRecord {
 export interface OrderItemRecord {
   id: string;
   order_id: string;
-  painting_id: string;
+  painting_id: string | null;
   painting_title: string;
   edition_type: string;
+  product_type?: ProductCategory;
+  pouch_id?: string | null;
+  quantity?: number;
   unit_price_inr: number;
   frame: string;
   frame_price_inr: number;

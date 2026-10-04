@@ -26,7 +26,7 @@ const STATUS_STYLES: Record<string, string> = {
 // supabase/schema.sql) — no image, since it's not a DB table. This is a
 // best-effort lookup against the static seed data for a thumbnail; an order
 // for a painting no longer in that list just shows the fallback icon.
-const thumbnailFor = (paintingId: string) => PAINTINGS.find((p) => p.id === paintingId)?.primaryImage;
+const thumbnailFor = (paintingId: string | null) => PAINTINGS.find((p) => p.id === paintingId)?.primaryImage;
 
 export const MyOrdersSection: React.FC<MyOrdersSectionProps> = ({ onOpenAuth }) => {
   const { user, session, isLoading: authLoading } = useAuth();

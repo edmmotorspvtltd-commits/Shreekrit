@@ -4,6 +4,11 @@
 
 export const ALLOWED_CURRENCIES = ['INR', 'USD', 'EUR', 'GBP', 'JPY'] as const;
 export const EDITION_TYPES = ['original', 'print'] as const;
+export const PRODUCT_TYPES = ['painting', 'pouch'] as const;
+
+// Most pieces of one pouch design a single order may contain, summed across
+// cart lines. Enforced server-side in api/orders/create.ts.
+export const MAX_PIECES_PER_PRODUCT = 10;
 
 export const MAX = {
   name: 100,
@@ -56,6 +61,10 @@ export function phone(value: unknown): string | null {
 export function postalCode(value: unknown): string | null {
   const v = text(value, { max: 12, min: 3 });
   return v && POSTAL_RE.test(v) ? v : null;
+}
+
+export function quantity(value: unknown): number | null {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= MAX_PIECES_PER_PRODUCT ? value : null;
 }
 
 export function oneOf<T extends string>(value: unknown, allowed: readonly T[]): T | null {

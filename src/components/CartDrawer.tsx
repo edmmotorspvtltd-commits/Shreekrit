@@ -5,6 +5,7 @@ import { CartItem, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/currency';
 import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
+import { isPouchItem, cartItemKey, cartItemTitle, cartItemImage, cartItemArtist, cartLineTotalINR, cartSubtotalINR } from '../utils/cart';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -26,10 +27,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   const { t, language } = useLanguage();
   if (!isOpen) return null;
 
-  const subtotalINR = items.reduce(
-    (sum, item) => sum + item.unitPriceINR + item.framePriceINR,
-    0
-  );
+  const subtotalINR = cartSubtotalINR(items);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
@@ -101,12 +99,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             ) : (
               items.map((item, idx) => (
                 <div
-                  key={`${item.painting.id}-${idx}`}
+                  key={cartItemKey(item, idx)}
                   className="p-3 bg-[#FAF5EA] rounded border border-[#E0D0B8] shadow-sm flex gap-3 relative group"
                 >
                   <img
-                    src={item.painting.primaryImage}
-                    alt={item.painting.title}
+                    src={cartItemImage(item)}
+                    alt={cartItemTitle(item)}
                     referrerPolicy="no-referrer"
                     onError={handleImageError}
                     className="w-20 h-20 object-cover rounded border border-[#DFCDB3] flex-shrink-0"
@@ -115,7 +113,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   <div className="flex-1 overflow-hidden">
                     <div className="flex items-start justify-between gap-1">
                       <h4 className="font-serif text-sm font-bold text-[#241A14] truncate">
-                        {(language === 'mai' || language === 'hi') && item.painting.maithiliTitle ? item.painting.maithiliTitle : item.painting.title}
+                        {!isPouchItem(item) && (language === 'mai' || language === 'hi') && item.painting.maithiliTitle ? item.painting.maithiliTitle : cartItemTitle(item)}
                       </h4>
                       <button
                         onClick={() => onRemoveItem(idx)}
@@ -128,24 +126,32 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
 
                     <div className="text-[12px] text-[#7A604D] truncate">
-                      {t.gallery.byArtist} {item.painting.artistName}
+                      {t.gallery.byArtist} {cartItemArtist(item)}
                     </div>
 
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[12px] text-[#8C2711] bg-[#F4EBDB] px-1.5 py-0.5 rounded inline-block font-mono">
-                        {item.frame}
-                      </span>
-                      <span className="text-[12px] text-[#3E5C38] bg-[#E8F0E5] px-1.5 py-0.5 rounded inline-block font-mono">
-                        {item.editionType === 'original' ? 'Original' : 'Museum Print'}
-                      </span>
+                      {isPouchItem(item) ? (
+                        <span className="text-[12px] text-[#3E5C38] bg-[#E8F0E5] px-1.5 py-0.5 rounded inline-block font-mono">
+                          Hand-painted pouch × {item.quantity}
+                        </span>
+                      ) : (
+                        <>
+                          <span className="text-[12px] text-[#8C2711] bg-[#F4EBDB] px-1.5 py-0.5 rounded inline-block font-mono">
+                            {item.frame}
+                          </span>
+                          <span className="text-[12px] text-[#3E5C38] bg-[#E8F0E5] px-1.5 py-0.5 rounded inline-block font-mono">
+                            {item.editionType === 'original' ? 'Original' : 'Museum Print'}
+                          </span>
+                        </>
+                      )}
                     </div>
 
                     <div className="mt-2 flex items-center justify-between text-xs">
                       <span className="text-[#6E5948] text-[12px]">
-                        {item.painting.dimensions.inches}
+                        {isPouchItem(item) ? `${item.pouch.sizeCm} cm` : item.painting.dimensions.inches}
                       </span>
                       <span className="font-bold text-[#241A14] font-serif-display text-sm">
-                        {formatPrice(item.unitPriceINR + item.framePriceINR, currency)}
+                        {formatPrice(cartLineTotalINR(item), currency)}
                       </span>
                     </div>
                   </div>

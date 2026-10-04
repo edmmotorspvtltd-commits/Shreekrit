@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import { CartItem, CurrencyCode, ShippingAddress, OrderConfirmation } from '../types';
 import { formatPrice, convertPrice } from '../utils/currency';
-import { SHIPPING_COST_INR, FREE_SHIPPING_THRESHOLD_INR } from '../data/paintings';
+import { FREE_SHIPPING_THRESHOLD_INR } from '../data/paintings';
+import { isPouchItem, cartItemKey, cartItemTitle, cartItemImage, cartLineTotalINR, cartSubtotalINR, cartShippingINR } from '../utils/cart';
 import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -50,15 +51,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     country: ''
   });
 
-  const subtotalINR = items.reduce(
-    (sum, item) => sum + item.unitPriceINR + item.framePriceINR,
-    0
-  );
+  const subtotalINR = cartSubtotalINR(items);
 
   // Shipping calculation
   // Free insured shipping on orders above ₹40,000 (~$500)
-  const isFreeShipping = subtotalINR > FREE_SHIPPING_THRESHOLD_INR;
-  const shippingCostINR = isFreeShipping ? 0 : SHIPPING_COST_INR;
+  // Mirrors the server (computeShippingINR in api/orders/create.ts), which
+  // recomputes the charged amount itself.
+  const shippingCostINR = cartShippingINR(items);
+  const isFreeShipping = shippingCostINR === 0 && subtotalINR > FREE_SHIPPING_THRESHOLD_INR;
   const grandTotalINR = subtotalINR + shippingCostINR;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -73,6 +73,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setStep('payment');
   };
 
+  // Only paintings get a certificate of authenticity.
+  const certItems = completedOrder ? completedOrder.items.filter((item) => item.productType !== 'pouch') : [];
+
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
@@ -80,11 +83,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
     try {
       const payload = {
-        items: items.map(item => ({
-          paintingId: item.painting.id,
-          editionType: item.editionType,
-          frame: item.frame
-        })),
+        items: items.map(item => isPouchItem(item)
+          ? { productType: 'pouch', pouchId: item.pouch.id, quantity: item.quantity }
+          : {
+              productType: 'painting',
+              paintingId: item.painting.id,
+              editionType: item.editionType,
+              frame: item.frame
+            }),
         shipping: formData,
         currency
       };
@@ -338,20 +344,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   {items.map((item, i) => (
                     <div key={i} className="flex gap-2.5 items-center text-xs">
                       <img
-                        src={item.painting.primaryImage}
-                        alt={item.painting.title}
+                        src={cartItemImage(item)}
+                        alt={cartItemTitle(item)}
                         referrerPolicy="no-referrer"
                         onError={handleImageError}
                         className="w-12 h-12 rounded object-cover border border-[#D5C3A5]"
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-[#241A14] truncate">{item.painting.title}</div>
+                        <div className="font-medium text-[#241A14] truncate">{cartItemTitle(item)}</div>
                         <div className="text-[12px] text-[#7A6452] truncate">
-                          {item.frame} · {item.editionType === 'original' ? 'Original' : 'Museum Print'}
+                          {isPouchItem(item)
+                            ? `Hand-painted pouch × ${item.quantity}`
+                            : `${item.frame} · ${item.editionType === 'original' ? 'Original' : 'Museum Print'}`}
                         </div>
                       </div>
                       <span className="font-mono font-semibold">
-                        {formatPrice(item.unitPriceINR + item.framePriceINR, currency)}
+                        {formatPrice(cartLineTotalINR(item), currency)}
                       </span>
                     </div>
                   ))}
@@ -470,7 +478,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </p>
               </div>
 
-              {/* Printable Certificate of Authenticity Preview Card */}
+              {/* Pouches carry no certificate; list them separately. */}
+              {completedOrder.items.some((item) => item.productType === 'pouch') && (
+                <div className="p-4 bg-[#FFFDF9] rounded-lg border border-[#E0D0B8] text-left text-xs space-y-1">
+                  {completedOrder.items.filter((item) => item.productType === 'pouch').map((item, i) => (
+                    <div key={i} className="flex justify-between text-[#5A4535]">
+                      <span>{item.paintingTitle} × {item.quantity ?? 1}</span>
+                      <span className="font-mono">{formatPrice((item.unitPriceINR + item.framePriceINR) * (item.quantity ?? 1), currency)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Printable Certificate of Authenticity Preview Card (paintings only) */}
+              {certItems.length > 0 && (
               <div className="p-6 bg-[#FFFDF9] rounded-lg border-2 border-[#8C2711] shadow-md text-left space-y-4 relative overflow-hidden">
                 <div className="absolute top-2 right-3 text-[12px] font-mono text-[#8C2711]/60">
                   OFFICIAL GUILD REGISTRATION
@@ -481,7 +502,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     Shreekrit Certificate of Authenticity
                   </h5>
                   <p className="text-[12px] text-[#7A6452] italic">
-                    {completedOrder.items[0]?.editionType === 'print'
+                    {certItems[0]?.editionType === 'print'
                       ? 'Certified Limited Giclée Edition of Madhubani Folk Art, Bihar, India'
                       : 'Certified Hand-Painted Original Folk Art of Madhubani, Bihar, India'}
                   </p>
@@ -502,17 +523,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                   <div>
                     <span className="text-[#8C7665] block text-[12px]">
-                      {completedOrder.items[0]?.editionType === 'print' ? 'Print Edition Certificate ID' : 'Registry Certificate ID'}
+                      {certItems[0]?.editionType === 'print' ? 'Print Edition Certificate ID' : 'Registry Certificate ID'}
                     </span>
                     <span className="font-mono font-bold text-[#8C2711]">
-                      {completedOrder.items[0]?.certificateNumber ?? completedOrder.orderRef}
+                      {certItems[0]?.certificateNumber ?? completedOrder.orderRef}
                     </span>
                   </div>
                 </div>
 
-                {completedOrder.items.length > 1 && (
+                {certItems.length > 1 && (
                   <div className="pt-2 border-t border-[#E0D0B8] space-y-1">
-                    {completedOrder.items.slice(1).map((item, i) => (
+                    {certItems.slice(1).map((item, i) => (
                       <div key={i} className="flex justify-between text-[12px] text-[#7A6452]">
                         <span>{item.paintingTitle} ({item.editionType === 'print' ? 'Print' : 'Original'})</span>
                         <span className="font-mono font-bold text-[#8C2711]">{item.certificateNumber}</span>
@@ -535,6 +556,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </button>
                 </div>
               </div>
+              )}
 
               <div className="pt-2">
                 <button

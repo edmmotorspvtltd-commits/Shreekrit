@@ -18,6 +18,7 @@ export const TRANSLATIONS = {
     nav: {
       home: 'Home',
       gallery: 'The Gallery',
+      pouches: 'Pouches',
       story: 'Artisan Journey',
       heritage: 'Heritage Lore',
       artists: 'Master Artists',
@@ -281,6 +282,7 @@ export const TRANSLATIONS = {
     nav: {
       home: 'गृह पृष्ठ',
       gallery: 'कला वीथिका',
+      pouches: 'पाउच',
       story: 'शिल्पी यात्रा',
       heritage: 'धरोहर कथा',
       artists: 'सिद्ध कलाकार',
@@ -544,6 +546,7 @@ export const TRANSLATIONS = {
     nav: {
       home: 'घर (गृह)',
       gallery: 'चित्र दीर्घा',
+      pouches: 'पाउच',
       story: 'कलाकार यात्रा',
       heritage: 'विरासत कथा',
       artists: 'महान कलाकार',

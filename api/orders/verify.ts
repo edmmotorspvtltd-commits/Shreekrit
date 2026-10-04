@@ -83,7 +83,7 @@ export default async function handler(req: Request) {
       await db`
         UPDATE order_items
         SET certificate_number = 'SHK-CERT-' || LPAD(id::text, 6, '0')
-        WHERE order_id = ${dbOrderId} AND certificate_number IS NULL
+        WHERE order_id = ${dbOrderId} AND certificate_number IS NULL AND product_type = 'painting'
       `;
     }
 
@@ -114,13 +114,15 @@ export default async function handler(req: Request) {
       shippingCostINR: Number(paidOrder.shipping_inr),
       paymentMethod: 'razorpay',
       items: itemRows.map((r: any) => ({
-        paintingId: r.painting_id,
+        productType: r.product_type,
+        quantity: r.quantity,
+        paintingId: r.painting_id ?? r.pouch_id,
         paintingTitle: r.painting_title,
         editionType: r.edition_type,
         frame: r.frame,
         framePriceINR: Number(r.frame_price_inr),
         unitPriceINR: Number(r.unit_price_inr),
-        certificateNumber: r.certificate_number
+        certificateNumber: r.certificate_number ?? ''
       }))
     }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (err) {

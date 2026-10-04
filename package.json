@@ -10,7 +10,9 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "db:migrate": "tsx db/migrate.ts",
-    "db:seed": "tsx db/seed.ts"
+    "db:seed": "tsx db/seed.ts",
+    "db:seed:pouches": "tsx db/seed-pouches.ts",
+    "test:stock": "tsx db/test-pouch-stock.ts"
   },
   "dependencies": {
     "@neon/config": "^1.8.2",
