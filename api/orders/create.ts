@@ -3,6 +3,7 @@ import { sql } from '../_lib/db';
 import { text, optionalText, email as validEmail, phone as validPhone, postalCode as validPostal, oneOf, quantity as validQuantity, badRequest, ALLOWED_CURRENCIES, EDITION_TYPES, PRODUCT_TYPES, MAX, MAX_PIECES_PER_PRODUCT } from '../_lib/validate';
 import { isProduction } from '../_lib/env';
 import { reservePouchStock, restorePouchStock, exceedsPerOrderLimit, type PouchLine } from '../_lib/pouchStock';
+import { reservePainting, releasePaintings } from '../_lib/paintingStock';
 import { sendOrderConfirmation, sendOrderAlertToStore } from '../_lib/email';
 import { FRAME_OPTIONS, PRINT_EDITION_PRICE_RATIO } from '../../src/data/paintings';
 import { computeShippingINR } from '../../src/utils/cart';
@@ -146,13 +147,7 @@ export default async function handler(req: Request) {
   let committedOrderId: number | null = null;
   const releaseReserved = async () => {
     await restorePouchStock(sql(), reservedPouches.splice(0));
-    for (const id of reservedIds.splice(0)) {
-      try {
-        await sql()`UPDATE paintings SET is_available = true WHERE id = ${id}`;
-      } catch (releaseErr) {
-        console.error(`Failed to release reserved painting ${id}:`, releaseErr);
-      }
-    }
+    await releasePaintings(sql(), reservedIds.splice(0));
   };
 
   try {
@@ -234,12 +229,7 @@ export default async function handler(req: Request) {
     // cannot both get it: exactly one UPDATE returns a row.
     for (const item of resolvedItems) {
       if (item.productType !== 'painting' || item.editionType !== 'original') continue;
-      const reserved = await db`
-        UPDATE paintings SET is_available = false
-        WHERE id = ${item.paintingId} AND is_available = true
-        RETURNING id
-      `;
-      if (reserved.length === 0) {
+      if (!(await reservePainting(db, item.paintingId))) {
         await releaseReserved();
         return new Response(JSON.stringify({ error: `"${item.paintingTitle}" is no longer available as an original` }), { status: 409 });
       }
