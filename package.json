@@ -12,7 +12,9 @@
     "db:migrate": "tsx db/migrate.ts",
     "db:seed": "tsx db/seed.ts",
     "db:seed:pouches": "tsx db/seed-pouches.ts",
-    "test:stock": "tsx db/test-pouch-stock.ts"
+    "test:stock": "tsx db/test-pouch-stock.ts",
+    "test:painting-stock": "tsx db/test-painting-stock.ts",
+    "test:status": "tsx db/test-admin-status.ts"
   },
   "dependencies": {
     "@neon/config": "^1.8.2",
