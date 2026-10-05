@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ShoppingBag, Menu, X, Sparkles,
-  Feather, User, LogOut, Package
+  Feather, User, LogOut, Package, ChevronDown
 } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { CURRENCY_RATES } from '../data/paintings';
@@ -10,13 +10,19 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { LANGUAGES } from '../i18n/translations';
 
+const DISCOVER_ITEMS = [
+  { to: '/story', section: 'story', key: 'story' },
+  { to: '/heritage', section: 'heritage', key: 'heritage' },
+  { to: '/artists', section: 'artists', key: 'artists' }
+] as const;
+
+const ACTIVE_LINK = 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]';
+
 interface NavbarProps {
   activeSection: string;
   currency: CurrencyCode;
   onCurrencyChange: (curr: CurrencyCode) => void;
   cartCount: number;
-  // The Pouches entry only appears once pouches have loaded.
-  showPouches: boolean;
   onOpenCart: () => void;
   onOpenCommission: () => void;
   onOpenArtistApplication: () => void;
@@ -29,7 +35,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   currency,
   onCurrencyChange,
   cartCount,
-  showPouches,
   onOpenCart,
   onOpenCommission,
   onOpenArtistApplication,
@@ -40,6 +45,49 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const { language, setLanguage, t } = useLanguage();
   const { user, signOut } = useAuth();
+
+  const [discoverOpen, setDiscoverOpen] = useState(false);
+  const [mobileDiscoverOpen, setMobileDiscoverOpen] = useState(false);
+  const discoverRef = useRef<HTMLDivElement>(null);
+  const discoverButtonRef = useRef<HTMLButtonElement>(null);
+  const discoverActive = DISCOVER_ITEMS.some((item) => item.section === activeSection);
+
+  // Close the desktop dropdown on outside click and Escape.
+  useEffect(() => {
+    if (!discoverOpen) return;
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      if (!discoverRef.current?.contains(e.target as Node)) setDiscoverOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setDiscoverOpen(false);
+      discoverButtonRef.current?.focus();
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [discoverOpen]);
+
+  // Escape also collapses the mobile menu.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [mobileMenuOpen]);
+
+  const closeMenus = () => {
+    setMobileMenuOpen(false);
+    setMobileDiscoverOpen(false);
+    setDiscoverOpen(false);
+  };
 
   const currencies: CurrencyCode[] = ['INR', 'USD', 'EUR', 'GBP', 'JPY'];
 
@@ -89,52 +137,59 @@ export const Navbar: React.FC<NavbarProps> = ({
               {t.nav.home}
             </Link>
             <Link
-              to="/gallery"
-              onClick={() => setMobileMenuOpen(false)}
+              to="/shop"
+              onClick={closeMenus}
               className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
-                activeSection === 'gallery' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
+                activeSection === 'shop' ? ACTIVE_LINK : ''
               }`}
             >
-              {t.nav.gallery}
+              {t.nav.shop}
             </Link>
-            {showPouches && (
-              <Link
-                to="/pouches"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
-                  activeSection === 'pouches' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
+            <div
+              ref={discoverRef}
+              className="relative"
+              onMouseEnter={() => setDiscoverOpen(true)}
+              onMouseLeave={() => setDiscoverOpen(false)}
+              onFocus={() => setDiscoverOpen(true)}
+              onBlur={(e) => {
+                if (!discoverRef.current?.contains(e.relatedTarget as Node | null)) setDiscoverOpen(false);
+              }}
+            >
+              <button
+                ref={discoverButtonRef}
+                type="button"
+                aria-haspopup="true"
+                aria-expanded={discoverOpen}
+                aria-controls="discover-menu"
+                onClick={() => setDiscoverOpen(true)}
+                className={`inline-flex items-center gap-1 whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
+                  discoverActive ? ACTIVE_LINK : ''
                 }`}
               >
-                {t.nav.pouches}
-              </Link>
-            )}
-            <Link
-              to="/story"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
-                activeSection === 'story' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
-              }`}
-            >
-              {t.nav.story}
-            </Link>
-            <Link
-              to="/heritage"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
-                activeSection === 'heritage' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
-              }`}
-            >
-              {t.nav.heritage}
-            </Link>
-            <Link
-              to="/artists"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`whitespace-nowrap hover:text-[#8C2711] transition-colors cursor-pointer ${
-                activeSection === 'artists' ? 'text-[#8C2711] font-semibold underline underline-offset-8 decoration-[#8C2711]' : ''
-              }`}
-            >
-              {t.nav.artists}
-            </Link>
+                {t.nav.discover}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${discoverOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+              </button>
+              {discoverOpen && (
+                <div id="discover-menu" className="absolute left-0 top-full pt-2 z-50">
+                  <ul className="min-w-48 bg-[#FAF5EA] border border-[#E2D4BF] rounded-lg shadow-lg py-1">
+                    {DISCOVER_ITEMS.map((item) => (
+                      <li key={item.to}>
+                        <Link
+                          to={item.to}
+                          onClick={closeMenus}
+                          aria-current={activeSection === item.section ? 'page' : undefined}
+                          className={`block px-4 py-2 text-sm hover:bg-[#F0E4D2] hover:text-[#8C2711] ${
+                            activeSection === item.section ? 'text-[#8C2711] font-semibold' : 'text-[#241A14]'
+                          }`}
+                        >
+                          {t.nav[item.key]}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
             {hasRealBlogContent && (
               <Link
                 to="/blog"
@@ -239,42 +294,40 @@ export const Navbar: React.FC<NavbarProps> = ({
             {t.nav.home}
           </Link>
           <Link
-            to="/gallery"
-            onClick={() => setMobileMenuOpen(false)}
+            to="/shop"
+            onClick={closeMenus}
             className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
           >
-            {t.nav.gallery}
+            {t.nav.shop}
           </Link>
-          {showPouches && (
-            <Link
-              to="/pouches"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
+          <div className="border-b border-[#E8DEC8]">
+            <button
+              type="button"
+              aria-expanded={mobileDiscoverOpen}
+              aria-controls="mobile-discover-menu"
+              onClick={() => setMobileDiscoverOpen((open) => !open)}
+              className="flex w-full items-center justify-between py-2 text-sm font-medium text-[#241A14]"
             >
-              {t.nav.pouches}
-            </Link>
-          )}
-          <Link
-            to="/story"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
-          >
-            {t.nav.story}
-          </Link>
-          <Link
-            to="/heritage"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
-          >
-            {t.nav.heritage}
-          </Link>
-          <Link
-            to="/artists"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block w-full text-left py-2 text-sm font-medium text-[#241A14] border-b border-[#E8DEC8]"
-          >
-            {t.nav.artists}
-          </Link>
+              {t.nav.discover}
+              <ChevronDown className={`w-4 h-4 transition-transform ${mobileDiscoverOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+            </button>
+            {mobileDiscoverOpen && (
+              <ul id="mobile-discover-menu" className="pb-2 pl-4">
+                {DISCOVER_ITEMS.map((item) => (
+                  <li key={item.to}>
+                    <Link
+                      to={item.to}
+                      onClick={closeMenus}
+                      aria-current={activeSection === item.section ? 'page' : undefined}
+                      className={`block py-2 text-sm ${activeSection === item.section ? 'text-[#8C2711] font-semibold' : 'text-[#241A14]'}`}
+                    >
+                      {t.nav[item.key]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           {hasRealBlogContent && (
             <Link
               to="/blog"

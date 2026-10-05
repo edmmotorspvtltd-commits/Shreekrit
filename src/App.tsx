@@ -465,7 +465,6 @@ export default function App() {
         currency={currency}
         onCurrencyChange={handleCurrencyChange}
         cartCount={cart.length}
-        showPouches={pouches.length > 0}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenCommission={() => handleOpenCommission()}
         onOpenArtistApplication={() => setIsArtistApplicationOpen(true)}
