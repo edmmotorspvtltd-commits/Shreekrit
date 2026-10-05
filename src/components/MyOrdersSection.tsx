@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Package, ShieldAlert } from 'lucide-react';
 import { OrderRecord, OrderItemRecord } from '../types';
-import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { PAINTINGS } from '../data/paintings';
 import { handleImageError } from '../utils/imageFallback';
