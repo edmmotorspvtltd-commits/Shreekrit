@@ -38,9 +38,12 @@ export const TRANSLATIONS = {
     },
     home: {
       tiles: {
-        pouchesSoon: 'New pouches soon',
-        shopPouches: 'Shop pouches',
-        shopPaintings: 'Shop original paintings'
+        paintingsTitle: 'Original paintings',
+        paintingsDesc: 'One-of-a-kind originals, each painted by hand.',
+        paintingsAlt: 'Original Mithila painting of Lakshmi seated on a lotus, hand-painted by a master artist',
+        pouchesTitle: 'Hand-painted pouches',
+        pouchesDesc: 'Hand-painted and made once.',
+        pouchesAlt: 'Blue hand-painted fabric pouch with orange tulips and a Mithila-style border'
       }
     },
     hero: {
@@ -310,18 +313,21 @@ export const TRANSLATIONS = {
       cart: 'झोली (कार्ट)',
       language: 'भाषा',
       currency: 'मुद्रा',
-      shop: '',
-      discover: ''
+      shop: 'खरीदारी', // NEEDS NATIVE REVIEW
+      discover: 'खोजें' // NEEDS NATIVE REVIEW
     },
     shop: {
-      paintingsTab: '',
-      pouchesTab: ''
+      paintingsTab: 'चित्र', // NEEDS NATIVE REVIEW
+      pouchesTab: 'हाथ से चित्रित पाउच' // NEEDS NATIVE REVIEW
     },
     home: {
-      tiles: {
-        pouchesSoon: '',
-        shopPouches: '',
-        shopPaintings: ''
+      tiles: { // NEEDS NATIVE REVIEW
+        paintingsTitle: 'मौलिक चित्र',
+        paintingsDesc: 'हर चित्र एक अद्वितीय मौलिक कृति है।',
+        paintingsAlt: 'कमल पर विराजमान लक्ष्मी का मौलिक मिथिला चित्र, कलाकार द्वारा हाथ से बनाया गया',
+        pouchesTitle: 'हाथ से चित्रित पाउच',
+        pouchesDesc: 'हाथ से चित्रित और केवल एक बार बना।',
+        pouchesAlt: 'नारंगी ट्यूलिप और मिथिला शैली की किनारी वाला नीला हाथ से चित्रित कपड़े का पाउच'
       }
     },
     hero: {
@@ -592,18 +598,21 @@ export const TRANSLATIONS = {
       cart: 'झोरी (कार्ट)',
       language: 'भाषा',
       currency: 'मुद्रा',
-      shop: '',
-      discover: ''
+      shop: 'खरीदारी', // NEEDS NATIVE REVIEW
+      discover: 'खोजू' // NEEDS NATIVE REVIEW
     },
     shop: {
-      paintingsTab: '',
-      pouchesTab: ''
+      paintingsTab: 'चित्र', // NEEDS NATIVE REVIEW
+      pouchesTab: 'हाथसँ चित्रित पाउच' // NEEDS NATIVE REVIEW
     },
     home: {
-      tiles: {
-        pouchesSoon: '',
-        shopPouches: '',
-        shopPaintings: ''
+      tiles: { // NEEDS NATIVE REVIEW
+        paintingsTitle: 'मौलिक चित्र',
+        paintingsDesc: 'प्रत्येक चित्र अद्वितीय मौलिक कृति अछि।',
+        paintingsAlt: 'कमल पर विराजमान लक्ष्मीक मौलिक मिथिला चित्र, कलाकार द्वारा हाथसँ बनाओल गेल',
+        pouchesTitle: 'हाथसँ चित्रित पाउच',
+        pouchesDesc: 'हाथसँ चित्रित आ एके बेर बनाओल गेल।',
+        pouchesAlt: 'नारंगी ट्यूलिप आ मिथिला शैलीक किनारी बला नीला हाथसँ चित्रित कपड़ाक पाउच'
       }
     },
     hero: {

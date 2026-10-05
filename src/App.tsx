@@ -29,6 +29,7 @@ import { Navbar } from './components/Navbar';
 import { HeroHandDrawn } from './components/HeroHandDrawn';
 import { ParallaxMotifs } from './components/ParallaxMotifs';
 import { ShopPage } from './components/ShopPage';
+import { CategoryTiles } from './components/CategoryTiles';
 import { PaintingCard } from './components/PaintingCard';
 import { VisualStoryTimeline } from './components/VisualStoryTimeline';
 import { HeritageAboutSection } from './components/HeritageAboutSection';
@@ -483,6 +484,9 @@ export default function App() {
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
             />
+
+            {/* Category tiles */}
+            <CategoryTiles showPouches={showPouchesCategory} />
 
             {/* Curated "Featured Masterpieces" Strip */}
             <section id="featured-curation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
