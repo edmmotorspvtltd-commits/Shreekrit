@@ -12,7 +12,6 @@ import { isPouchItem, cartItemKey, cartItemTitle, cartItemImage, cartLineTotalIN
 import { handleImageError } from '../utils/imageFallback';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabaseClient';
 
 interface CheckoutModalProps {
   isOpen: boolean;
