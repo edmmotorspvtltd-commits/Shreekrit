@@ -4,7 +4,21 @@ import type { Artist, Painting, Pouch } from '../types';
 // and it must match the host the domain redirects to.
 export const SITE_ORIGIN = 'https://www.shreekrit.in';
 
-export const SECTIONS = ['home', 'gallery', 'story', 'heritage', 'pouches', 'artists', 'blog', 'my-orders'] as const;
+// 'gallery' and 'pouches' are legacy URLs: they still load, then redirect to
+// the matching Shop category (see LEGACY_SECTION_REDIRECTS).
+export const SECTIONS = ['home', 'shop', 'gallery', 'story', 'heritage', 'pouches', 'artists', 'blog', 'my-orders'] as const;
+
+export type ShopCategory = 'paintings' | 'pouches';
+
+export const shopPath = (category: ShopCategory) => `/shop?category=${category}`;
+
+export const LEGACY_SECTION_REDIRECTS: Record<string, ShopCategory> = {
+  gallery: 'paintings',
+  pouches: 'pouches'
+};
+
+export const parseShopCategory = (search: string): ShopCategory =>
+  new URLSearchParams(search).get('category') === 'pouches' ? 'pouches' : 'paintings';
 
 export type Route =
   | { kind: 'section'; section: string }

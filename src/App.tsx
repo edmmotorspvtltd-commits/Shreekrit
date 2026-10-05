@@ -17,8 +17,9 @@ import { formatPrice } from './utils/currency';
 import { refreshLiveRates } from './utils/liveRates';
 import { useLanguage } from './context/LanguageContext';
 import { Link } from './components/Link';
-import { usePathname, navigate, closeModalRoute, getNavState } from './utils/router';
-import { parseRoute, findById, paintingPath, pouchPath, artistPath, sectionPath } from './utils/routes';
+import { usePathname, useSearch, navigate, closeModalRoute, getNavState } from './utils/router';
+import { parseRoute, findById, paintingPath, pouchPath, artistPath, sectionPath, shopPath, parseShopCategory, LEGACY_SECTION_REDIRECTS, type ShopCategory } from './utils/routes';
+import { hasSellablePouches } from './utils/pouches';
 import { addPouchToCart, sanitizeSavedCart } from './utils/cart';
 import { applyPageMeta, truncate } from './utils/seo';
 import { readCache, writeCache } from './utils/dataCache';
@@ -27,9 +28,8 @@ import { readCache, writeCache } from './utils/dataCache';
 import { Navbar } from './components/Navbar';
 import { HeroHandDrawn } from './components/HeroHandDrawn';
 import { ParallaxMotifs } from './components/ParallaxMotifs';
-import { GallerySection } from './components/GallerySection';
+import { ShopPage } from './components/ShopPage';
 import { PaintingCard } from './components/PaintingCard';
-import { PouchesSection } from './components/PouchesSection';
 import { VisualStoryTimeline } from './components/VisualStoryTimeline';
 import { HeritageAboutSection } from './components/HeritageAboutSection';
 import { ArtistsSection } from './components/ArtistsSection';
@@ -94,6 +94,7 @@ const HOME_DESCRIPTION = 'Fine-art gallery of authentic, hand-painted Mithila (M
 
 const SECTION_META: Record<string, { title: string; description: string }> = {
   home: { title: 'Shreekrit — Hand-Painted Folk Art Gallery', description: HOME_DESCRIPTION },
+  shop: { title: 'Shop — Original Mithila Paintings | Shreekrit', description: 'Shop original hand-painted Mithila (Madhubani) paintings and hand-painted pouches by master artists.' },
   pouches: { title: 'Hand-Painted Pouches | Shreekrit', description: 'Hand-painted fabric pouches in the Mithila (Madhubani) tradition by Lovely Jha, made in small numbers.' },
   gallery: { title: 'Gallery — Original Mithila Paintings | Shreekrit', description: 'Browse original hand-painted Mithila (Madhubani) paintings by master artists, filterable by style, theme and price.' },
   story: { title: 'The Story of a Painting | Shreekrit', description: 'Follow a Mithila painting from natural pigments and hand-drawn motifs to the finished work and its certificate of authenticity.' },
@@ -106,6 +107,7 @@ const SECTION_META: Record<string, { title: string; description: string }> = {
 export default function App() {
   const { t, language } = useLanguage();
   const pathname = usePathname();
+  const search = useSearch();
   const route = useMemo(() => parseRoute(pathname), [pathname]);
 
   // Section shown behind the page/modal. Painting and artist URLs render as
@@ -113,12 +115,15 @@ export default function App() {
   // so fall back to the natural parent listing.
   const [backgroundSection, setBackgroundSection] = useState<string>(() => {
     const initial = parseRoute(window.location.pathname);
-    if (initial.kind === 'section') return initial.section;
-    return initial.kind === 'artist' ? 'artists' : initial.kind === 'pouch' ? 'pouches' : 'gallery';
+    if (initial.kind === 'section') return LEGACY_SECTION_REDIRECTS[initial.section] ? 'shop' : initial.section;
+    return initial.kind === 'artist' ? 'artists' : 'shop';
   });
-  useEffect(() => {
-    if (route.kind === 'section') setBackgroundSection(route.section);
-  }, [route]);
+  // Shop category behind a painting/pouch page, so closing it (or a direct
+  // visit) lands on the matching tab.
+  const [backgroundCategory, setBackgroundCategory] = useState<ShopCategory>(() => {
+    const initial = parseRoute(window.location.pathname);
+    return initial.kind === 'pouch' ? 'pouches' : 'paintings';
+  });
 
   const [currency, setCurrency] = useState<CurrencyCode>(() => {
     const saved = localStorage.getItem('mithila_currency');
@@ -233,11 +238,34 @@ export default function App() {
     ((route.kind === 'painting' && !routedPainting) || (route.kind === 'artist' && !selectedArtist));
   // Pouches have their own loaded flag (separate request).
   const isMissingPouch = route.kind === 'pouch' && pouchesLoaded && !selectedPouch;
+  // Legacy /gallery and /pouches render as Shop immediately and are then
+  // rewritten to the canonical Shop URL by the effect below.
+  const legacyCategory = route.kind === 'section' ? LEGACY_SECTION_REDIRECTS[route.section] : undefined;
+  const sectionKey = route.kind === 'section' ? (legacyCategory ? 'shop' : route.section) : backgroundSection;
   const activeSection =
-    route.kind === 'not-found' || isMissingItem || isMissingPouch ? '404' : route.kind === 'section' ? route.section : backgroundSection;
+    route.kind === 'not-found' || isMissingItem || isMissingPouch ? '404' : sectionKey;
+  const showPouchesCategory = hasSellablePouches(pouches);
+  const requestedCategory: ShopCategory =
+    legacyCategory ?? (route.kind === 'section' && route.section === 'shop' ? parseShopCategory(search) : backgroundCategory);
+  const shopCategory: ShopCategory = showPouchesCategory ? requestedCategory : 'paintings';
+
+  useEffect(() => {
+    if (route.kind === 'section') {
+      setBackgroundSection(sectionKey);
+      if (sectionKey === 'shop') setBackgroundCategory(shopCategory);
+    }
+  }, [route, sectionKey, shopCategory]);
+
+  useEffect(() => {
+    if (route.kind !== 'section') return;
+    const canonical = sectionKey === 'shop' ? shopPath(shopCategory) : null;
+    if (canonical && (legacyCategory || (route.section === 'shop' && window.location.search !== `?category=${shopCategory}`))) {
+      navigate(canonical, { replace: true });
+    }
+  }, [route, sectionKey, legacyCategory, shopCategory]);
 
   const openPainting = (painting: Painting) => navigate(paintingPath(painting));
-  const closeModalPage = () => closeModalRoute(route.kind === 'artist' ? sectionPath('artists') : route.kind === 'pouch' ? sectionPath('pouches') : sectionPath('gallery'));
+  const closeModalPage = () => closeModalRoute(route.kind === 'artist' ? sectionPath('artists') : route.kind === 'pouch' ? shopPath('pouches') : shopPath('paintings'));
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isCommissionOpen, setIsCommissionOpen] = useState(false);
@@ -299,8 +327,12 @@ export default function App() {
         window.history.replaceState(window.history.state, '', path);
       }
     } else if (route.kind === 'section') {
-      const meta = SECTION_META[route.section] ?? SECTION_META.home;
-      applyPageMeta({ ...meta, path: sectionPath(route.section) });
+      if (sectionKey === 'shop') {
+        applyPageMeta({ ...(shopCategory === 'pouches' ? SECTION_META.pouches : SECTION_META.shop), path: shopPath(shopCategory) });
+      } else {
+        const meta = SECTION_META[route.section] ?? SECTION_META.home;
+        applyPageMeta({ ...meta, path: sectionPath(route.section) });
+      }
     } else if (route.kind === 'not-found' || isMissingItem || isMissingPouch) {
       applyPageMeta({
         title: 'Page not found | Shreekrit',
@@ -308,7 +340,7 @@ export default function App() {
         path: '/'
       });
     }
-  }, [route, routedPainting, selectedPouch, selectedArtist, isMissingItem, isMissingPouch]);
+  }, [route, sectionKey, shopCategory, routedPainting, selectedPouch, selectedArtist, isMissingItem, isMissingPouch]);
 
   // Save cart to session localStorage
   useEffect(() => {
@@ -470,7 +502,7 @@ export default function App() {
                 </div>
 
                 <Link
-                  to="/gallery"
+                  to={shopPath('paintings')}
                   className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8C2711] hover:text-[#5C1A0B] cursor-pointer group py-3 -my-3 px-1 -mx-1"
                 >
                   <span>{t.featured.viewAll}</span>
@@ -508,21 +540,17 @@ export default function App() {
           </div>
         )}
 
-        {activeSection === 'gallery' && (
-          <GallerySection
+        {activeSection === 'shop' && (
+          <ShopPage
+            category={shopCategory}
+            showPouches={showPouchesCategory}
             paintings={paintings}
             artists={artists}
+            pouches={pouches}
+            pouchesLoaded={pouchesLoaded}
             currency={currency}
             onQuickAdd={handleQuickAdd}
-          />
-        )}
-
-        {activeSection === 'pouches' && (
-          <PouchesSection
-            pouches={pouches}
-            loaded={pouchesLoaded}
-            currency={currency}
-            onAdd={(pouch) => handleAddPouch(pouch, 1)}
+            onAddPouch={(pouch) => handleAddPouch(pouch, 1)}
           />
         )}
 

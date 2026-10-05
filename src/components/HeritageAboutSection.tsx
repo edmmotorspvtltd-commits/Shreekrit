@@ -93,7 +93,7 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
 
             <div className="flex items-center gap-4 pt-2">
               <Link
-                to="/gallery"
+                to="/shop?category=paintings"
                 className="px-5 py-2.5 bg-[#8C2711] hover:bg-[#6E1C0A] text-white rounded text-xs font-semibold tracking-wide transition-colors cursor-pointer"
               >
                 {t.heritage.exploreBtn}

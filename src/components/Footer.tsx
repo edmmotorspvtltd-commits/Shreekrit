@@ -115,11 +115,11 @@ export const Footer: React.FC<FooterProps> = ({ onOpenCommission, onOpenArtistAp
               {t.footer.theCollection}
             </h5>
             <ul className="space-y-2">
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कल्पवृक्ष (जीवनक वृक्ष)' : 'Kalpavriksha (Tree of Life)'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'सूर्य ओ चन्द्र मण्डल' : 'Surya & Chandra Mandalas'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'राधा कृष्ण रासलीला' : 'Radha Krishna Rasleela'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कोहबर भित्तिचित्र' : 'Ceremonial Kohbar Murals'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'मत्स्य आ जल लोककथा' : 'Matsya & Aquatic Folklore'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कल्पवृक्ष (जीवनक वृक्ष)' : 'Kalpavriksha (Tree of Life)'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'सूर्य ओ चन्द्र मण्डल' : 'Surya & Chandra Mandalas'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'राधा कृष्ण रासलीला' : 'Radha Krishna Rasleela'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कोहबर भित्तिचित्र' : 'Ceremonial Kohbar Murals'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'मत्स्य आ जल लोककथा' : 'Matsya & Aquatic Folklore'}</Link></li>
             </ul>
           </div>
 
@@ -128,10 +128,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenCommission, onOpenArtistAp
               {t.footer.canonicalStyles}
             </h5>
             <ul className="space-y-2">
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कचनी (महीन रेखांकन)' : 'Kachni (Line Hatching)'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'भरनी (प्राकृतिक रंग)' : 'Bharni (Jeweled Washes)'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'गोदना (टैटू ज्यामिति)' : 'Godna (Tattoo Geometry)'}</Link></li>
-              <li><Link to="/gallery" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'तांत्रिक यंत्र' : 'Tantrik Yantras'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'कचनी (महीन रेखांकन)' : 'Kachni (Line Hatching)'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'भरनी (प्राकृतिक रंग)' : 'Bharni (Jeweled Washes)'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'गोदना (टैटू ज्यामिति)' : 'Godna (Tattoo Geometry)'}</Link></li>
+              <li><Link to="/shop?category=paintings" className="hover:text-white cursor-pointer">{language === 'mai' || language === 'hi' ? 'तांत्रिक यंत्र' : 'Tantrik Yantras'}</Link></li>
             </ul>
           </div>
 

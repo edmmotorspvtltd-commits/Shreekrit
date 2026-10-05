@@ -26,6 +26,8 @@ const getPathname = () => window.location.pathname;
 
 export const usePathname = () => useSyncExternalStore(subscribe, getPathname, () => '/');
 
+export const useSearch = () => useSyncExternalStore(subscribe, () => window.location.search, () => '');
+
 export const getNavState = (): NavState => (window.history.state as NavState | null) ?? {};
 
 export function navigate(to: string, options: { replace?: boolean; under?: string } = {}) {

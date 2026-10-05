@@ -1,5 +1,5 @@
 import { sql } from './_lib/db';
-import { SITE_ORIGIN, paintingPath, pouchPath, artistPath, sectionPath } from '../src/utils/routes';
+import { SITE_ORIGIN, paintingPath, pouchPath, artistPath, sectionPath, shopPath } from '../src/utils/routes';
 import { isProduction } from './_lib/env';
 
 export const config = { runtime: 'edge' };
@@ -37,11 +37,18 @@ export default async function handler(req: Request) {
         return [] as any[];
       });
 
-    const staticSections = ['home', 'gallery', ...(pouches.length > 0 ? ['pouches'] : []), 'story', 'heritage', 'artists', 'blog'];
+    // /shop is the canonical listing; the pouches tab only exists when
+    // there are pouches. /gallery and /pouches redirect to these.
+    const staticPaths = [
+      sectionPath('home'),
+      shopPath('paintings'),
+      ...(pouches.length > 0 ? [shopPath('pouches')] : []),
+      ...['story', 'heritage', 'artists', 'blog'].map(sectionPath)
+    ];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${
-      staticSections.map((section) => urlEntry(sectionPath(section), 'daily', section === 'home' ? '1.0' : '0.8')).join('')
+      staticPaths.map((path) => urlEntry(path, 'daily', path === '/' ? '1.0' : '0.8')).join('')
     }${
       paintings.map((p: any) => urlEntry(paintingPath({ id: p.id, title: p.title }), 'weekly', '0.6')).join('')
     }${

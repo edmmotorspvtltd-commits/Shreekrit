@@ -10,6 +10,20 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+function deepMerge<T extends object>(base: T, override: Partial<T>): T {
+  const result = { ...base };
+  for (const key in override) {
+    const b = base[key as keyof T];
+    const o = override[key as keyof Partial<T>];
+    if (o && typeof o === 'object' && !Array.isArray(o) && b && typeof b === 'object') {
+      result[key as keyof T] = deepMerge(b as object, o as object) as T[keyof T];
+    } else if (o !== undefined && o !== '') {
+      result[key as keyof T] = o as T[keyof T];
+    }
+  }
+  return result;
+}
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     try {
@@ -37,7 +51,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.lang = language === 'mai' ? 'mai' : language === 'hi' ? 'hi' : 'en';
   }, [language]);
 
-  const t = TRANSLATIONS[language] || TRANSLATIONS.en;
+  const t = language === 'en'
+    ? TRANSLATIONS.en
+    : deepMerge(TRANSLATIONS.en, TRANSLATIONS[language] as Partial<typeof TRANSLATIONS.en>);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

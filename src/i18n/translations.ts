@@ -28,7 +28,20 @@ export const TRANSLATIONS = {
       tagline: 'Authentic Folk Art Archives',
       cart: 'Cart',
       language: 'Language',
-      currency: 'Currency'
+      currency: 'Currency',
+      shop: 'Shop',
+      discover: 'Discover'
+    },
+    shop: {
+      paintingsTab: 'Paintings',
+      pouchesTab: 'Hand-painted pouches'
+    },
+    home: {
+      tiles: {
+        pouchesSoon: 'New pouches soon',
+        shopPouches: 'Shop pouches',
+        shopPaintings: 'Shop original paintings'
+      }
     },
     hero: {
       badge: 'Living Folk Heritage of Madhubani',
@@ -296,7 +309,20 @@ export const TRANSLATIONS = {
       tagline: 'प्रमाणित लोक कला अभिलेखागार',
       cart: 'झोली (कार्ट)',
       language: 'भाषा',
-      currency: 'मुद्रा'
+      currency: 'मुद्रा',
+      shop: '',
+      discover: ''
+    },
+    shop: {
+      paintingsTab: '',
+      pouchesTab: ''
+    },
+    home: {
+      tiles: {
+        pouchesSoon: '',
+        shopPouches: '',
+        shopPaintings: ''
+      }
     },
     hero: {
       badge: 'मधुबनी की जीवंत लोक धरोहर',
@@ -565,7 +591,20 @@ export const TRANSLATIONS = {
       tagline: 'प्रामाणिक लोककला धरोहर',
       cart: 'झोरी (कार्ट)',
       language: 'भाषा',
-      currency: 'मुद्रा'
+      currency: 'मुद्रा',
+      shop: '',
+      discover: ''
+    },
+    shop: {
+      paintingsTab: '',
+      pouchesTab: ''
+    },
+    home: {
+      tiles: {
+        pouchesSoon: '',
+        shopPouches: '',
+        shopPaintings: ''
+      }
     },
     hero: {
       badge: 'मिथिलाक जीवंत लोक धरोहर',
