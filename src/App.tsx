@@ -12,6 +12,7 @@ import {
 import { Painting, Pouch, Artist, CartItem, CurrencyCode, FrameOption, EditionType } from './types';
 import { PAINTINGS } from './data/paintings';
 import { ARTISTS } from './data/artists';
+import { POUCHES } from './data/pouches';
 import { formatPrice } from './utils/currency';
 import { refreshLiveRates } from './utils/liveRates';
 import { useLanguage } from './context/LanguageContext';
@@ -134,10 +135,15 @@ export default function App() {
     () => readCache<Artist>(ARTISTS_CACHE_KEY) ?? ARTISTS
   );
 
-  // Pouches load separately and are never cached locally: stock changes as
-  // pieces sell, and demo pouches must not outlive the API hiding them. If
-  // the request fails (e.g. migration not applied) the Pouches nav stays hidden.
-  const [pouches, setPouches] = useState<Pouch[]>([]);
+  // Pouches: seed with static data so cards render immediately (zero delay),
+  // then hydrate with live stock counts from the API in the background.
+  // Demo pouches in the static array are filtered out in production by the API;
+  // until the fetch resolves we show the static list (acceptable for a brief moment).
+  // If the request fails the Pouches nav stays visible (already seeded), which is
+  // safer than hiding it — the server re-checks stock atomically at checkout anyway.
+  const [pouches, setPouches] = useState<Pouch[]>(
+    () => POUCHES.filter((p) => !p.isPlaceholder)
+  );
   const [pouchesLoaded, setPouchesLoaded] = useState(false);
   useEffect(() => {
     let cancelled = false;
