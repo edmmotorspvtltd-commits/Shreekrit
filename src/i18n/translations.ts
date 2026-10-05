@@ -253,7 +253,8 @@ export const TRANSLATIONS = {
       styleSpecialist: 'Specialist',
       meetTheArtist: 'Meet the Artist',
       meetTheArtistSubtitle: 'A painter from the village of Chanpura, Madhubani, keeping the line and colour of Mithila alive.',
-      selectedWorks: 'Selected Works'
+      selectedWorks: 'Selected Works',
+      viewProfile: 'View Profile'
     },
     blog: {
       badge: 'From the Guild Journal',
@@ -520,7 +521,9 @@ export const TRANSLATIONS = {
       styleSpecialist: 'विशेषज्ञ',
       meetTheArtist: 'कलाकार से मिलें',
       meetTheArtistSubtitle: 'मधुबनी के चंपुरा गाँव की चित्रकार, जो मिथिला की रेखा और रंग को जीवित रख रही हैं।',
-      selectedWorks: 'चुनिंदा कृतियाँ'
+      selectedWorks: 'चुनिंदा कृतियाँ',
+      // TODO(native-review): machine-drafted Hindi, needs native speaker review
+      viewProfile: 'प्रोफ़ाइल देखें'
     },
     blog: {
       badge: 'गिल्ड पत्रिका से',
@@ -787,7 +790,9 @@ export const TRANSLATIONS = {
       styleSpecialist: 'विशेषज्ञ',
       meetTheArtist: 'कलाकार सँ भेटू',
       meetTheArtistSubtitle: 'मधुबनीक चनपुरा गामक चित्रकार, जे मिथिलाक रेखा आ रंग केँ जीवंत राखि रहल छथि।',
-      selectedWorks: 'चुनल कृति'
+      selectedWorks: 'चुनल कृति',
+      // TODO(native-review): machine-drafted Maithili, needs native speaker review
+      viewProfile: 'प्रोफाइल देखू'
     },
     blog: {
       badge: 'गिल्ड पत्रिका सँ',
