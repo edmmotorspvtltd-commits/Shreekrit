@@ -129,10 +129,10 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
         <div className="space-y-6 pt-6 border-t border-[#DFCDB5]">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-[#241A14]">
-              {t.heritage.stylesTitle}
+              {t.heritage.canonicalTitle}
             </h3>
             <p className="text-xs sm:text-sm text-[#665141]">
-              {t.heritage.stylesSubtitle}
+              {t.heritage.canonicalSubtitle}
             </p>
           </div>
 
@@ -176,24 +176,24 @@ export const HeritageAboutSection: React.FC<HeritageAboutSectionProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-[#DFCDB3]">
             <div className="space-y-1">
-              <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat1Num}</span>
-              <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat1Label}</h5>
+              <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat1Number}</span>
+              <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat1Title}</h5>
               <p className="text-[12px] text-[#695444]">
                 {t.heritage.stat1Desc}
               </p>
             </div>
 
             <div className="space-y-1">
-              <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat2Num}</span>
-              <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat2Label}</h5>
+              <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat2Number}</span>
+              <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat2Title}</h5>
               <p className="text-[12px] text-[#695444]">
                 {t.heritage.stat2Desc}
               </p>
             </div>
 
             <div className="space-y-1">
-              <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat3Num}</span>
-              <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat3Label}</h5>
+              <span className="font-serif-display text-3xl font-bold text-[#8C2711]">{t.heritage.stat3Number}</span>
+              <h5 className="font-semibold text-xs text-[#241A14]">{t.heritage.stat3Title}</h5>
               <p className="text-[12px] text-[#695444]">
                 {t.heritage.stat3Desc}
               </p>
